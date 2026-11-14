@@ -5,7 +5,7 @@ Tasks for the Space Mission Design Game. Each task names who owns it (an agent f
 Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 - Open tasks are split into numbered **subtasks** (T4.1, T4.2, …). Do them in order unless a subtask says otherwise, and tick each one when it is finished. Each subtask is small enough to review on its own.
-- A task is done when all its subtasks are ticked and its "Done when" list holds. There is no routine review step for now: review and debugging happen later, on request. The user makes the commits.
+- A task is done when all its subtasks are ticked and its "Done when" list holds. There is no review step: the user tries the result and reports bugs, which then become fixes. `reviewer` runs only when the user asks. The user makes the commits.
 - T1–T3 were done before the monorepo existed, so their text names `data/` at the repo root. T5 moved the data to `packages/data/json/`.
 - After every edit of `packages/data/json/launchers.curation.json`, rebuild with `node --experimental-strip-types scripts/fetch-launchers.ts --offline`. It does not call the API, so the Launch Library 2 values stay as they were fetched.
 - This list covers the launcher data, the platform and data parts of M0, and the first M1 data files. The other M0 work in [tech.md](tech.md) section 7 (`sim` API, app shell, style guide) and the M1 mission card have no tasks yet.
@@ -167,3 +167,202 @@ Write these files in `packages/data/json/`, with their Zod schema in `packages/d
   - Wildfire Watch has real choices: daylight fire detection (R2), thermal infrared for night detection, and both narrow and wide fields of view.
   - Some instruments fit a 6U or 12U CubeSat and at least one needs the ~150 kg satellite, so both spacecraft sizes on the mission card can be played.
   - Every instrument has a source, and CREDITS.md and APIDoc.md are updated.
+
+---
+
+## Visuals (M1–M2)
+
+The first web screen (built quickly, outside this list) has a placeholder 2D CSS launch animation. These tasks replace it with the 3D plan in [tech.md](tech.md) (sections 2 and 3, React Three Fiber + NASA 3D Resources). Visual quality matters: this is what the demo video shows.
+
+### [x] T8 – 3D orbit view
+
+- **Owner:** `visuals-developer`
+- **Why:** The orbit is the Launch role's main decision, and the 3D view is what makes the demo memorable.
+- **Subtasks:**
+  - [x] **T8.1 – Scene setup.** React Three Fiber + drei in `apps/web/src/scene/`, a `<Canvas>` panel on the design screen, orbit controls (drag to rotate, scroll to zoom), a starfield.
+  - [x] **T8.2 – Earth.** A textured Earth (NASA Blue Marble or a NASA 3D Resources Earth texture, public domain; optimised, committed in `apps/web/public/`), slow rotation, soft atmosphere glow, day/night lighting from a sun direction.
+  - [x] **T8.3 – Orbit and satellite.** The orbit drawn as a line at the design's altitude and inclination (sun-synchronous ≈ 97.5°; altitude from the rideshare's fixed orbit, otherwise a default of 525 km until an altitude choice exists), with a small satellite model moving along it at a visibly accelerated rate. Positions come from a small pure function in `packages/sim` (circular orbit: period from altitude), with a test.
+  - [x] **T8.4 – Ground station and swath.** One or two ground stations on the globe; the satellite's link line shows when it is in contact. The instrument's swath shown as a light strip on the ground under the satellite (width from field of view and altitude, a placeholder width if no instrument is chosen).
+  - [x] **T8.5 – Polish and performance.** Readable at the dashboard size, smooth on a normal laptop, `prefers-reduced-motion` respected, no console errors. Credit the texture in CREDITS.md.
+
+### [x] T9 – 3D launch sequence
+
+- **Owner:** `visuals-developer`
+- **Needs:** T8.
+- **Why:** The current CSS rocket does not look like the game we want.
+- **Subtasks:**
+  - [x] **T9.1 – Launch scene.** Full-screen 3D scene on Launch: a launch pad, a rocket model (simple modelled geometry or a NASA 3D Resources model), countdown, engine flame and smoke particles, camera following the ascent.
+  - [x] **T9.2 – Outcome.** PASS: the rocket climbs, the camera pulls back to the curved Earth and the satellite separates into its orbit (hand-off to the T8 orbit view). FAIL: the launch is scrubbed on the pad with a clear message.
+  - [x] **T9.3 – Replace the placeholder.** Remove the CSS `LaunchSequence` and its styles from `apps/web/src/App.tsx` and `styles.css`; keep "click to skip".
+
+### [ ] T10 – Spacecraft view
+
+- **Owner:** `visuals-developer`
+- **Subtasks:**
+  - [ ] **T10.1 – Bus by size.** A 6U, 12U or small-satellite body that changes with the chosen structure.
+  - [ ] **T10.2 – Parts on the model.** Solar panels (body-mounted or deployable wings), antenna and instrument aperture appear as the parts are chosen.
+
+---
+
+## Simulation (M1–M2)
+
+### [x] T11 – Align the budget rules with design.md
+
+- **Owner:** `sim-engineer`
+- **Why:** The first web screen was built quickly with two shortcuts that differ from [design.md](design.md) section 1 and the mission card.
+- **Subtasks:**
+  - [x] **T11.1 – TRL penalties add up.** Development time = base time + the **sum** of all chosen parts' and instruments' penalties (today only the worst penalty counts).
+  - [x] **T11.2 – Team cost by allocation.** The monthly team cost is charged to the roles in proportion to their budget allocations (today it all goes to Spacecraft). Update the dashboard label in `apps/web`. *(Done: dashboard uses `spendByRole`.)*
+  - [x] **T11.3 – Move the mission card into data.** Replace the hard-coded `WILDFIRE_WATCH` in `packages/sim` with the mission card from `packages/data` (T15).
+  - [x] **T11.4 – Tests** for both rules.
+
+### [x] T12 – Earth-orbit model
+
+- **Owner:** `sim-engineer`
+- **Subtasks:**
+  - [x] **T12.1 – Basics.** Period, ground speed, eclipse fraction and sun-synchronous inclination from altitude (circular orbits).
+  - [x] **T12.2 – Lifetime (R4).** Simple orbit decay by altitude (a table of plausible lifetimes), and the effect of propulsion "none".
+  - [x] **T12.3 – Revisit (R1).** Revisit of the target region from swath width (instrument field of view and altitude) and orbit.
+  - [x] **T12.4 – Ground contact and data (R3).** Contact minutes per day by number of ground stations, data downlinked per day from the radio's data rate, data produced by the instrument.
+  - [x] **T12.5 – Power over an orbit.** Average power produced including eclipse; battery sized for the eclipse.
+  - [x] **T12.6 – Tests** with known values (e.g., about 95 minutes period at 525 km).
+
+### [x] T13 – Full design validation (R1–R4 and launcher)
+
+- **Owner:** `sim-engineer`
+- **Needs:** T12.
+- **Subtasks:**
+  - [x] **T13.1 – Instruments in the budget:** mass, power, data, cost (Science allocation), TRL.
+  - [x] **T13.2 – Requirements R1–R4** checked with the orbit model, each with a plain-English reason when it fails.
+  - [x] **T13.3 – Launcher compatibility:** capacity to the chosen orbit, the rideshare's fixed orbit, rideshare price by mass.
+  - [x] **T13.4 – Deadline penalty:** missing the 30-month deadline means a 12-month wait at team cost and a zero schedule score, not a failure (design.md section 1).
+
+### [x] T14 – Mission run: events, scoring and the report
+
+- **Owner:** `sim-engineer`
+- **Needs:** T13, T16.
+- **Subtasks:**
+  - [x] **T14.1 – Seeded run.** A deterministic `runMission(design, mission, seed)` that steps through development, launch and operations.
+  - [x] **T14.2 – Launch failure** rolled from the launcher's success rate.
+  - [x] **T14.3 – Events:** 3–5 per run from the event list, each checking a design margin, with team decisions as inputs.
+  - [x] **T14.4 – Scoring:** success gate, then science 40 · efficiency 20 · schedule 15 · risk 15 · coordination 10 (design.md section 5), stars 1–3.
+  - [x] **T14.5 – Cause chain:** plain-English explanations of every outcome, used by the report and the Flight Director.
+  - [x] **T14.6 – Real-mission match:** the nearest real mission from T16.2.
+
+---
+
+## Data and content (M1–M2)
+
+Plausible values are enough (no research): mark them `estimated` or `game-design`.
+
+### [x] T15 – Wildfire Watch mission card
+
+- **Owner:** `data-curator`
+- **Subtasks:**
+  - [x] **T15.1 – Schema and file** for the mission card: objective, why it matters, requirements R1–R4 with thresholds, constraints, budget, allocations, team cost, base times, deadline, score weights, bonus objectives (design.md section 4.3).
+  - [x] **T15.2 – Orbit options and ground stations:** a few altitudes (e.g., 400–700 km), orbit types, 1–3 ground station locations with plausible contact times.
+
+### [x] T16 – Events and real missions
+
+- **Owner:** `data-curator`
+- **Subtasks:**
+  - [x] **T16.1 – Events file:** the 9 Wildfire Watch events from design.md section 6.2, each with its phase, the margin it checks, the decision options and their effects, and a "why does this happen?" text.
+  - [x] **T16.2 – Real missions:** 10–15 Earth-observation satellites (e.g., Landsat, Terra, Aqua, Suomi NPP, a fire-detection CubeSat) with orbit, mass, power and instrument type, for the "your design resembles…" match.
+
+### [x] T17 – Learning texts
+
+- **Owner:** `data-curator`
+- **Subtasks:**
+  - [x] **T17.1 – Glossary and tooltips:** one plain-language sentence for every term the UI shows (TRL, SSO, swath, downlink, …), with "learn more" links.
+  - [x] **T17.2 – First-play tour:** 5–6 short steps (design.md section 9).
+  - [x] **T17.3 – Role advisor lines** for solo play (design.md section 3.4).
+
+---
+
+## Web app (M1–M3)
+
+### [x] T18 – Complete the design screen
+
+- **Owner:** `web-developer`
+- **Needs:** T13.
+- **Subtasks:**
+  - [x] **T18.1 – Instrument picker** for the Science role, with the same live effect preview and lock reasons as parts.
+  - [x] **T18.2 – Orbit and ground choices:** altitude and orbit type (Launch role), number of ground stations (Ground role); fixed for the rideshare.
+  - [x] **T18.3 – Role tabs:** Launch, Spacecraft, Ground and Science, each showing only its own choices and budget allocation.
+  - [x] **T18.4 – Requirements panel:** R1–R4 status with plain-English reasons.
+  - [x] **T18.5 – Tooltips and glossary** from T17.
+
+### [x] T19 – Game flow, events and results
+
+- **Owner:** `web-developer`
+- **Needs:** T14, T18.
+- **Subtasks:**
+  - [x] **T19.1 – Phases:** Setup, Briefing, Concept, Trade-offs, Design approval, Development, Launch, Operations, Results (design.md section 7).
+  - [x] **T19.2 – Event decisions** during development and operations.
+  - [x] **T19.3 – Results screen:** score components, stars, the post-mission report with its cause chain, the real-mission match.
+  - [x] **T19.4 – Retry and compare:** same seed, new seed, and the last two attempts side by side (design.md section 8).
+  - [x] **T19.5 – First-play tour** from T17.2.
+
+### [x] T20 – Team play (hot-seat)
+
+- **Owner:** `web-developer` (rules: `sim-engineer`)
+- **Needs:** T19.
+- **Subtasks:**
+  - [x] **T20.1 – Player setup:** solo or 2–4 players with nicknames; role assignment (fewer players take more roles).
+  - [x] **T20.2 – Turns:** the screen shows the role and nickname that is up next; each player acts only for their roles.
+  - [x] **T20.3 – Voting in turn** for design approval and Go / No-Go.
+  - [x] **T20.4 – Requests and trades** between roles; advisors raise them in solo play (design.md section 3).
+  - [x] **T20.5 – Coordination score** inputs passed to the sim.
+
+---
+
+## Local API (M2–M5)
+
+### [x] T21 – Saved attempts and leaderboard
+
+- **Owner:** `platform-engineer`
+- **Subtasks:**
+  - [x] **T21.1 – Tables:** attempts (design, seed, result, score, nickname, time).
+  - [x] **T21.2 – Endpoints:** save an attempt, list recent attempts, leaderboard per mission; CORS or a Vite proxy for the web app.
+  - [x] **T21.3 – Web hook-up** of retry/compare and the leaderboard (with `web-developer`).
+
+### [x] T22 – AI Flight Director (`claude -p`)
+
+- **Owner:** `platform-engineer`
+- **Needs:** T14.5.
+- **Subtasks:**
+  - [x] **T22.1 – Endpoint** that runs `claude -p` with no tools and a fixed prompt file, sending the result and cause chain.
+  - [x] **T22.2 – Template fallback** when the CLI is missing or fails.
+  - [x] **T22.3 – Web:** the debrief appears after the result without blocking it.
+
+---
+
+## Housekeeping
+
+### [ ] T23 – Setup docs and tooling
+
+- **Owner:** coordinator (the user for T23.2 and T23.3)
+- **Subtasks:**
+  - [x] **T23.1 – README and tech.md:** Node 22.12 or newer; run pnpm as `npx --yes pnpm@10.34.9` (or `pnpm` once corepack works); project structure now has `apps/web`, `apps/api`, `packages/sim`, `packages/data`; API port 8787.
+  - [ ] **T23.2 – Decide on corepack:** `npm i -g corepack@latest` (user-level global install) so plain `pnpm` works.
+  - [ ] **T23.3 – First CI run:** push and check the GitHub Actions run on Ubuntu and Windows.
+
+---
+
+## Presentation (M6)
+
+### [ ] T24 – Submission material
+
+- **Owner:** coordinator with the user
+- **Subtasks:**
+  - [ ] **T24.1 – Demo script:** a solo run and a short hot-seat run of Wildfire Watch, including one failure and its explanation.
+  - [ ] **T24.2 – Video** recorded locally.
+  - [ ] **T24.3 – Slides or project page:** challenge fit (CML phases, mission segments as roles), data sources, the trade-offs the game teaches, the disclaimer.
+
+---
+
+## Later (M4–M5, not broken down yet)
+
+- More missions: Lunar Ice Hunter, Mars Climate Orbiter (Orrery modules, NASA LSP data), Europa, sandbox.
+- Difficulty levels; export and import of designs; sound; accessibility pass; real satellites (ISS) in the orbit view.
+- Team-vs-team competition (D6).

@@ -1,0 +1,247 @@
+{
+  "effectsNote": "Effects are added to the run when an option is chosen. months: development or launch delay; costUsd: extra cost; scienceDaysLost: days without observations; failureRiskPct: added chance of losing the mission; performancePct: change to the affected part's performance; sciencePct: change to the science score; dataBacklogDays: days of data waiting to be downlinked; propulsionUsePct: share of the propulsion capacity used; endsMission: the mission is lost.",
+  "events": [
+    {
+      "id": "supplier-delay",
+      "missionId": "wildfire-watch",
+      "phase": "development",
+      "name": "Supplier delay",
+      "margin": "schedule",
+      "decidedBy": "spacecraft",
+      "rolled": "pool",
+      "weight": 3,
+      "text": "A supplier says one of your parts will arrive 4 months late.",
+      "why": "Space parts are built in small numbers by a few companies. One missing component or a busy factory can hold up a whole project.",
+      "absorbedText": "Your schedule had enough room, so the late part did not move the ready-for-launch date.",
+      "options": [
+        {
+          "id": "buy-alternative",
+          "label": "Buy a more expensive alternative part",
+          "effects": { "costUsd": 400000 },
+          "outcome": "You paid extra for a part from another supplier and kept the schedule."
+        },
+        {
+          "id": "accept-delay",
+          "label": "Accept the delay",
+          "effects": { "months": 4 },
+          "outcome": "You waited 4 months for the part, and the team cost kept running."
+        }
+      ]
+    },
+    {
+      "id": "test-failure",
+      "missionId": "wildfire-watch",
+      "phase": "development",
+      "name": "Test failure",
+      "margin": "trl",
+      "decidedBy": "spacecraft",
+      "rolled": "pool",
+      "weight": 3,
+      "text": "Your least mature part failed its vibration test.",
+      "why": "Parts that have never flown (low TRL) have not yet proven they survive the shaking of launch and the vacuum of space. Ground tests find these problems before launch.",
+      "absorbedText": "All your parts have flown before, so they passed their tests.",
+      "options": [
+        {
+          "id": "retest",
+          "label": "Fix and re-test the part",
+          "effects": { "months": 3, "costUsd": 200000 },
+          "outcome": "You fixed the part and it passed its second test, 3 months later."
+        },
+        {
+          "id": "swap-proven",
+          "label": "Swap to a proven part",
+          "effects": { "performancePct": -20 },
+          "outcome": "You swapped to a part that has flown before: safer, but less capable."
+        }
+      ]
+    },
+    {
+      "id": "launch-delay",
+      "missionId": "wildfire-watch",
+      "phase": "launch",
+      "name": "Launch delay",
+      "margin": "deadline",
+      "decidedBy": null,
+      "rolled": "pool",
+      "weight": 2,
+      "text": "Bad weather and a rocket problem push the launch back by 1 month.",
+      "why": "Rockets launch only when winds, clouds and every system are within safe limits. Rideshare satellites also wait for the main passenger to be ready.",
+      "absorbedText": "Your mission was ready well before the deadline, so the delay did not matter.",
+      "options": [
+        {
+          "id": "wait",
+          "label": "Wait for the next attempt",
+          "effects": { "months": 1 },
+          "outcome": "The launch slipped by a month."
+        }
+      ]
+    },
+    {
+      "id": "launch-failure",
+      "missionId": "wildfire-watch",
+      "phase": "launch",
+      "name": "Launch failure",
+      "margin": "launcher-reliability",
+      "decidedBy": null,
+      "rolled": "once-per-run",
+      "weight": 0,
+      "text": "The rocket failed during ascent and the satellite was lost.",
+      "why": "Every rocket has a track record. A launcher with fewer successful flights has a higher chance of failing, which is why cheap new rockets carry more risk.",
+      "absorbedText": "The rocket worked and placed your satellite in orbit.",
+      "options": [
+        {
+          "id": "mission-lost",
+          "label": "The mission ends",
+          "effects": { "endsMission": true },
+          "outcome": "The satellite was lost at launch. The launcher's success rate decided this roll."
+        }
+      ]
+    },
+    {
+      "id": "solar-storm",
+      "missionId": "wildfire-watch",
+      "phase": "operations",
+      "name": "Solar storm",
+      "margin": "power",
+      "decidedBy": "spacecraft",
+      "rolled": "pool",
+      "weight": 2,
+      "text": "A strong solar storm is hitting Earth. Charged particles can upset the electronics.",
+      "why": "The Sun sometimes throws out bursts of charged particles. They can flip bits in computers and damage parts that are not radiation-tolerant.",
+      "absorbedText": "Your radiation-tolerant parts and power margin rode out the storm.",
+      "options": [
+        {
+          "id": "safe-mode",
+          "label": "Enter safe mode",
+          "effects": { "scienceDaysLost": 2 },
+          "outcome": "You entered safe mode and protected the satellite, losing 2 days of observations."
+        },
+        {
+          "id": "keep-operating",
+          "label": "Keep operating",
+          "effects": { "failureRiskPct": 10 },
+          "outcome": "You kept observing through the storm and accepted the risk of damage."
+        }
+      ]
+    },
+    {
+      "id": "debris-approach",
+      "missionId": "wildfire-watch",
+      "phase": "operations",
+      "name": "Space debris approach",
+      "margin": "propulsion",
+      "decidedBy": "launch",
+      "rolled": "pool",
+      "weight": 2,
+      "text": "A piece of old rocket will pass very close to your satellite in 2 days.",
+      "why": "Thousands of old satellites and fragments circle the Earth. Even a small piece hits hard at orbital speed, so operators move out of the way when they can.",
+      "absorbedText": "The tracked debris passed at a safe distance.",
+      "options": [
+        {
+          "id": "avoid",
+          "label": "Make an avoidance manoeuvre",
+          "requires": "propulsion",
+          "effects": { "propulsionUsePct": 10 },
+          "outcome": "You fired the thruster and moved out of the way, using some fuel."
+        },
+        {
+          "id": "take-risk",
+          "label": "Take the risk",
+          "effects": { "failureRiskPct": 5 },
+          "outcome": "You stayed on course and hoped the debris would miss."
+        }
+      ]
+    },
+    {
+      "id": "part-failure",
+      "missionId": "wildfire-watch",
+      "phase": "operations",
+      "name": "Part failure",
+      "margin": "redundancy",
+      "decidedBy": "spacecraft",
+      "rolled": "pool",
+      "weight": 2,
+      "text": "One of your parts has stopped working properly.",
+      "why": "Parts wear out in space and cannot be repaired. Less mature parts fail more often, and a backup (redundancy) lets the mission continue.",
+      "absorbedText": "Your parts are proven and kept working.",
+      "options": [
+        {
+          "id": "switch-backup",
+          "label": "Switch to the backup",
+          "requires": "redundancy",
+          "effects": { "scienceDaysLost": 1 },
+          "outcome": "You switched to the backup and lost only a day of observations."
+        },
+        {
+          "id": "continue-degraded",
+          "label": "Continue degraded",
+          "effects": { "sciencePct": -15 },
+          "outcome": "The satellite kept working with reduced performance for the rest of the mission."
+        }
+      ]
+    },
+    {
+      "id": "ground-station-outage",
+      "missionId": "wildfire-watch",
+      "phase": "operations",
+      "name": "Ground station outage",
+      "margin": "comms",
+      "decidedBy": "ground",
+      "rolled": "pool",
+      "weight": 2,
+      "text": "One of your ground stations is down for a week after a storm damaged its antenna.",
+      "why": "A satellite can only send data when it passes over a ground station. With fewer stations, data waits on board until the next contact.",
+      "absorbedText": "Your other stations had enough spare contact time to carry the data.",
+      "options": [
+        {
+          "id": "rent-station",
+          "label": "Rent an extra station for a week",
+          "effects": { "costUsd": 50000 },
+          "outcome": "You rented time on another station and kept the data flowing."
+        },
+        {
+          "id": "accept-backlog",
+          "label": "Accept the data backlog",
+          "effects": { "dataBacklogDays": 7 },
+          "outcome": "Data piled up on board and fire alerts arrived late for a week."
+        }
+      ]
+    },
+    {
+      "id": "major-fire-season",
+      "missionId": "wildfire-watch",
+      "phase": "operations",
+      "name": "Major fire season",
+      "margin": "data-capacity",
+      "decidedBy": "science",
+      "rolled": "pool",
+      "weight": 2,
+      "text": "A hot, dry summer brings many fires. Firefighters ask for more observations.",
+      "why": "This is what the mission was built for. More observations mean more data and more power, so spare capacity turns into extra science.",
+      "absorbedText": "Your satellite had spare data and power capacity and delivered extra observations.",
+      "options": [
+        {
+          "id": "increase-observations",
+          "label": "Increase observations",
+          "requires": "margin",
+          "effects": { "sciencePct": 20, "dataBacklogDays": 2 },
+          "outcome": "You observed more often and helped firefighters during the worst weeks."
+        },
+        {
+          "id": "keep-plan",
+          "label": "Keep the normal plan",
+          "effects": {},
+          "outcome": "You kept the normal observation plan and missed some of the fires."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "fields": ["events", "weight", "effects"],
+      "data_quality": "game-design",
+      "source": "design.md section 6.2",
+      "note": "Effect sizes and draw weights are starting values for balancing."
+    }
+  ]
+}

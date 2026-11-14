@@ -260,118 +260,16 @@ ul {
   gap: 2px;
 }
 
-/* ---------- Launch sequence ---------- */
-.launch-overlay {
+/* ---------- Launch sequence (3D scene lives in src/scene/) ---------- */
+.launch-loading {
   position: fixed;
   inset: 0;
   z-index: 100;
-  overflow: hidden;
-  cursor: pointer;
-  background: radial-gradient(ellipse at bottom, #1b2a4a 0%, #05070d 70%);
-}
-.launch-overlay .stars {
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(1px 1px at 10% 20%, #fff, transparent), radial-gradient(1px 1px at 30% 70%, #fff, transparent),
-    radial-gradient(1px 1px at 55% 35%, #fff, transparent), radial-gradient(1px 1px at 75% 15%, #fff, transparent),
-    radial-gradient(1px 1px at 85% 60%, #fff, transparent), radial-gradient(1px 1px at 20% 85%, #fff, transparent),
-    radial-gradient(2px 2px at 65% 80%, #cfe3ff, transparent), radial-gradient(2px 2px at 45% 10%, #cfe3ff, transparent);
-  opacity: 0.8;
-}
-.launch-overlay .pad {
-  position: absolute;
-  left: 50%;
-  bottom: 8vh;
-  width: 180px;
-  height: 10px;
-  margin-left: -90px;
-  border-radius: 4px;
-  background: #3b4558;
-}
-.launch-overlay .rocket {
-  position: absolute;
-  left: 50%;
-  bottom: calc(8vh + 10px);
-  margin-left: -30px;
-}
-.launch-overlay .rocket.liftoff {
-  animation: liftoff 3s cubic-bezier(0.55, 0, 0.9, 0.4) forwards;
-}
-.launch-overlay .rocket.scrub {
-  animation: shake 0.4s ease-in-out 3;
-}
-.launch-overlay .flame {
-  width: 18px;
-  height: 46px;
-  margin: -4px auto 0;
-  border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%;
-  background: linear-gradient(#fff6c2, #ffb03a 40%, #ff4b2b 80%, transparent);
-  animation: flicker 0.08s infinite alternate;
-  transform-origin: top;
-}
-.launch-overlay .launch-text {
-  position: absolute;
-  top: 18vh;
-  width: 100%;
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
-.launch-overlay .countdown {
-  color: #e8ecf4;
-  font-size: 4rem;
-}
-.launch-overlay .go {
-  color: #4ade80;
-}
-.launch-overlay .nogo {
-  color: #f87171;
-}
-.launch-overlay .skip {
-  position: absolute;
-  bottom: 2vh;
-  width: 100%;
-  text-align: center;
-}
-@keyframes liftoff {
-  0% {
-    transform: translateY(0);
-  }
-  10% {
-    transform: translateY(2px) translateX(-1px);
-  }
-  100% {
-    transform: translateY(-120vh);
-  }
-}
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-4px) rotate(-2deg);
-  }
-  75% {
-    transform: translateX(4px) rotate(2deg);
-  }
-}
-@keyframes flicker {
-  from {
-    transform: scaleY(0.85);
-    opacity: 0.85;
-  }
-  to {
-    transform: scaleY(1.15);
-    opacity: 1;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .launch-overlay .rocket.liftoff,
-  .launch-overlay .rocket.scrub,
-  .launch-overlay .flame {
-    animation: none;
-  }
+  display: grid;
+  place-items: center;
+  background: #000;
+  color: var(--muted);
+  font: 12px var(--mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }

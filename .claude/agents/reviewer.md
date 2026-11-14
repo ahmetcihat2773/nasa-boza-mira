@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Reviews work produced by the other agents before it is merged – conformance to design.md and tech.md, correctness, tests, determinism of the sim, data sourcing, licences and credits. Read-only; never edits code. Use after each agent task in the Space Mission Design Game.
+description: Used only when the user asks for a review. Reviews work produced by the other agents – conformance to design.md and tech.md, correctness, tests, determinism of the sim, data sourcing, licences and credits. Read-only; never edits code. Not part of the normal task flow in the Space Mission Design Game.
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -23,3 +23,6 @@ You are the **reviewer** of the Space Mission Design Game, an open-source (MIT) 
 - **Findings:** most severe first, each with file:line, what is wrong, and a concrete fix.
 - **Verified:** what you ran (tests, type check) and the results.
 Keep it concise; do not report style nitpicks unless they hide a real problem.
+
+## When to use
+- **Only when the user explicitly asks for a review.** There is no routine review step: the user tries the result and reports bugs.

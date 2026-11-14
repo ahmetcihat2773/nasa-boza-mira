@@ -1,0 +1,276 @@
+/* Full-screen launch sequence (webcast-style HUD over the 3D scene). */
+.ls {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  cursor: pointer;
+  overflow: hidden;
+  animation: ls-in 0.5s ease-out;
+}
+.ls canvas {
+  display: block;
+}
+@keyframes ls-in {
+  from {
+    opacity: 0;
+  }
+}
+.ls-fade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+}
+.ls-letterbox {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6vh;
+  background: #000;
+  pointer-events: none;
+}
+.ls-letterbox.top {
+  top: 0;
+}
+.ls-letterbox.bottom {
+  bottom: 0;
+}
+.ls-hud {
+  position: absolute;
+  inset: 6vh 0;
+  pointer-events: none;
+  color: #e9eef7;
+  font:
+    13px/1.3 ui-sans-serif,
+    system-ui,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  text-shadow: 0 1px 3px #000a;
+}
+.ls-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  padding: 18px 28px;
+}
+.ls-kicker {
+  font: 600 11px/1 var(--mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.ls-vehicle {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.ls-clock {
+  font: 600 clamp(28px, 4.2vw, 54px)/1 var(--mono);
+  letter-spacing: 0.06em;
+  padding: 8px 18px;
+  border: 1px solid #ffffff2a;
+  border-radius: 6px;
+  background: #05080ea6;
+  backdrop-filter: blur(6px);
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}
+.ls-clock.hold {
+  color: #ff5a5f;
+  border-color: #ff5a5f88;
+  animation: ls-blink 0.9s steps(2, start) infinite;
+}
+@keyframes ls-blink {
+  to {
+    opacity: 0.55;
+  }
+}
+.ls-head-right {
+  justify-self: end;
+  font: 12px var(--mono);
+  color: #9fb0ca;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.ls-telemetry {
+  position: absolute;
+  left: 28px;
+  bottom: 24px;
+  display: grid;
+  gap: 6px;
+  padding: 12px 16px;
+  min-width: 210px;
+  border-left: 2px solid var(--accent);
+  background: linear-gradient(90deg, #05080ecc, #05080e00);
+  font: 12px var(--mono);
+  color: #9fb0ca;
+}
+.ls-telemetry div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.ls-telemetry span {
+  width: 72px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 10px;
+}
+.ls-telemetry b {
+  color: #fff;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.ls-callout {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  font-size: clamp(16px, 2vw, 24px);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  opacity: 0;
+}
+.ls-callout.show {
+  animation: ls-callout 0.6s ease-out forwards;
+}
+@keyframes ls-callout {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+.ls-events {
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0;
+}
+.ls-event {
+  position: relative;
+  width: clamp(64px, 9vw, 120px);
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  font: 10px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6f7f99;
+}
+.ls-event::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: -50%;
+  width: 100%;
+  height: 1px;
+  background: #ffffff26;
+}
+.ls-event:first-child::before {
+  display: none;
+}
+.ls-event i {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid #8a9ab5;
+  background: #05080e;
+}
+.ls-event.done {
+  color: #e9eef7;
+}
+.ls-event.done i {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+.ls-event.done::before {
+  background: var(--accent);
+}
+.ls-scrub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -30%);
+  width: min(560px, calc(100% - 32px));
+  padding: 20px 24px;
+  border: 1px solid #ff5a5f88;
+  border-left: 4px solid #ff5a5f;
+  border-radius: 6px;
+  background: #12060acc;
+  backdrop-filter: blur(8px);
+  animation: ls-callout-plain 0.4s ease-out;
+}
+@keyframes ls-callout-plain {
+  from {
+    opacity: 0;
+  }
+}
+.ls-scrub-title {
+  color: #ff6b70;
+  font: 700 26px/1.1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.ls-scrub-sub {
+  margin: 8px 0 10px;
+  color: #d5c3c6;
+}
+.ls-scrub ul {
+  list-style: disc;
+  padding-left: 18px;
+  gap: 4px;
+  color: #f1e4e6;
+}
+.ls-skip {
+  position: absolute;
+  right: 28px;
+  bottom: 24px;
+  font: 11px var(--mono);
+  color: #7d8aa3;
+  letter-spacing: 0.08em;
+}
+@media (max-width: 700px) {
+  .ls-head {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+  .ls-head-right {
+    justify-self: start;
+  }
+  .ls-telemetry {
+    left: 16px;
+    bottom: 80px;
+  }
+  .ls-events {
+    display: none;
+  }
+  .ls-callout {
+    white-space: normal;
+    text-align: center;
+    width: calc(100% - 32px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ls,
+  .ls-callout.show,
+  .ls-clock.hold,
+  .ls-scrub {
+    animation: none;
+  }
+  .ls-callout.show {
+    opacity: 1;
+  }
+}

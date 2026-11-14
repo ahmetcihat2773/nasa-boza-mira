@@ -1,0 +1,307 @@
+import {
+  altitudeOptions,
+  groundStations,
+  instruments,
+  launchers,
+  maxGroundStations,
+  orbitTypes,
+  parts,
+  type Subsystem,
+} from "@space-mission/data";
+import { formatUsd, swathWidthKm, trlPenaltyMonths, type Budget, type Mission } from "@space-mission/sim";
+import { instrumentLockReason, launcherLockReason, partFits, partLockReason } from "../lock.ts";
+import { useGame } from "../store.ts";
+import { Term } from "./Glossary.tsx";
+
+export const LABELS: Record<Subsystem, string> = {
+  structure: "Structure",
+  solar: "Solar panels",
+  battery: "Battery",
+  obc: "On-board computer",
+  adcs: "Attitude control",
+  propulsion: "Propulsion",
+  comms: "Communications",
+};
+const TERM: Partial<Record<Subsystem, string>> = {
+  solar: "solar-panel",
+  battery: "battery",
+  obc: "obc",
+  adcs: "adcs",
+  propulsion: "propulsion",
+  comms: "downlink",
+};
+
+function TrlText({ trl }: { trl: number }) {
+  const penalty = trlPenaltyMonths(trl);
+  return (
+    <>
+      <Term id="trl">TRL</Term> {trl}
+      {penalty ? ` (+${penalty} months)` : ""}
+    </>
+  );
+}
+
+export function PartPicker({ subsystem }: { subsystem: Subsystem }) {
+  const design = useGame((s) => s.design);
+  const pickPart = useGame((s) => s.pickPart);
+  const size = design.parts.structure?.fits[0];
+  const chosen = design.parts[subsystem];
+  const isStructure = subsystem === "structure";
+  const options = parts.filter((p) => p.subsystem === subsystem && (isStructure || partFits(p, size)));
+  const term = TERM[subsystem];
+
+  return (
+    <section className="picker">
+      <h3>
+        {term ? (
+          <Term id={term} focusable>
+            {LABELS[subsystem]}
+          </Term>
+        ) : (
+          LABELS[subsystem]
+        )}
+        {isStructure && size && <span className="tag">{size}</span>}
+      </h3>
+      {!isStructure && !size ? (
+        <p className="muted">Choose a structure first (Spacecraft tab): it sets the spacecraft size.</p>
+      ) : (
+        <ul>
+          {options.map((p) => {
+            const lock = partLockReason(p);
+            const active = chosen?.id === p.id;
+            const power = p.powerProducedW ? `+${p.powerProducedW} W produced` : `${p.powerW} W drawn`;
+            return (
+              <li key={p.id}>
+                <button
+                  className={`option ${active ? "active" : ""}`}
+                  disabled={lock !== null}
+                  aria-pressed={active}
+                  onClick={() => pickPart(subsystem, active ? undefined : p)}
+                >
+                  <span className="name">{p.name}</span>
+                  <span className="perf">
+                    {p.performance.label}: {p.performance.value} {p.performance.unit}
+                  </span>
+                  <span className="delta">
+                    +{p.massKg} kg · {power} · +{formatUsd(p.costUsd)} · <TrlText trl={p.trl} />
+                  </span>
+                  {lock && <span className="lock">Locked: {lock}</span>}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+const DETECTS: Record<string, string> = {
+  daylightFire: "fires by day",
+  nightFire: "fires at night",
+  smoke: "smoke",
+};
+
+export function InstrumentPicker({ b }: { b: Budget }) {
+  const design = useGame((s) => s.design);
+  const toggle = useGame((s) => s.toggleInstrument);
+  const size = design.parts.structure?.fits[0];
+  const chosen = design.instruments ?? [];
+  const options = instruments.filter((i) => partFits(i, size));
+  const alt = b.orbit.altitudeKm;
+
+  return (
+    <section className="picker">
+      <h3>
+        <Term id="payload" focusable>
+          Instruments
+        </Term>
+        <span className="tag">pick one or more</span>
+      </h3>
+      {!size ? (
+        <p className="muted">Choose a structure first (Spacecraft tab): it sets which instruments fit.</p>
+      ) : (
+        <ul>
+          {options.map((i) => {
+            const lock = instrumentLockReason(i);
+            const active = chosen.some((c) => c.id === i.id);
+            return (
+              <li key={i.id}>
+                <button
+                  className={`option ${active ? "active" : ""}`}
+                  disabled={lock !== null}
+                  aria-pressed={active}
+                  onClick={() => toggle(i)}
+                >
+                  <span className="name">{i.name}</span>
+                  <span className="perf">
+                    Sees {i.detects.map((d) => DETECTS[d] ?? d).join(", ")} · <Term id="fov">field of view</Term>{" "}
+                    {i.fieldOfViewDeg}° gives a <Term id="swath">swath</Term> of{" "}
+                    {swathWidthKm(i.fieldOfViewDeg, alt).toFixed(0)} km at {alt} km
+                  </span>
+                  <span className="delta">
+                    +{i.massKg} kg · {i.powerW} W while imaging · <Term id="data-rate">{i.dataRateMbps} Mbps</Term> · +
+                    {formatUsd(i.costUsd)} · <TrlText trl={i.trl} />
+                  </span>
+                  {lock && <span className="lock">Locked: {lock}</span>}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+export function LauncherPicker({ b, mission }: { b: Budget; mission: Mission }) {
+  const chosen = useGame((s) => s.design.launcher);
+  const pickLauncher = useGame((s) => s.pickLauncher);
+  return (
+    <section className="picker">
+      <h3>
+        <Term id="launch-vehicle" focusable>
+          Launcher
+        </Term>
+      </h3>
+      <ul>
+        {launchers.map((l) => {
+          const lock = launcherLockReason(l, b.massKg, mission);
+          const active = chosen?.id === l.id;
+          const perKg =
+            l.costPerKgUsd && l.includedKg ? ` up to ${l.includedKg} kg, then $${l.costPerKgUsd / 1000}k/kg` : "";
+          return (
+            <li key={String(l.id)}>
+              <button
+                className={`option ${active ? "active" : ""}`}
+                disabled={lock !== null}
+                aria-pressed={active}
+                onClick={() => pickLauncher(active ? undefined : l)}
+              >
+                <span className="name">{l.name}</span>
+                <span className="delta">
+                  {formatUsd(l.launchCostUsd)}
+                  {perKg} · <Term id="sso">SSO</Term> capacity {l.ssoCapacityKg} kg
+                  {l.fixedOrbit && ` · fixed orbit: ${l.fixedOrbit.altitudeKm} km ${l.fixedOrbit.type}`}
+                </span>
+                {lock && <span className="lock">Locked: {lock}</span>}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+const ORBIT_TERM: Record<string, string> = { "sun-synchronous": "sso", polar: "polar-orbit" };
+
+export function OrbitPicker({ b }: { b: Budget }) {
+  const launcher = useGame((s) => s.design.launcher);
+  const setOrbit = useGame((s) => s.setOrbit);
+  const fixed = b.orbit.fixedByLauncher;
+
+  return (
+    <section className="picker">
+      <h3>
+        Orbit
+        <span className="tag">
+          <Term id="inclination" focusable>
+            inclination
+          </Term>{" "}
+          {b.orbit.inclinationDeg.toFixed(1)}°
+        </span>
+      </h3>
+      {fixed && (
+        <p className="muted">
+          The{" "}
+          <Term id="rideshare" focusable>
+            {launcher?.name ?? "rideshare"}
+          </Term>{" "}
+          decides the orbit. Choose a dedicated launcher to pick your own.
+        </p>
+      )}
+      <fieldset disabled={fixed} className="orbit-choice">
+        <legend>Orbit type</legend>
+        {orbitTypes.map((o) => {
+          const term = ORBIT_TERM[o.id];
+          return (
+            <label key={o.id} className="radio">
+              <input
+                type="radio"
+                name="orbit-type"
+                checked={b.orbit.type === o.id}
+                onChange={() => setOrbit({ type: o.id, altitudeKm: b.orbit.altitudeKm })}
+              />
+              <span>
+                <b>{term ? <Term id={term}>{o.name}</Term> : o.name}</b>
+                <span className="muted small"> {o.text}</span>
+              </span>
+            </label>
+          );
+        })}
+      </fieldset>
+      <fieldset disabled={fixed} className="orbit-choice">
+        <legend>
+          <Term id="altitude" focusable>
+            Altitude
+          </Term>
+        </legend>
+        <select
+          aria-label="Altitude"
+          value={b.orbit.altitudeKm}
+          onChange={(e) => setOrbit({ type: b.orbit.type, altitudeKm: Number(e.target.value) })}
+        >
+          {altitudeOptions.map((a) => (
+            <option key={a.altitudeKm} value={a.altitudeKm}>
+              {a.altitudeKm} km · stays up about {a.lifetimeYearsNoPropulsion} years without propulsion
+            </option>
+          ))}
+        </select>
+      </fieldset>
+    </section>
+  );
+}
+
+export function GroundPicker({ b }: { b: Budget }) {
+  const setStations = useGame((s) => s.setGroundStations);
+  const chosen = b.groundStations;
+  const full = chosen.length >= maxGroundStations;
+
+  return (
+    <section className="picker">
+      <h3>
+        <Term id="ground-station" focusable>
+          Ground stations
+        </Term>
+        <span className="tag">
+          {chosen.length} of up to {maxGroundStations}
+        </span>
+      </h3>
+      <ul>
+        {groundStations.map((g) => {
+          const active = chosen.some((c) => c.id === g.id);
+          const minutes = g.contactMinutesPerDay[b.orbit.type] ?? 0;
+          const lock = !active && full ? `At most ${maxGroundStations} ground stations.` : null;
+          return (
+            <li key={g.id}>
+              <button
+                className={`option ${active ? "active" : ""}`}
+                disabled={lock !== null}
+                aria-pressed={active}
+                onClick={() => setStations(active ? chosen.filter((c) => c.id !== g.id) : [...chosen, g])}
+              >
+                <span className="name">{g.name}</span>
+                <span className="perf">{g.text}</span>
+                <span className="delta">
+                  +{minutes} min/day of <Term id="contact-time">contact</Term> in this orbit · +{formatUsd(g.costUsd)}
+                </span>
+                {lock && <span className="lock">Locked: {lock}</span>}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}

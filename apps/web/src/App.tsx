@@ -1,290 +1,240 @@
-import { launchers, parts, type Subsystem } from "@space-mission/data";
+import { orbitTypes } from "@space-mission/data";
+import { WILDFIRE_WATCH, computeBudget, formatUsd, runMission, type MissionResult } from "@space-mission/sim";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import "./components/components.css";
 import {
-  SUBSYSTEMS,
-  WILDFIRE_WATCH,
-  computeBudget,
-  formatUsd,
-  trlPenaltyMonths,
-  type BudgetRole,
-} from "@space-mission/sim";
-import { useEffect, useState } from "react";
-import { launcherLockReason, partFits, partLockReason } from "./lock.ts";
+  ApprovalScreen,
+  BriefingScreen,
+  EventsScreen,
+  PhaseStepper,
+  ResultsScreen,
+  SetupScreen,
+} from "./components/Flow.tsx";
+import { Tour } from "./components/Tour.tsx";
+import { recordRun, useFlow } from "./flow.ts";
+import { GlossaryButton, Term } from "./components/Glossary.tsx";
+import { Meter } from "./components/Meter.tsx";
+import { RequirementsPanel } from "./components/Requirements.tsx";
+import { ROLES, RoleBudget, RoleTabs } from "./components/RoleTabs.tsx";
 import { useGame } from "./store.ts";
+import { adjustedMission, coordinationOf, useTeam } from "./team.ts";
 
-/** Full-screen launch sequence: the rocket lifts off on PASS, or the launch is scrubbed on FAIL. */
-function LaunchSequence({ pass, onDone }: { pass: boolean; onDone: () => void }) {
-  const [count, setCount] = useState(3);
-  useEffect(() => {
-    if (count > 0) {
-      const t = setTimeout(() => setCount(count - 1), 700);
-      return () => clearTimeout(t);
-    }
-    const t = setTimeout(onDone, pass ? 3200 : 2200);
-    return () => clearTimeout(t);
-  }, [count, pass, onDone]);
+// The 3D scenes load on demand so the design screen appears quickly.
+const OrbitView = lazy(() => import("./scene/OrbitView.tsx"));
+const LaunchScene = lazy(() => import("./scene/LaunchScene.tsx"));
 
-  const ignition = count === 0;
-  return (
-    <div className="launch-overlay" onClick={onDone} role="dialog" aria-label="Launch sequence">
-      <div className="stars" />
-      <div className={`rocket ${ignition ? (pass ? "liftoff" : "scrub") : ""}`} aria-hidden="true">
-        <svg viewBox="0 0 60 160" width="60" height="160">
-          <path d="M30 4 C46 24 48 60 46 104 L14 104 C12 60 14 24 30 4 Z" fill="#e8ecf4" stroke="#9aa6bd" />
-          <circle cx="30" cy="48" r="8" fill="#3aa0ff" stroke="#1d5f99" strokeWidth="2" />
-          <path d="M14 84 L2 112 L14 106 Z M46 84 L58 112 L46 106 Z" fill="#ff5a4e" />
-          <rect x="20" y="104" width="20" height="8" fill="#9aa6bd" />
-        </svg>
-        {ignition && pass && <div className="flame" />}
-      </div>
-      <div className="pad" />
-      <div className="launch-text">
-        {!ignition && <span className="countdown">T-{count}</span>}
-        {ignition && pass && <span className="go">Liftoff! Wildfire Watch is on its way to orbit</span>}
-        {ignition && !pass && <span className="nogo">Launch scrubbed: the design review did not pass</span>}
-      </div>
-      <div className="muted small skip">Click to skip</div>
-    </div>
-  );
-}
-
-const mission = WILDFIRE_WATCH;
-
-const LABELS: Record<Subsystem, string> = {
-  structure: "Structure",
-  solar: "Solar panels",
-  battery: "Battery",
-  obc: "On-board computer",
-  adcs: "Attitude control",
-  propulsion: "Propulsion",
-  comms: "Communications",
-};
-const ROLES: { id: BudgetRole; label: string }[] = [
-  { id: "launch", label: "Launch" },
-  { id: "spacecraft", label: "Spacecraft" },
-  { id: "science", label: "Science" },
-  { id: "ground", label: "Ground" },
-];
-
-type Level = "ok" | "warn" | "bad";
-/** Green below 85 % of the limit, amber up to 100 %, red above. */
-const level = (used: number, limit: number): Level => (used > limit ? "bad" : used > 0.85 * limit ? "warn" : "ok");
-
-function Meter(props: { label: string; value: string; used: number; limit: number; lvl?: Level | undefined }) {
-  const lvl = props.lvl ?? level(props.used, props.limit);
-  const pct = props.limit > 0 ? Math.min(100, (props.used / props.limit) * 100) : 0;
-  return (
-    <div className="meter">
-      <div className="meter-head">
-        <span>{props.label}</span>
-        <span className={`val ${lvl}`}>{props.value}</span>
-      </div>
-      <div className="bar">
-        <div className={`fill ${lvl}`} style={{ width: `${pct}%` }} />
-      </div>
-    </div>
-  );
-}
-
-function PartPicker({ subsystem }: { subsystem: Subsystem }) {
-  const design = useGame((s) => s.design);
-  const pickPart = useGame((s) => s.pickPart);
-  const size = design.parts.structure?.fits[0];
-  const chosen = design.parts[subsystem];
-  const isStructure = subsystem === "structure";
-  const options = parts.filter((p) => p.subsystem === subsystem && (isStructure || partFits(p, size)));
-
-  return (
-    <section className="picker">
-      <h3>
-        {LABELS[subsystem]}
-        {isStructure && size && <span className="tag">{size}</span>}
-      </h3>
-      {!isStructure && !size ? (
-        <p className="muted">Choose a structure first: it sets the spacecraft size.</p>
-      ) : (
-        <ul>
-          {options.map((p) => {
-            const lock = partLockReason(p);
-            const penalty = trlPenaltyMonths(p.trl);
-            const active = chosen?.id === p.id;
-            const power = p.powerProducedW ? `+${p.powerProducedW} W produced` : `${p.powerW} W drawn`;
-            return (
-              <li key={p.id}>
-                <button
-                  className={`option ${active ? "active" : ""}`}
-                  disabled={lock !== null}
-                  onClick={() => pickPart(subsystem, active ? undefined : p)}
-                >
-                  <span className="name">{p.name}</span>
-                  <span className="perf">
-                    {p.performance.label}: {p.performance.value} {p.performance.unit}
-                  </span>
-                  <span className="delta">
-                    +{p.massKg} kg · {power} · +{formatUsd(p.costUsd)} · TRL {p.trl}
-                    {penalty ? ` (+${penalty} months)` : ""}
-                  </span>
-                  {lock && <span className="lock">Locked: {lock}</span>}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </section>
-  );
-}
-
-function LauncherPicker({ massKg }: { massKg: number }) {
-  const chosen = useGame((s) => s.design.launcher);
-  const pickLauncher = useGame((s) => s.pickLauncher);
-  return (
-    <section className="picker">
-      <h3>Launcher</h3>
-      <ul>
-        {launchers.map((l) => {
-          const lock = launcherLockReason(l, massKg, mission);
-          const active = chosen?.id === l.id;
-          const perKg =
-            l.costPerKgUsd && l.includedKg ? ` up to ${l.includedKg} kg, then $${l.costPerKgUsd / 1000}k/kg` : "";
-          return (
-            <li key={String(l.id)}>
-              <button
-                className={`option ${active ? "active" : ""}`}
-                disabled={lock !== null}
-                onClick={() => pickLauncher(active ? undefined : l)}
-              >
-                <span className="name">{l.name}</span>
-                <span className="delta">
-                  {formatUsd(l.launchCostUsd)}
-                  {perKg} · SSO capacity {l.ssoCapacityKg} kg
-                </span>
-                {lock && <span className="lock">Locked: {lock}</span>}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
+const baseMission = WILDFIRE_WATCH;
 
 export function App() {
   const design = useGame((s) => s.design);
-  const launched = useGame((s) => s.launched);
   const launch = useGame((s) => s.launch);
   const [flying, setFlying] = useState(false);
   const reset = useGame((s) => s.reset);
+  // Team play (T20): accepted budget requests and trades move allocations between roles.
+  const requests = useTeam((s) => s.requests);
+  const mission = useMemo(() => adjustedMission(baseMission, requests), [requests]);
   const b = computeBudget(design, mission);
-  const failed = b.checks.filter((c) => !c.ok);
-  // The team works on the spacecraft, so its salaries count against the spacecraft allocation.
-  const spend: Record<BudgetRole, number> = { ...b.costByRole, spacecraft: b.costByRole.spacecraft + b.teamCostUsd };
+  const failed = b.checks.filter((c) => !c.ok && c.blocking);
+
+  // Game flow (T19): phases, events, the run and its attempts.
+  const phase = useFlow((s) => s.phase);
+  const nickname = useFlow((s) => s.nickname);
+  const goTo = useFlow((s) => s.goTo);
+  const seed = useFlow((s) => s.seed);
+  const decisions = useFlow((s) => s.decisions);
+  const attempts = useFlow((s) => s.attempts);
+  /** The run as it stands at the launch (decisions so far), for the launch outcome. */
+  const [launchRun, setLaunchRun] = useState<MissionResult | null>(null);
+  const finish = () => {
+    recordRun(
+      mission.id,
+      design,
+      runMission(design, mission, seed, decisions, coordinationOf(requests, computeBudget(design, mission))),
+    );
+  };
+  const startLaunch = () => {
+    setLaunchRun(
+      runMission(design, mission, seed, decisions, coordinationOf(requests, computeBudget(design, mission))),
+    );
+    launch();
+    setFlying(true);
+  };
+  // After the launch sequence: operations when the satellite reached orbit, else the results.
+  const endLaunch = useCallback(() => {
+    setFlying(false);
+    if (launchRun?.launch?.ok) goTo("operations");
+    else
+      recordRun(
+        mission.id,
+        design,
+        runMission(design, mission, seed, decisions, coordinationOf(requests, computeBudget(design, mission))),
+      );
+  }, [launchRun, design, seed, decisions, goTo, mission, requests]);
+  const orbitName = orbitTypes.find((o) => o.id === b.orbit.type)?.name ?? b.orbit.type;
 
   return (
     <div className="app">
-      {flying && <LaunchSequence pass={b.pass} onDone={() => setFlying(false)} />}
+      {flying && (
+        <Suspense fallback={<div className="launch-loading">Preparing launch…</div>}>
+          <LaunchScene
+            pass={launchRun?.launch?.ok ?? false}
+            missionName={mission.name}
+            design={design}
+            failure={b.pass ? "anomaly" : "scrub"}
+            reasons={b.pass ? (launchRun?.failureReasons ?? []) : failed.map((c) => c.message)}
+            onDone={endLaunch}
+          />
+        </Suspense>
+      )}
       <header>
-        <div>
-          <div className="kicker">Mission control · Design review</div>
+        <div data-tour="mission-card">
+          <div className="kicker">Mission control · {nickname || "New game"}</div>
           <h1>{mission.name}</h1>
           <p className="objective">{mission.objective}</p>
         </div>
-        <div className="constraints">
-          <div>
-            Budget <b>{formatUsd(mission.budgetUsd)}</b>
-          </div>
-          <div>
-            Deadline <b>{mission.deadlineMonths} months</b>
+        <div className="header-tools">
+          <GlossaryButton />
+          <div className="constraints">
+            <div>
+              Budget <b>{formatUsd(mission.budgetUsd)}</b>
+            </div>
+            <div>
+              <Term id="deadline" focusable>
+                Deadline
+              </Term>{" "}
+              <b>{mission.deadlineMonths} months</b>
+            </div>
           </div>
         </div>
       </header>
+      <PhaseStepper phase={phase} />
 
-      <main>
-        <div className="pickers">
-          {SUBSYSTEMS.map((s) => (
-            <PartPicker key={s} subsystem={s} />
-          ))}
-          <LauncherPicker massKg={b.massKg} />
-        </div>
+      {phase === "setup" && <SetupScreen />}
+      {phase === "briefing" && <BriefingScreen mission={mission} />}
+      {phase === "approval" && <ApprovalScreen b={b} onApprove={() => goTo(b.pass ? "development" : "launch")} />}
+      {phase === "development" && (
+        <EventsScreen
+          phase="development"
+          design={design}
+          b={b}
+          mission={mission}
+          continueLabel="Ship it to the launch site"
+          onContinue={(lost) => (lost ? finish() : goTo("launch"))}
+        />
+      )}
+      {phase === "launch" && (
+        <EventsScreen
+          phase="launch"
+          design={design}
+          b={b}
+          mission={mission}
+          continueLabel="Go for launch"
+          vote="Go / No-Go for launch?"
+          onContinue={(lost) => (lost ? finish() : startLaunch())}
+        />
+      )}
+      {phase === "operations" && (
+        <EventsScreen
+          phase="operations"
+          design={design}
+          b={b}
+          mission={mission}
+          continueLabel="End the mission and see the results"
+          onContinue={finish}
+        >
+          <Suspense fallback={<div className="orbit-view scene-loading">Loading orbit view…</div>}>
+            <OrbitView orbit={b.orbit} orbitName={orbitName} swathKm={b.swathKm} stations={b.groundStations} live />
+          </Suspense>
+        </EventsScreen>
+      )}
+      {phase === "results" && attempts.length > 0 && (
+        <ResultsScreen
+          mission={mission}
+          attempt={attempts[attempts.length - 1]!}
+          previous={attempts[attempts.length - 2]}
+        />
+      )}
 
-        <aside className="dashboard">
-          <h2>Live dashboard</h2>
-          <Meter
-            label="Mass vs structure limit"
-            value={`${b.massKg.toFixed(1)} / ${b.maxMassKg ?? "-"} kg`}
-            used={b.massKg}
-            limit={b.maxMassKg ?? 0}
-            lvl={b.maxMassKg === null ? "warn" : undefined}
-          />
-          <Meter
-            label="Mass vs launcher capacity (SSO)"
-            value={`${b.massKg.toFixed(1)} / ${b.launcherCapacityKg ?? "-"} kg`}
-            used={b.massKg}
-            limit={b.launcherCapacityKg ?? 0}
-            lvl={b.launcherCapacityKg === null ? "warn" : undefined}
-          />
-          <Meter
-            label="Power drawn vs produced"
-            value={`${b.powerDrawnW.toFixed(1)} / ${b.powerProducedW} W`}
-            used={b.powerDrawnW}
-            limit={b.powerProducedW}
-            lvl={b.powerProducedW === 0 ? "bad" : undefined}
-          />
-          <Meter
-            label="Budget used"
-            value={`${formatUsd(b.totalCostUsd)} / ${formatUsd(mission.budgetUsd)}`}
-            used={b.totalCostUsd}
-            limit={mission.budgetUsd}
-          />
-          <Meter
-            label="Development time"
-            value={`${b.devMonths} / ${mission.deadlineMonths} months`}
-            used={b.devMonths}
-            limit={mission.deadlineMonths}
-          />
+      {phase === "design" && <Tour />}
+      {phase === "design" && (
+        <main>
+          <RoleTabs b={b} mission={mission} />
 
-          <h3>Budget by role</h3>
-          {ROLES.map((r) => (
+          <aside className="dashboard" data-tour="dashboard">
+            <h2>Live dashboard</h2>
+            <Suspense fallback={<div className="orbit-view scene-loading">Loading orbit view…</div>}>
+              <OrbitView
+                orbit={b.orbit}
+                orbitName={orbitName}
+                swathKm={b.swathKm}
+                stations={b.groundStations}
+                live={false}
+              />
+            </Suspense>
             <Meter
-              key={r.id}
-              label={`${r.label} (${mission.allocationsPct[r.id]}%)${r.id === "spacecraft" ? " incl. team" : ""}`}
-              value={`${formatUsd(spend[r.id])} / ${formatUsd(b.allocationByRole[r.id])}`}
-              used={spend[r.id]}
-              limit={b.allocationByRole[r.id]}
+              label="Mass vs structure limit"
+              value={`${b.massKg.toFixed(1)} / ${b.maxMassKg ?? "-"} kg`}
+              used={b.massKg}
+              limit={b.maxMassKg ?? 0}
+              lvl={b.maxMassKg === null ? "warn" : undefined}
             />
-          ))}
-          <p className="muted small">
-            Team cost: {b.devMonths} months x $0.2M = {formatUsd(b.teamCostUsd)}
-          </p>
+            <Meter
+              label={`Mass vs launcher capacity (${orbitName})`}
+              value={`${b.massKg.toFixed(1)} / ${b.launcherCapacityKg ?? "-"} kg`}
+              used={b.massKg}
+              limit={b.launcherCapacityKg ?? 0}
+              lvl={b.launcherCapacityKg === null ? "warn" : undefined}
+            />
+            <Meter
+              label="Power drawn vs produced"
+              value={`${b.powerDrawnW.toFixed(1)} / ${b.powerProducedW} W`}
+              used={b.powerDrawnW}
+              limit={b.powerProducedW}
+              lvl={b.powerProducedW === 0 ? "bad" : undefined}
+            />
+            <Meter
+              label="Budget used"
+              value={`${formatUsd(b.totalCostUsd)} / ${formatUsd(mission.budgetUsd)}`}
+              used={b.totalCostUsd}
+              limit={mission.budgetUsd}
+            />
+            <Meter
+              label="Ready for launch"
+              value={`${b.deadline.readyMonths} / ${mission.deadlineMonths} months`}
+              used={b.deadline.readyMonths}
+              limit={mission.deadlineMonths}
+            />
+            <p className="muted small">
+              Development {b.devMonths} months
+              {b.deadline.waitMonths > 0 ? ` + ${b.deadline.waitMonths} months waiting for the next launch window` : ""}
+              .
+            </p>
 
-          <div className="actions">
-            <button
-              className="launch"
-              onClick={() => {
-                launch();
-                setFlying(true);
-              }}
-            >
-              Launch
-            </button>
-            <button className="ghost" onClick={reset}>
-              Reset
-            </button>
-          </div>
+            <h3>Budget by role</h3>
+            {ROLES.map((r) => (
+              <RoleBudget key={r.id} role={r.id} label={r.label} b={b} mission={mission} />
+            ))}
+            <p className="muted small">
+              <Term id="team-cost" focusable>
+                Team cost
+              </Term>
+              : {b.deadline.readyMonths} months x {formatUsd(mission.teamCostPerMonthUsd)} = {formatUsd(b.teamCostUsd)},
+              split over the roles by their budget allocation.
+            </p>
 
-          {launched && (
-            <div className={`result ${b.pass ? "pass" : "fail"}`}>
-              <div className="verdict">
-                {b.pass ? "PASS: mission ready for launch" : "FAIL: design review not passed"}
-              </div>
-              <ul>
-                {(b.pass ? b.checks : failed).map((c) => (
-                  <li key={c.id}>{c.message}</li>
-                ))}
-              </ul>
+            <RequirementsPanel b={b} />
+
+            <div className="actions">
+              <button className="launch" data-tour="approve-button" onClick={() => goTo("approval")}>
+                Submit for design approval
+              </button>
+              <button className="ghost" onClick={reset}>
+                Reset
+              </button>
             </div>
-          )}
-        </aside>
-      </main>
+          </aside>
+        </main>
+      )}
     </div>
   );
 }

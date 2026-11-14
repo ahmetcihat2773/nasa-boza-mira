@@ -196,7 +196,8 @@ pnpm install
 pnpm dev              # web (Vite) + local API, in parallel via Turborepo
 ```
 
-- **Requirements:** Node and pnpm. Optional: the Claude Code CLI for the Flight Director. No Docker needed.
+- **Requirements:** Node 22.12 or newer and pnpm 10 (pinned via `packageManager`; on this machine run it as `npx --yes pnpm@10.34.9`, because the installed corepack is too old). Optional: the Claude Code CLI for the Flight Director. No Docker needed.
+- **Ports:** web app http://localhost:5173, local API http://127.0.0.1:8787 (`API_PORT`, `API_HOST`); SQLite file `apps/api/.local/game.sqlite` (`DB_PATH`).
 - **Player modes (same screen):**
   - **Solo:** one player controls all four roles.
   - **Team (hot-seat):** 2–4 players share the PC, each controlling one role (with fewer than 4 players, some take two roles). The screen shows whose turn it is.

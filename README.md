@@ -25,18 +25,20 @@ Built for the [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.or
 
 ## Getting started
 
-> These steps describe the planned setup and will work once the code is in place.
+> The first playable screen (Wildfire Watch design and launch) works today; more of the game is being added.
 
-**Requirements:** Node.js and pnpm. Optional: [Claude Code](https://claude.com/claude-code) CLI for the AI Flight Director debrief.
+**Requirements:** Node.js 22.12 or newer. pnpm 10 is pinned in `package.json`: if `pnpm` is not installed, use `npx --yes pnpm@10.34.9` instead of `pnpm` in the commands below. Optional: [Claude Code](https://claude.com/claude-code) CLI for the AI Flight Director debrief.
 
 ```bash
 pnpm install
 pnpm dev         # web app + local API (SQLite)
 ```
 
-Then open the URL shown in the terminal. For team play, players take turns on the same screen – the game shows whose role is up.
+Then open http://localhost:5173. The local API runs on http://127.0.0.1:8787. Stop both with Ctrl+C.
 
-## Project structure (planned)
+For team play, players take turns on the same screen – the game shows whose role is up.
+
+## Project structure
 
 ```
 apps/web        React web app (UI, dashboard, 3D view)

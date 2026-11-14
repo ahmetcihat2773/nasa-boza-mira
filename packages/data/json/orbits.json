@@ -1,0 +1,118 @@
+{
+  "orbitTypes": [
+    {
+      "id": "sun-synchronous",
+      "name": "Sun-synchronous",
+      "inclinationDeg": null,
+      "text": "A near-polar orbit that crosses each place at the same local time every day, so lighting is consistent. Covers the whole Earth, including polar ground stations.",
+      "sources": [
+        {
+          "fields": ["inclinationDeg"],
+          "data_quality": "estimated",
+          "source": "Computed from altitude by the simulation (about 97–98° in LEO)"
+        }
+      ]
+    },
+    {
+      "id": "polar",
+      "name": "Polar",
+      "inclinationDeg": 90,
+      "text": "Passes over both poles and covers the whole Earth, but the local time of each pass slowly drifts.",
+      "sources": [
+        { "fields": ["inclinationDeg"], "data_quality": "game-design", "source": "Definition of a polar orbit" }
+      ]
+    },
+    {
+      "id": "inclined",
+      "name": "Mid-inclination",
+      "inclinationDeg": 45,
+      "text": "Tilted to stay over mid-latitudes, so it passes the target region more often, but it never reaches the poles or polar ground stations.",
+      "sources": [
+        {
+          "fields": ["inclinationDeg"],
+          "data_quality": "game-design",
+          "source": "Chosen for the game",
+          "note": "Slightly above the target region's latitude so the region is covered."
+        }
+      ]
+    }
+  ],
+  "altitudes": [
+    { "altitudeKm": 400, "lifetimeYearsNoPropulsion": 0.8 },
+    { "altitudeKm": 450, "lifetimeYearsNoPropulsion": 2 },
+    { "altitudeKm": 500, "lifetimeYearsNoPropulsion": 4 },
+    { "altitudeKm": 525, "lifetimeYearsNoPropulsion": 6 },
+    { "altitudeKm": 550, "lifetimeYearsNoPropulsion": 8 },
+    { "altitudeKm": 600, "lifetimeYearsNoPropulsion": 15 },
+    { "altitudeKm": 650, "lifetimeYearsNoPropulsion": 25 },
+    { "altitudeKm": 700, "lifetimeYearsNoPropulsion": 40 }
+  ],
+  "altitudeSources": [
+    {
+      "fields": ["altitudeKm"],
+      "data_quality": "game-design",
+      "source": "Chosen for the game (design.md section 4.3)",
+      "note": "525 km matches the rideshare's fixed orbit."
+    },
+    {
+      "fields": ["lifetimeYearsNoPropulsion"],
+      "data_quality": "estimated",
+      "source": "Representative value for an example project",
+      "note": "Rough lifetime of a small satellite at average solar activity; real decay varies a lot with the Sun and the satellite's shape."
+    }
+  ],
+  "maxGroundStations": 3,
+  "groundStations": [
+    {
+      "id": "svalbard",
+      "name": "Svalbard, Norway",
+      "latDeg": 78.2,
+      "lonDeg": 15.4,
+      "contactMinutesPerDay": { "sun-synchronous": 60, "polar": 60, "inclined": 0 },
+      "costUsd": 600000,
+      "text": "Near the North Pole, so a polar or sun-synchronous satellite passes on almost every orbit.",
+      "sources": [
+        {
+          "fields": ["contactMinutesPerDay", "costUsd"],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "About 10 passes of 6 minutes per day; costUsd is rent for the whole mission."
+        }
+      ]
+    },
+    {
+      "id": "fairbanks",
+      "name": "Fairbanks, Alaska",
+      "latDeg": 64.8,
+      "lonDeg": -147.7,
+      "contactMinutesPerDay": { "sun-synchronous": 45, "polar": 45, "inclined": 5 },
+      "costUsd": 450000,
+      "text": "A high-latitude station that sees most polar passes, close to the target region.",
+      "sources": [
+        {
+          "fields": ["contactMinutesPerDay", "costUsd"],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "About 7 passes of 6–7 minutes per day; costUsd is rent for the whole mission."
+        }
+      ]
+    },
+    {
+      "id": "wallops",
+      "name": "Wallops Island, Virginia",
+      "latDeg": 37.9,
+      "lonDeg": -75.5,
+      "contactMinutesPerDay": { "sun-synchronous": 25, "polar": 25, "inclined": 35 },
+      "costUsd": 300000,
+      "text": "A mid-latitude station: cheaper, but a polar satellite passes only a few times a day.",
+      "sources": [
+        {
+          "fields": ["contactMinutesPerDay", "costUsd"],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "About 4 passes per day in a polar orbit, more in a mid-inclination orbit; costUsd is rent for the whole mission."
+        }
+      ]
+    }
+  ]
+}

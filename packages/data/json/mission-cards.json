@@ -1,0 +1,108 @@
+{
+  "missionCards": [
+    {
+      "id": "wildfire-watch",
+      "name": "Wildfire Watch",
+      "difficulty": "easy",
+      "objective": "Detect wildfires early from space over a target region.",
+      "whyItMatters": "Early detection gives firefighters hours instead of days. A satellite can watch remote forests that no lookout tower or patrol covers.",
+      "destination": "Low Earth orbit (LEO). You choose the orbit type and altitude.",
+      "targetRegion": {
+        "name": "Western United States",
+        "latDeg": 40,
+        "lonDeg": -120,
+        "widthKm": 1000
+      },
+      "requirements": [
+        {
+          "id": "R1",
+          "title": "Daily revisit",
+          "text": "See the target region at least once per day.",
+          "check": { "kind": "min", "metric": "revisitsPerDay", "value": 1, "unit": "per day" },
+          "roles": ["launch", "science"],
+          "failText": "The satellite does not pass over the region every day. Pick a wider-angle instrument or a higher orbit so each pass covers a wider strip."
+        },
+        {
+          "id": "R2",
+          "title": "Daylight fire detection",
+          "text": "Carry an instrument able to detect active fires in daylight.",
+          "check": { "kind": "detects", "detection": "daylightFire" },
+          "roles": ["science"],
+          "failText": "None of the chosen instruments can spot an active fire. A shortwave or thermal infrared instrument can, because fires are very bright at those wavelengths."
+        },
+        {
+          "id": "R3",
+          "title": "Enough data on the ground",
+          "text": "Downlink at least 1 GB of data per day.",
+          "check": { "kind": "min", "metric": "downlinkGbPerDay", "value": 1, "unit": "GB per day" },
+          "roles": ["ground", "spacecraft"],
+          "failText": "Too little data reaches the ground each day. Add a ground station for more contact time, or a faster radio."
+        },
+        {
+          "id": "R4",
+          "title": "One year in orbit",
+          "text": "Operate for at least 1 year.",
+          "check": { "kind": "min", "metric": "lifetimeYears", "value": 1, "unit": "years" },
+          "roles": ["spacecraft", "launch"],
+          "failText": "The orbit decays too fast and the satellite re-enters the atmosphere too early. Fly higher, or carry propulsion to raise the orbit."
+        }
+      ],
+      "constraints": {
+        "budgetUsd": 30000000,
+        "sizes": ["6U", "12U", "smallsat"],
+        "maxSmallsatMassKg": 150,
+        "satellites": 1,
+        "minTrl": 5,
+        "lockLaunchersOverBudget": true
+      },
+      "allocationsPct": { "launch": 35, "spacecraft": 30, "science": 25, "ground": 10 },
+      "teamCostPerMonthUsd": 200000,
+      "baseDevMonths": { "6U": 15, "12U": 15, "smallsat": 24 },
+      "deadlineMonths": 30,
+      "lateWaitMonths": 12,
+      "scoreWeights": { "science": 40, "efficiency": 20, "schedule": 15, "risk": 15, "coordination": 10 },
+      "bonusObjectives": [
+        {
+          "id": "night-detection",
+          "name": "Night detection",
+          "text": "Carry a thermal infrared instrument, so fires are also seen at night.",
+          "check": { "kind": "detects", "detection": "nightFire" }
+        },
+        {
+          "id": "twice-daily-revisit",
+          "name": "Twice-daily revisit",
+          "text": "See the region at least twice per day.",
+          "check": { "kind": "min", "metric": "revisitsPerDay", "value": 2, "unit": "per day" }
+        },
+        {
+          "id": "fast-alerts",
+          "name": "Fast alerts",
+          "text": "Deliver data to the ground within 1 hour of an observation. This needs more ground station contacts.",
+          "check": { "kind": "max", "metric": "alertLatencyHours", "value": 1, "unit": "hours" }
+        }
+      ],
+      "tradeOffs": [
+        "Power vs data: a better camera needs more power and produces more data, but ground contact time is short.",
+        "Revisit vs sharpness: with one satellite, a daily revisit needs a wide swath (a wide-angle instrument or a higher orbit), and both give less sharp images.",
+        "Altitude: a lower orbit gives sharper images but decays sooner.",
+        "Orbit type: a sun-synchronous orbit passes at the same local time every day; other orbits may revisit the region more often.",
+        "Launch choice: a rideshare is cheap but its orbit is fixed; a dedicated small launcher lets you choose the orbit but takes a large share of the budget.",
+        "Technology vs time: advanced parts improve performance but risk missing the fire-season deadline."
+      ],
+      "sources": [
+        {
+          "fields": ["requirements", "constraints", "allocationsPct", "teamCostPerMonthUsd", "baseDevMonths", "deadlineMonths", "lateWaitMonths", "scoreWeights", "bonusObjectives"],
+          "data_quality": "game-design",
+          "source": "design.md sections 1, 4.3 and 5",
+          "note": "Starting values for balancing; not real-world figures."
+        },
+        {
+          "fields": ["targetRegion"],
+          "data_quality": "game-design",
+          "source": "Chosen for the game",
+          "note": "A fire-prone region at mid-latitude, so orbit type matters for revisit and ground contact."
+        }
+      ]
+    }
+  ]
+}

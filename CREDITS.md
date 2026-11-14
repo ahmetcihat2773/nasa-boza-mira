@@ -22,7 +22,7 @@ Add every asset, dataset and library here **when it is added to the repo**. Entr
 | [Rocket Lab – Electron Payload User's Guide 7.0](https://rocketlabcorp.com/assets/Electron-Payload-User-Guide-7.0-v6.pdf) | Electron capacity to sun-synchronous orbit | Published figure; figures only, no text or images copied | Rocket Lab |
 | [Firefly Aerospace – Alpha](https://fireflyspace.com/alpha/) | Firefly Alpha capacity to sun-synchronous orbit | Published figure; figures only, no text or images copied | Firefly Aerospace |
 | [ISRO – Polar Satellite Launch Vehicle](https://www.isro.gov.in/PSLV_CON.html) | PSLV capacity to sun-synchronous orbit | Published figure; figures only, no text or images copied | Indian Space Research Organisation (ISRO) |
-| [NASA mission archive (NSSDCA)](https://nssdc.gsfc.nasa.gov/nmc/) and NASA mission pages | Real missions (planned); `instruments.json` uses representative values with no external source | US Government work | NASA |
+| [NASA mission archive (NSSDCA)](https://nssdc.gsfc.nasa.gov/nmc/) and NASA mission pages | Approximate orbit, mass and power of real missions in `missions.json` (figures only, own summaries; ESA, NOAA and DLR pages likewise); `instruments.json` uses representative values with no external source | US Government work | NASA |
 | [NASA LSP Performance](https://elvperf.ksc.nasa.gov/) | Payload mass vs C3 (planned, later missions) | US Government work | NASA Launch Services Program |
 | [NASA GMAT](https://software.nasa.gov/) | Offline trajectory data / validation | Apache-2.0 | NASA Goddard Space Flight Center |
 | [DSN Telecommunications Link Design Handbook 810-005](https://deepspace.jpl.nasa.gov/dsndocs/810-005/) | Deep-space comms reference values (planned, later missions) | US Government work | NASA JPL |
@@ -36,6 +36,9 @@ Add every asset, dataset and library here **when it is added to the repo**. Entr
 | Asset | Source | Licence / terms | Credit line |
 |---|---|---|---|
 | _e.g., spacecraft GLB_ | [NASA 3D Resources](https://github.com/nasa/NASA-3D-Resources) | NASA media usage guidelines | _per-asset credit, e.g., "NASA/Christopher R. Meaney"_ |
+| `apps/web/public/textures/earth-day.jpg` (2048×1024, resized) | NASA Blue Marble ("Whole world – land and oceans"), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Whole_world_-_land_and_oceans_12000.jpg) | Public domain (US Government work) | NASA Goddard Space Flight Center / Visible Earth (Blue Marble) |
+| `apps/web/public/textures/earth-night.jpg` (2048×1024, resized) | NASA Earth at Night (Black Marble 2012), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:The_earth_at_night.jpg) | Public domain (US Government work) | NASA Earth Observatory / NOAA NGDC, Suomi NPP VIIRS |
+| Rocket, launch pad, satellite, smoke and flame | Modelled in code (`apps/web/src/scene/`) | MIT (project code) | Project contributors |
 | NASA Eyes on the Solar System (optional link) | [eyes.nasa.gov](https://eyes.nasa.gov/) | NASA | NASA/JPL-Caltech |
 
 ## Audio
@@ -55,7 +58,8 @@ Add every asset, dataset and library here **when it is added to the repo**. Entr
 | [Drizzle ORM](https://github.com/drizzle-team/drizzle-orm) – database access | Apache-2.0 |
 | [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) – SQLite driver (bundles SQLite, public domain) | MIT |
 | Development tools: Turborepo, TypeScript (Apache-2.0), ESLint, typescript-eslint, Prettier, Vitest, drizzle-kit | MIT unless noted |
-| React, Three.js, React Three Fiber, Zustand (planned, web app) | MIT |
+| React, Zustand (web app) | MIT |
+| [Three.js](https://github.com/mrdoob/three.js), [React Three Fiber](https://github.com/pmndrs/react-three-fiber), [drei](https://github.com/pmndrs/drei), [postprocessing](https://github.com/pmndrs/postprocessing), [@react-three/postprocessing](https://github.com/pmndrs/react-postprocessing) – 3D orbit view and launch | MIT (postprocessing: Zlib) |
 
 ## Licence rules for contributors
 
