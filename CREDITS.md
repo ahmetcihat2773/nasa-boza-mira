@@ -41,7 +41,7 @@ Add every asset, dataset and library here **when it is added to the repo**.
 | Library | Licence |
 |---|---|
 | [Orrery](https://github.com/chipi/orrery) – vendored orbital mechanics modules and mission/porkchop data | MIT, © 2026 Marko Dragoljevic |
-| [Colyseus](https://github.com/colyseus/colyseus) | MIT |
+| [Hono](https://github.com/honojs/hono) | MIT |
 | [satellite.js](https://github.com/shashwatak/satellite-js) | MIT |
 | React, Three.js, React Three Fiber, Zustand, Zod | MIT |
 

@@ -47,11 +47,71 @@ Every part in `parts.json` carries a **TRL (Technology Readiness Level, 1–9)**
 
 ---
 
-## 2. Roles (solo and team play)
-**Status: to be discussed.**
+## 2. Player modes
 
-## 3. Role permissions and shared decisions
-**Status: to be discussed.**
+**Status: decided.** Everything runs on **one PC**; there is no online or network play.
+
+| Mode | Who | How |
+|---|---|---|
+| **Solo** | 1 player | Controls all four roles and switches freely between role tabs. |
+| **Team (hot-seat)** | 2–4 players on the same screen | Each player takes a role. The screen shows whose turn it is (e.g., "Up next: Science – Alex"). With fewer than 4 players, the unassigned roles are shared out (2 players → 2 roles each). |
+
+- **Shared decisions** (e.g., approving the mission objective, the launch Go / No-Go) are made by **voting in turn**: each role casts its vote, then the result is revealed together.
+- The challenge asks for single-player and team play on the **same mission**, different responsibilities, and collective decisions ([CHALLENGE.md](CHALLENGE.md)) – both modes cover this.
+
+### Roles
+Based on NASA's four mission segments:
+
+| Role | Owns |
+|---|---|
+| **Launch** | Launch vehicle, orbit / trajectory, launch window |
+| **Spacecraft** | Structure, power, batteries, onboard computer, attitude control, propulsion |
+| **Ground** | Communications, ground stations, data downlink |
+| **Science** | Mission objective, scientific instruments |
+
+How roles share resources and negotiate is defined in section 3.
+
+---
+
+## 3. Negotiation and resource allocation
+
+**Status: decided.** The challenge asks for situations where team members *negotiate between competing priorities* and for results that depend on *how effectively the team coordinates* ([CHALLENGE.md](CHALLENGE.md)).
+
+### 3.1 Resource allocations
+At the start of a mission, the total resources (**budget, mass, power**) are split into an **allocation per role**, e.g.:
+
+| Role | Example allocation |
+|---|---|
+| Spacecraft | 40% |
+| Science | 35% |
+| Ground | 15% |
+| Launch | 10% |
+
+Each role makes its choices within its own allocation. Exact percentages are set per scenario.
+
+### 3.2 Requests
+If a role wants to go over its allocation, it opens a **request**, e.g.:
+> "Science requests +15 W for a second camera."
+
+The other roles vote on it in turn:
+- **Accepted:** the resource moves from another role's allocation.
+- **Rejected:** the requesting role must find another way (a lighter instrument, a different part, etc.).
+
+### 3.3 Trades
+A role can offer part of its own allocation in exchange:
+> "Ground gives 5 kg, asks for 10 W in return."
+
+The receiving role accepts or rejects.
+
+### 3.4 Solo play
+In solo play, requests are raised by **role advisors**, e.g. the Science advisor: "A second camera would increase science value by 30%." The player accepts or rejects – the same trade-offs, without other players.
+
+### 3.5 Effect on scoring
+Coordination counts towards the score (detailed in section 5):
+- Accepted requests that **paid off** (e.g., the extra power enabled an instrument that produced science).
+- The mission ending with **balanced resource use** (no role starved, no large unused reserves).
+
+---
 
 ## 4. Scenarios
 **Status: to be discussed.**

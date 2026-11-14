@@ -1,6 +1,6 @@
 # Space Mission Design Game
 
-An open-source, browser-based game where you design, manage and simulate a complete space mission – alone or as a team of up to four.
+An open-source game, running locally in your browser, where you design, manage and simulate a complete space mission – alone or as a team of up to four sharing one screen.
 
 Choose a mission objective, build a spacecraft from real components, pick a launch vehicle and orbit, and balance **mass, power, budget, data, communications and time**. Then launch, survive random events, and get a post-mission report that explains *why* your mission succeeded or failed.
 
@@ -13,7 +13,7 @@ Built for the [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.or
 ## Features (planned)
 
 - **Mission phases** modelled on NASA JPL's Concept Maturity Levels: Idea → Feasibility → Trade Study → Point Design → Launch & Simulate.
-- **Team play for up to 4** with roles based on NASA's mission segments: Launch, Spacecraft, Ground, Science. Solo players handle all four.
+- **Team play for up to 4 on one PC** (hot-seat) with roles based on NASA's mission segments: Launch, Spacecraft, Ground, Science. Shared decisions are voted on in turn. Solo players handle all four roles.
 - **Real trade-offs:** every part changes mass, power, cost, data and development time. Newer technology performs better but takes longer and carries more risk.
 - **Real data:** spacecraft parts from NASA's small spacecraft technology report, launch vehicles from Launch Library 2, interplanetary transfers and real missions from Orrery.
 - **Live resource dashboard** showing the effect of every decision before you make it.
@@ -25,21 +25,20 @@ Built for the [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.or
 
 > These steps describe the planned setup and will work once the code is in place.
 
-**Requirements:** Node.js, pnpm, Docker. Optional: [Claude Code](https://claude.com/claude-code) CLI for the AI Flight Director debrief.
+**Requirements:** Node.js and pnpm. Optional: [Claude Code](https://claude.com/claude-code) CLI for the AI Flight Director debrief.
 
 ```bash
 pnpm install
-supabase start   # local database (Docker)
-pnpm dev         # web app + multiplayer server
+pnpm dev         # web app + local API (SQLite)
 ```
 
-Then open the URL shown in the terminal. For team play, open up to four browser windows, or have players on the same network join via your machine's local IP address.
+Then open the URL shown in the terminal. For team play, players take turns on the same screen – the game shows whose role is up.
 
 ## Project structure (planned)
 
 ```
 apps/web        React web app (UI, dashboard, 3D view)
-apps/server     Colyseus multiplayer server
+apps/api        Small local API (SQLite storage, AI debrief)
 packages/sim    Deterministic simulation and orbital mechanics
 packages/data   Validated game data (parts, launchers, orbits, scenarios, missions)
 scripts/        Offline scripts that convert source data to JSON

@@ -10,12 +10,12 @@
 
 **Stack:** TypeScript monorepo (pnpm + Turborepo).
 
-- `packages/sim` – deterministic, seeded simulation and orbital-mechanics engine, shared by client and server.
+- `packages/sim` – deterministic, seeded simulation and orbital-mechanics engine; runs in the browser.
 - `packages/data` – Zod-validated JSON game data (parts, launchers, orbits, scenarios, events, real missions).
 - `apps/web` – React + Vite + React Three Fiber + Tailwind/shadcn/ui + visx.
-- `apps/server` – Colyseus authoritative multiplayer server.
-- Storage – Supabase (Postgres) + Drizzle ORM, run locally via the Supabase CLI.
-- Runs **locally** with one command; the hackathon submission is a recorded video.
+- `apps/api` – small local Node service (Hono): SQLite storage and the `claude -p` Flight Director.
+- Storage – SQLite + Drizzle ORM (a single local file).
+- **Local only, one PC:** solo play or hot-seat team play (2–4 players sharing one screen). No online deployment. The hackathon submission is a recorded video.
 - `scripts/` – TypeScript, run **offline** to convert real NASA and industry data into JSON (one language across the whole repo).
 
 **Top 5 time-saving resources:**
@@ -32,21 +32,22 @@
 
 | Layer | Choice | Why |
 |---|---|---|
-| Repo | pnpm workspaces + Turborepo | Shared types and simulation across client and server |
+| Repo | pnpm workspaces + Turborepo | Shared types across web, API, sim and data packages |
 | Language | TypeScript (strict) + Zod | One language everywhere; JSON game data validated at load |
-| Simulation | `packages/sim`: pure TS, seeded RNG, Vitest | Identical results on client and server; replayable runs; tested balance |
+| Simulation | `packages/sim`: pure TS, seeded RNG, Vitest | Deterministic, replayable runs; tested balance; framework-independent |
 | Orbital math | [Orrery](https://github.com/chipi/orrery)'s Kepler, Lambert and porkchop modules (vendored, MIT); our own small additions for Earth orbits (J2, drag/decay) | One ephemeris source keeps planet positions and porkchop grids consistent; real computation enables a sandbox with custom orbits; validated against GMAT |
 | Real satellites (extra, M5) | satellite.js + CelesTrak TLE data | Show the ISS and real satellites in the LEO scenario, after the core game is done |
 | Frontend | React + Vite, Zustand, Tailwind + shadcn/ui, Framer Motion | Fast way to a polished interface |
 | Charts | visx (D3-based) | Custom mission-control gauges |
 | 3D | React Three Fiber + drei + postprocessing | Orbits, launch sequence, spacecraft model |
-| Multiplayer | Colyseus | Authoritative rooms, delta state sync, reconnection, `maxClients = 4`; server runs the sim so leaderboard scores can't be cheated |
-| Database | Supabase (Postgres) + Drizzle · **local via Supabase CLI** | Saved designs, runs, nickname leaderboards; same code locally and online |
-| Running | **Local first** (one command starts everything, see section 5) · optional 24-hour online deploy: web on Vercel, server on Railway / Fly.io, Supabase cloud | Submission is a video, so the demo is recorded locally |
+| Players | **Hot-seat on one PC** – game state in Zustand; role turns and voting handled in the UI | No network code; solo and team play use the same flow |
+| Local API | [Hono](https://hono.dev/) on Node | Tiny HTTP service for SQLite and for running `claude -p`, which the browser cannot do |
+| Database | **SQLite** + Drizzle (`better-sqlite3`) | Saved designs, runs, nickname leaderboard – one file, no Docker |
+| Running | **Local only** – `pnpm dev` starts everything (see section 5) | The submission is a video recorded on one PC |
 | Quality | Vitest (sim), Playwright (main game path), GitHub Actions CI | Main flow tested on every push |
-| AI layer (optional) | "Flight Director" narrating the post-mission report, run with **Claude Code headless mode (`claude -p`)** on the server | The sim decides outcomes; the LLM only explains them. The game works without it |
+| AI layer (optional) | "Flight Director" narrating the post-mission report, run with **Claude Code headless mode (`claude -p`)** via the local API | The sim decides outcomes; the LLM only explains them. The game works without it |
 
-**Engines considered:** Godot is viable, but the game is mostly dashboards and forms and must open instantly from a link, so a web stack wins. Unity WebGL and Bevy are not worth the load times or build friction.
+**Engines considered:** Godot is viable, but the game is mostly dashboards and forms, so a web stack running locally in the browser wins. Unity WebGL and Bevy are not worth the load times or build friction.
 
 ---
 
@@ -67,7 +68,6 @@
 | Real-mission matching | [Orrery](https://github.com/chipi/orrery) mission data (113 missions); NASA NSSDCA; NASA telescope learning game (idea) | Import script → `missions.json` | MIT (facts only) | Nearest-neighbour matcher |
 | 3D models and textures | [NASA 3D Resources](https://github.com/nasa/NASA-3D-Resources), [Satellite kit](https://science.nasa.gov/3d-resources/satellite-kit/) | GLB → React Three Fiber | NASA media guidelines + per-asset credit line ([example](https://nasa3d.arc.nasa.gov/detail/saturn-v)) | Scene, launch animation |
 | Mission visualisation | [NASA Eyes embed](https://science.nasa.gov/eyes/museums) | iframe with `?embed=true&locked=true` | NASA | Pick deep link per scenario |
-| Multiplayer rooms | [Colyseus](https://docs.colyseus.io/) | `npm create colyseus-app@latest` | MIT | Room schema, roles, intents |
 | Game phases and roles | JPL CML paper, NASA MDL, "Design and Develop Science Missions" (challenge resources) | Structure for game flow and explanations | — | Phase screens and explanation texts |
 | Tutorials, tooltips, glossary | [NASA/JPL "Basics of Space Flight"](https://science.nasa.gov/learn/basics-of-space-flight), [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf), Orrery's glossary pattern | Link as "learn more"; write our own short explanations | US Government work | Plain-language texts for every resource and decision |
 
@@ -168,45 +168,41 @@ scripts/ (offline)                  packages/data  (Zod-validated JSON)
   Orrery → missions + porkchops       events, missions
   SST-SOA → parts.json (manual)             │
                                     packages/sim/vendor/orrery (MIT physics)
-                                            │
                                             ▼
-apps/web (React, R3F, visx) ◄── packages/sim (deterministic, seeded) ──► apps/server (Colyseus)
-  single-player runs sim locally            ▲                              │
-  + NASA Eyes iframe, NASA 3D GLBs          └──────── same code ───────────┘
-                                                                           ▼
-                                                              Postgres (designs, runs, leaderboard)
+apps/web (React, R3F, visx) ◄──── packages/sim (deterministic, seeded)
+  hot-seat roles, voting,                   runs in the browser
+  NASA Eyes iframe, NASA 3D GLBs
+        │  HTTP (localhost)
+        ▼
+apps/api (Hono, Node) ──► SQLite file (designs, runs, leaderboard)
+        └──► claude -p  (Flight Director debrief, optional)
 ```
 
 - Data is generated at build time, so the running game never depends on external APIs.
+- The sim runs entirely in the browser; the API only stores results and calls Claude.
 
-### Running locally (primary)
+### Running locally
 
-The hackathon submission is a **video**, so the game is built to run fully on one laptop:
+Everything runs on **one PC**; there is no online version.
 
 ```
 pnpm install
-supabase start        # local Supabase (Postgres) in Docker
-pnpm dev              # web (Vite) + Colyseus server + sim, in parallel via Turborepo
+pnpm dev              # web (Vite) + local API, in parallel via Turborepo
 ```
 
-- **Requirements:** Node, pnpm, Docker (for Supabase CLI), and optionally the Claude Code CLI for the Flight Director.
-- **Team mode on video:** open 4 browser windows side by side, or let 4 people on the same Wi-Fi join via the laptop's local IP.
-- **Config:** one `.env` switches between local Supabase and Supabase cloud; no code changes.
+- **Requirements:** Node and pnpm. Optional: the Claude Code CLI for the Flight Director. No Docker needed.
+- **Player modes (same screen):**
+  - **Solo:** one player controls all four roles.
+  - **Team (hot-seat):** 2–4 players share the PC, each controlling one role (with fewer than 4 players, some take two roles). The screen shows whose turn it is.
+- **Shared decisions:** each role votes in turn on the same screen; the result is revealed together.
 - **No login:** players pick a **nickname**; no personal data is stored.
-
-### Online (optional, ~24 hours)
-
-If we want a public link during judging: web → Vercel, Colyseus → Railway / Fly.io, database → Supabase cloud free tier. Cost for one day is negligible. Shut everything down afterwards; the GitHub repo and video remain the permanent deliverables.
 
 ### AI Flight Director (`claude -p`)
 
-- After a run, the server sends the sim's **result + cause chain (JSON)** to `claude -p` and gets back a short, plain-language debrief.
+- After a run, the web app sends the sim's **result + cause chain (JSON)** to the local API, which runs `claude -p` and returns a short, plain-language debrief.
 - The sim result is shown **immediately**; the narration appears when ready (it takes a few seconds).
 - **Fallback:** if the Claude CLI is not installed or fails, a template-based debrief is shown from the same cause chain. The open-source game must work without it.
 - Run it with no tools enabled and a fixed prompt file, so it only writes text.
-- Online: the server host must have the Claude CLI installed and authenticated; otherwise leave it local-only.
-- **Single-player** runs the sim in the browser (works offline).
-- **Team mode**: Colyseus room; each role edits only its part of the design; the server validates intents and broadcasts state.
 - **Competitive mode**: out of scope for now (see D6).
 
 ---
@@ -216,7 +212,8 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 - `sim`: budgets, validation, events, scoring, cause chain
 - Curating `parts.json`, `instruments.json`, `launchers.json`, `orbits.json`, `missions.json`
 - Mission builder UI + live deltas + dashboard
-- Colyseus room: roles, intents, validation
+- Hot-seat flow: role turns, role permissions, voting
+- Local API: SQLite storage, `claude -p` wrapper
 - 3D orbit view + launch sequence
 - Post-mission report + mission matcher
 - Tutorial, explanation texts, scenarios
@@ -228,12 +225,12 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 
 | Milestone | Sim | Web | Data & Server | Visuals |
 |---|---|---|---|---|
-| **M0 – Foundation** | `sim` API, Zod schemas | App shell | Monorepo, CI, deploy | Style guide |
+| **M0 – Foundation** | `sim` API, Zod schemas | App shell | Monorepo, CI, local API skeleton + SQLite | Style guide |
 | **M1 – Single-player loop** | Budgets, validation, Kepler/Hohmann | Builder + dashboard | LL2 script, SST-SOA parts, LSP C3 points | R3F scene with NASA GLBs |
 | **M2 – Simulation & feedback** | Events, scoring, cause chains, tests | Report screen, tutorial | Mission matcher | Launch animation, Eyes embed |
-| **M3 – Team play** | Role-based validation | Lobby, role UI | Colyseus rooms + roles | Presence indicators |
-| **M4 – Content & balance** | Scenarios, difficulty levels, sandbox | Share / compare designs | Supabase leaderboard (nicknames) | Sound, polish |
-| **M5 – Extras** | — | Accessibility, mobile | Optional 24-hour online deploy | AI Flight Director (`claude -p`) + template fallback; real satellites (ISS) in LEO view |
+| **M3 – Team play (hot-seat)** | Role-based validation | Player setup, role turns, voting UI | Save runs per team | Turn / role indicators |
+| **M4 – Content & balance** | Scenarios, difficulty levels, sandbox | Share / compare designs | SQLite leaderboard (nicknames) | Sound, polish |
+| **M5 – Extras** | — | Accessibility | — | AI Flight Director (`claude -p`) + template fallback; real satellites (ISS) in LEO view |
 | **M6 – Presentation** | GMAT validation slide | Project page | CREDITS + data sources | Demo video + slides |
 
 ---
@@ -244,7 +241,7 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 - **Validity:** cite every number's source on the project page (launchers: Launch Library 2 + NASA LSP; parts: NASA SST-SOA 2024). Include a slide comparing sim values with GMAT.
 - **Relevance:** make the challenge resources visible – CML phase names, MDL study types, the 4 mission segments as team roles, a NASA Eyes embed.
 - **Creativity:** role negotiation + "why it failed" cause chains + "your design resembles Juno" ending.
-- **Avoid:** live external API calls during the demo, 3D work crowding out core gameplay, multiplayer without a single-player fallback, last-minute submission.
+- **Avoid:** live external API calls during the demo, 3D work crowding out core gameplay, last-minute submission.
 
 ---
 
@@ -271,7 +268,7 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 - [x] "Data sources" section in README
 - [ ] "Data sources" section on the Space Apps project page
 - [x] Launch Library 2 checked: free, 15 requests/hour; no formal attribution terms found – credit The Space Devs anyway
-- [ ] MIT credits for Orrery, Colyseus, satellite.js
+- [ ] MIT credits for Orrery, Hono, satellite.js
 
 ---
 
@@ -279,14 +276,15 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 
 | # | Topic | Decision |
 |---|---|---|
-| D1 | Hosting | **Local first.** The submission is a video. An online deploy is optional and runs for about 24 hours only, so cost is negligible. |
+| D1 | Hosting | **Local only, never online.** Everything runs on one PC; the submission is a video. |
 | D2 | Leaderboard identity | **Nicknames only**, no login and no personal data. |
 | D3 | Game language | **English.** |
 | D4 | AI Flight Director | **Claude Code headless mode (`claude -p`)**, with a template-based fallback so the game works without it. |
-| D5 | Database | **Supabase**, run locally with the Supabase CLI (Docker); Supabase cloud only for the optional online deploy. |
-| D6 | Competitive mode (team vs team) | **Out of scope for now.** [CHALLENGE.md](CHALLENGE.md) lists it only as an optional idea. Can be added later as asynchronous competition (same scenario + seed, compared on the leaderboard). Cooperative team mode (up to 4) stays. |
+| D5 | Database | **SQLite** (one local file, via Drizzle). No Docker, no Supabase. |
+| D6 | Competitive mode (team vs team) | **Out of scope for now.** [CHALLENGE.md](CHALLENGE.md) lists it only as an optional idea. Can be added later as asynchronous competition (same scenario + seed, compared on the local leaderboard). Cooperative team mode (up to 4) stays. |
 | D7 | Data scripts language | **TypeScript only.** No Python; GMAT is used manually for validation. |
 | D8 | Real satellites (satellite.js) | **Moved to M5 extras**; revisit after the core game is done. |
+| D9 | Player modes | **One PC, hot-seat.** Solo (one player, all four roles) or team (2–4 players on the same screen, one role each). No network multiplayer – Colyseus removed. Shared decisions by voting in turn. |
 
 ## Sources
 
@@ -305,7 +303,7 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 [Satellite kit](https://science.nasa.gov/3d-resources/satellite-kit/) ·
 [Eyes embed how-to](https://www.vaticanobservatory.org/sacred-space-astronomy/nasas-web-based-eyes-apps-are-great-educational-tools/) ·
 [Eyes deep links](https://science.nasa.gov/eyes/museums) ·
-[Colyseus docs](https://docs.colyseus.io/) ·
+[Hono](https://hono.dev/) ·
 [Judging guide](https://www.spaceappschallenge.org/resources/judging-awards-guide) ·
 [Submission guide](https://www.spaceappschallenge.org/resources/project-submission-guide/) ·
 [UniSat Game](https://gamelab-kbtu.itch.io/unisat-game) ·
