@@ -21,3 +21,17 @@ export {
   type Subsystem,
   type Tier,
 } from "./parts.ts";
+export {
+  DetectionSchema,
+  InstrumentCostMethodSchema,
+  InstrumentKindSchema,
+  InstrumentSchema,
+  InstrumentsFileSchema,
+  ScienceValueSchema,
+  instruments,
+  instrumentsCostMethod,
+  type Detection,
+  type Instrument,
+  type InstrumentCostMethod,
+  type InstrumentKind,
+} from "./instruments.ts";

@@ -15,5 +15,8 @@
   },
   "devDependencies": {
     "vitest": "4.1.12"
+  },
+  "dependencies": {
+    "@space-mission/data": "workspace:*"
   }
 }

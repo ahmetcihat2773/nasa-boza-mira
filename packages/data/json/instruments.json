@@ -1,0 +1,391 @@
+{
+  "costMethod": {
+    "data_quality": "game-design",
+    "note": "costUsd is the instrument's share of development cost, including integration and test (same meaning as costUsd in parts.json), not its price. Values are representative for an example project, set by class: CubeSat-sized TRL 9 instruments $0.6–2M, small-satellite instruments $4.5–6M, and not-yet-flown instruments about 1.5–1.75 × a flown instrument of the same class. Tuned in the playability check (APIDoc.md, TODO T7.6)."
+  },
+  "instruments": [
+    {
+      "id": "vis-narrow-cubesat",
+      "name": "Narrow-field visible camera",
+      "kind": "visible",
+      "massKg": 1.8,
+      "powerW": 7,
+      "dataRateMbps": 80,
+      "costUsd": 1800000,
+      "trl": 9,
+      "fieldOfViewDeg": 1.6,
+      "groundSampleDistanceM": 4.5,
+      "detects": [
+        "smoke"
+      ],
+      "fits": [
+        "6U",
+        "12U",
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 25
+      },
+      "referenceAltitudeKm": 500,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM"
+          ],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "Resembles a flown CubeSat high-resolution telescope camera (3U-class optics, ~5 m GSD)."
+        },
+        {
+          "fields": [
+            "costUsd",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Representative value for an example project",
+          "note": "Cost class: CubeSat-sized, TRL 9, high-resolution optics. Science value: sharp images of smoke and burn scars, but no fire detection and a 14 km swath."
+        }
+      ]
+    },
+    {
+      "id": "vis-wide-cubesat",
+      "name": "Wide-angle visible camera",
+      "kind": "visible",
+      "massKg": 0.5,
+      "powerW": 2.5,
+      "dataRateMbps": 5,
+      "costUsd": 600000,
+      "trl": 9,
+      "fieldOfViewDeg": 90,
+      "groundSampleDistanceM": 250,
+      "detects": [
+        "smoke"
+      ],
+      "fits": [
+        "6U",
+        "12U",
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 20
+      },
+      "referenceAltitudeKm": 500,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM"
+          ],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "Resembles a flown CubeSat wide-field colour camera used for weather and smoke-plume imaging."
+        },
+        {
+          "fields": [
+            "costUsd",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Representative value for an example project",
+          "note": "Cost class: CubeSat-sized, TRL 9, simple optics. Science value: wide swath (1,000 km at 500 km) for daily revisit and smoke plumes; cannot see active fires."
+        }
+      ]
+    },
+    {
+      "id": "swir-fire-cubesat",
+      "name": "CubeSat short-wave infrared fire imager",
+      "kind": "swir-mwir",
+      "massKg": 1.2,
+      "powerW": 6,
+      "dataRateMbps": 10,
+      "costUsd": 2000000,
+      "trl": 9,
+      "fieldOfViewDeg": 30,
+      "groundSampleDistanceM": 200,
+      "detects": [
+        "daylightFire",
+        "smoke"
+      ],
+      "fits": [
+        "6U",
+        "12U",
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 50
+      },
+      "referenceAltitudeKm": 500,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM"
+          ],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "Resembles a flown CubeSat InGaAs SWIR camera (1.6–2.2 µm) used for hot-spot detection."
+        },
+        {
+          "fields": [
+            "costUsd",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Representative value for an example project",
+          "note": "Cost class: CubeSat-sized, TRL 9, uncooled infrared detector. Science value: meets R2 (daylight fire detection) at moderate swath."
+        }
+      ]
+    },
+    {
+      "id": "mwir-fire-cubesat",
+      "name": "Compact cooled mid-wave infrared fire imager",
+      "kind": "swir-mwir",
+      "massKg": 3.5,
+      "powerW": 15,
+      "dataRateMbps": 20,
+      "costUsd": 3500000,
+      "trl": 6,
+      "fieldOfViewDeg": 40,
+      "groundSampleDistanceM": 150,
+      "detects": [
+        "daylightFire",
+        "nightFire"
+      ],
+      "fits": [
+        "12U",
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 70
+      },
+      "referenceAltitudeKm": 500,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM"
+          ],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "Resembles a NASA Earth Science Technology Office compact MWIR fire-radiance CubeSat instrument with a micro-cryocooler, tested in the lab but not yet flown."
+        },
+        {
+          "fields": [
+            "costUsd",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Representative value for an example project",
+          "note": "Cost class: CubeSat-sized, new technology (cryocooler), about 1.75 × the flown SWIR imager. Science value: day and night fire detection with fire intensity."
+        }
+      ]
+    },
+    {
+      "id": "tir-night-cubesat",
+      "name": "CubeSat uncooled thermal infrared imager",
+      "kind": "thermal-ir",
+      "massKg": 1.5,
+      "powerW": 5,
+      "dataRateMbps": 4,
+      "costUsd": 1500000,
+      "trl": 9,
+      "fieldOfViewDeg": 40,
+      "groundSampleDistanceM": 350,
+      "detects": [
+        "nightFire"
+      ],
+      "fits": [
+        "6U",
+        "12U",
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 35
+      },
+      "referenceAltitudeKm": 500,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM"
+          ],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "Resembles a flown CubeSat microbolometer long-wave infrared camera (8–14 µm) of the kind used by commercial fire-monitoring CubeSats."
+        },
+        {
+          "fields": [
+            "costUsd",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Representative value for an example project",
+          "note": "Cost class: CubeSat-sized, TRL 9, uncooled detector. Science value: earns the night-detection bonus; coarse pixels and low contrast against hot ground in daylight."
+        }
+      ]
+    },
+    {
+      "id": "fire-imager-smallsat",
+      "name": "Dual-band SWIR/MWIR fire imager",
+      "kind": "swir-mwir",
+      "massKg": 15,
+      "powerW": 40,
+      "dataRateMbps": 40,
+      "costUsd": 5000000,
+      "trl": 8,
+      "fieldOfViewDeg": 20,
+      "groundSampleDistanceM": 60,
+      "detects": [
+        "daylightFire",
+        "nightFire",
+        "smoke"
+      ],
+      "fits": [
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 85
+      },
+      "referenceAltitudeKm": 500,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM"
+          ],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "Resembles a recently demonstrated small-satellite fire-detection payload (heritage of the DLR BIRD/FireBIRD hot-spot sensor and newer dedicated fire-satellite protoflights)."
+        },
+        {
+          "fields": [
+            "costUsd",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Representative value for an example project",
+          "note": "Cost class: small-satellite instrument, recently demonstrated. Science value: sharp (60 m) day and night fire detection, but a narrow 176 km swath."
+        }
+      ]
+    },
+    {
+      "id": "tir-cooled-smallsat",
+      "name": "Cooled multi-channel thermal infrared imager",
+      "kind": "thermal-ir",
+      "massKg": 12,
+      "powerW": 35,
+      "dataRateMbps": 15,
+      "costUsd": 4500000,
+      "trl": 7,
+      "fieldOfViewDeg": 30,
+      "groundSampleDistanceM": 70,
+      "detects": [
+        "nightFire"
+      ],
+      "fits": [
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 55
+      },
+      "referenceAltitudeKm": 500,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM"
+          ],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "Resembles a compact cooled thermal infrared radiometer demonstrated in space (a scaled-down Landsat TIRS / ECOSTRESS-class instrument)."
+        },
+        {
+          "fields": [
+            "costUsd",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Representative value for an example project",
+          "note": "Cost class: small-satellite instrument, demonstrated once in space. Science value: sharp night fire detection and surface temperature."
+        }
+      ]
+    },
+    {
+      "id": "multiband-smallsat",
+      "name": "Multi-band scanning radiometer",
+      "kind": "multiband",
+      "massKg": 45,
+      "powerW": 60,
+      "dataRateMbps": 12,
+      "costUsd": 6000000,
+      "trl": 9,
+      "fieldOfViewDeg": 100,
+      "groundSampleDistanceM": 400,
+      "detects": [
+        "daylightFire",
+        "nightFire",
+        "smoke"
+      ],
+      "fits": [
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 95
+      },
+      "referenceAltitudeKm": 500,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM"
+          ],
+          "data_quality": "estimated",
+          "source": "Representative value for an example project",
+          "note": "Resembles a scaled-down MODIS/VIIRS-class whisk-broom radiometer (visible to long-wave infrared bands)."
+        },
+        {
+          "fields": [
+            "costUsd",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Representative value for an example project",
+          "note": "Cost class: largest instrument, TRL 9 heritage. Science value: daily wide-swath (1,190 km at 500 km) day and night fire detection plus smoke; coarse pixels."
+        }
+      ]
+    }
+  ]
+}

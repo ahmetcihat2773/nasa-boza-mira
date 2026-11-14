@@ -142,7 +142,7 @@ Write these files in `packages/data/json/`, with their Zod schema in `packages/d
   - Parts exist in every TRL band of design.md section 1, including a few at TRL ≤ 4 that the first mission shows as locked.
   - Every part has a source, and CREDITS.md and APIDoc.md are updated.
 
-### [ ] T7 – Curate the instruments (`instruments.json`)
+### [x] T7 – Curate the instruments (`instruments.json`)
 
 - **Owner:** `data-curator`
 - **Why:** Requirement R2, the night-detection bonus and the revisit-versus-sharpness trade-off all depend on the instrument ([design.md](design.md) section 4.3).
@@ -150,18 +150,18 @@ Write these files in `packages/data/json/`, with their Zod schema in `packages/d
 - **Scope:** only what the first mission, Wildfire Watch, needs: **6–8 instruments**. More are added when later missions need them.
 - **Decided by the user (14 November 2026):** 2–3 of the 6–8 instruments are not-yet-flown or recently demonstrated instruments, so the "new technology is better but takes longer" trade-off (design.md section 1) also applies to instruments. The user accepts the recommendations for all of T7: there are no approval stops, the agent decides and records each decision with its reason.
 - **Subtasks:**
-  - [ ] **T7.1 – Find candidates.** From NASA mission pages and the NASA mission archive, list real instruments of these kinds, with the mission each flew on:
+  - [x] **T7.1 – Find candidates.** From NASA mission pages and the NASA mission archive, list real instruments of these kinds, with the mission each flew on:
     - visible-light cameras, one narrow and one wide field of view;
     - short-wave or mid-wave infrared imagers that detect active fires in daylight (R2), one CubeSat-sized and one larger;
     - thermal infrared imagers for night detection (the bonus objective), one CubeSat-sized and one larger;
     - one large multi-band instrument that only fits the ~150 kg satellite.
-  - [ ] **T7.2 – Propose the record and the list.** Write down the fields of one instrument: id, name, kind, mass, power, data rate, cost, TRL, field of view, ground sharpness at a reference altitude, what it can detect (daylight fire, night fire), which spacecraft sizes it fits, `sources`. Give the proposed 6–8 instruments, and 2–3 lower-TRL candidates with their source (for example NASA Earth Science Technology Office projects, if their data is usable). Record the choice and its reasons in APIDoc.md, then continue (no approval stop).
-  - [ ] **T7.3 – Record the instruments.** Fill in every field for the approved list.
-  - [ ] **T7.4 – Game-design values.** Add the science value of each instrument for Wildfire Watch and mark it as a game-design number.
-  - [ ] **T7.5 – Sources.** Every instrument has a `sources` entry with a `data_quality` flag, and the file says how each cost was derived.
-  - [ ] **T7.6 – Playability check.** With the parts from T6 and the launchers, confirm on paper that at least two different designs can meet R1–R4 within the $30M budget: one CubeSat design and one small-satellite design. Report any instrument that no design can afford or power.
-  - [ ] **T7.7 – Schema and test.** A Zod schema for an instrument (reusing the source schema from T5.3) and a test that validates the file. *Needs T5.*
-  - [ ] **T7.8 – Update the docs.** Add the sources to CREDITS.md, describe the method in APIDoc.md and tick its "curate instruments" item.
+  - [x] **T7.2 – Propose the record and the list.** Write down the fields of one instrument: id, name, kind, mass, power, data rate, cost, TRL, field of view, ground sharpness at a reference altitude, what it can detect (daylight fire, night fire), which spacecraft sizes it fits, `sources`. Give the proposed 6–8 instruments, and 2–3 lower-TRL candidates with their source (for example NASA Earth Science Technology Office projects, if their data is usable). Record the choice and its reasons in APIDoc.md, then continue (no approval stop).
+  - [x] **T7.3 – Record the instruments.** Fill in every field for the approved list.
+  - [x] **T7.4 – Game-design values.** Add the science value of each instrument for Wildfire Watch and mark it as a game-design number.
+  - [x] **T7.5 – Sources.** Every instrument has a `sources` entry with a `data_quality` flag, and the file says how each cost was derived.
+  - [x] **T7.6 – Playability check.** With the parts from T6 and the launchers, confirm on paper that at least two different designs can meet R1–R4 within the $30M budget: one CubeSat design and one small-satellite design. Report any instrument that no design can afford or power.
+  - [x] **T7.7 – Schema and test.** A Zod schema for an instrument (reusing the source schema from T5.3) and a test that validates the file. *Needs T5.*
+  - [x] **T7.8 – Update the docs.** Add the sources to CREDITS.md, describe the method in APIDoc.md and tick its "curate instruments" item.
 - **Done when:**
   - There are 6–8 instruments.
   - Wildfire Watch has real choices: daylight fire detection (R2), thermal infrared for night detection, and both narrow and wide fields of view.

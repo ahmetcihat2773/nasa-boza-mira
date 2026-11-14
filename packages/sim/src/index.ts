@@ -1,2 +1,3 @@
-/** Placeholder: the real @space-mission/sim API is added by its owner. */
+/** @space-mission/sim: pure game rules (no UI). */
 export const PACKAGE_NAME = "@space-mission/sim";
+export * from "./budget.ts";

@@ -22,7 +22,7 @@ Add every asset, dataset and library here **when it is added to the repo**. Entr
 | [Rocket Lab – Electron Payload User's Guide 7.0](https://rocketlabcorp.com/assets/Electron-Payload-User-Guide-7.0-v6.pdf) | Electron capacity to sun-synchronous orbit | Published figure; figures only, no text or images copied | Rocket Lab |
 | [Firefly Aerospace – Alpha](https://fireflyspace.com/alpha/) | Firefly Alpha capacity to sun-synchronous orbit | Published figure; figures only, no text or images copied | Firefly Aerospace |
 | [ISRO – Polar Satellite Launch Vehicle](https://www.isro.gov.in/PSLV_CON.html) | PSLV capacity to sun-synchronous orbit | Published figure; figures only, no text or images copied | Indian Space Research Organisation (ISRO) |
-| [NASA mission archive (NSSDCA)](https://nssdc.gsfc.nasa.gov/nmc/) and NASA mission pages | Instruments and real missions (planned) | US Government work | NASA |
+| [NASA mission archive (NSSDCA)](https://nssdc.gsfc.nasa.gov/nmc/) and NASA mission pages | Real missions (planned); `instruments.json` uses representative values with no external source | US Government work | NASA |
 | [NASA LSP Performance](https://elvperf.ksc.nasa.gov/) | Payload mass vs C3 (planned, later missions) | US Government work | NASA Launch Services Program |
 | [NASA GMAT](https://software.nasa.gov/) | Offline trajectory data / validation | Apache-2.0 | NASA Goddard Space Flight Center |
 | [DSN Telecommunications Link Design Handbook 810-005](https://deepspace.jpl.nasa.gov/dsndocs/810-005/) | Deep-space comms reference values (planned, later missions) | US Government work | NASA JPL |
