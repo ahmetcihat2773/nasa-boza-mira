@@ -16,7 +16,7 @@
 - `apps/server` – Colyseus authoritative multiplayer server.
 - Storage – Supabase (Postgres) + Drizzle ORM, run locally via the Supabase CLI.
 - Runs **locally** with one command; the hackathon submission is a recorded video.
-- `scripts/` – Python, run **offline** to convert real NASA and industry data into JSON.
+- `scripts/` – TypeScript, run **offline** to convert real NASA and industry data into JSON (one language across the whole repo).
 
 **Top 5 time-saving resources:**
 
@@ -36,7 +36,7 @@
 | Language | TypeScript (strict) + Zod | One language everywhere; JSON game data validated at load |
 | Simulation | `packages/sim`: pure TS, seeded RNG, Vitest | Identical results on client and server; replayable runs; tested balance |
 | Orbital math | [Orrery](https://github.com/chipi/orrery)'s Kepler, Lambert and porkchop modules (vendored, MIT); our own small additions for Earth orbits (J2, drag/decay) | One ephemeris source keeps planet positions and porkchop grids consistent; real computation enables a sandbox with custom orbits; validated against GMAT |
-| Real satellites (optional) | satellite.js + CelesTrak TLE data | Show the ISS and real satellites in the LEO scenario |
+| Real satellites (extra, M5) | satellite.js + CelesTrak TLE data | Show the ISS and real satellites in the LEO scenario, after the core game is done |
 | Frontend | React + Vite, Zustand, Tailwind + shadcn/ui, Framer Motion | Fast way to a polished interface |
 | Charts | visx (D3-based) | Custom mission-control gauges |
 | 3D | React Three Fiber + drei + postprocessing | Orbits, launch sequence, spacecraft model |
@@ -58,8 +58,8 @@
 | Scientific instruments (mass, power, data rate, science value) | Instruments of real flown missions: NASA NSSDCA experiment entries and NASA mission pages (e.g., cameras, spectrometers, magnetometers, radar) | Curate ~15–25 representative instruments into `instruments.json`, each tagged with the objectives it serves | US Government work (facts) | Science value per objective, locking rules |
 | Launch vehicles | [Launch Library 2](https://ll.thespacedevs.com/2.2.0/config/launcher/75/?format=api) | Script → `launchers.json` (handle null capacities). Free tier: 15 requests/hour per IP, so fetch once and commit the JSON | Free access; formal attribution terms not published – credit The Space Devs | ~10 curated vehicles + rideshare option |
 | Deep-space launch capability | [NASA LSP Performance](https://elvperf.ksc.nasa.gov/) | Copy several mass-vs-C3 points per vehicle | US Government | Interpolation in `sim` |
-| Earth orbits (LEO, SSO, GEO, Moon) | GMAT (challenge resource), astropy | **Offline**: generate delta-v, periods and eclipse fractions → `orbits.json`; GMAT also validates Orrery's interplanetary values | Apache-2.0 / BSD | Orbit option table |
-| Real satellites in LEO view | satellite.js + CelesTrak TLEs | npm + fetch (cache locally) | MIT / free | Optional ISS fly-by |
+| Earth orbits (LEO, SSO, GEO, Moon) | Standard orbital formulas; GMAT (challenge resource) for validation | **Offline** TS script computes delta-v, periods and eclipse fractions → `orbits.json`; selected values cross-checked manually in GMAT (also Orrery's interplanetary values) | GMAT: Apache-2.0 | Orbit option table |
+| Real satellites in LEO view | satellite.js + CelesTrak TLEs | npm + fetch (cache locally) | MIT / free | ISS fly-by (M5 extra) |
 | Power, eclipse, decay | Standard formulas (solar flux ∝ 1/r², eclipse geometry, decay table by altitude) | Implemented in `sim` | — | Formulas + tests |
 | Comms and ground segment | [DSN Link Design Handbook 810-005](https://deepspace.jpl.nasa.gov/dsndocs/810-005/) | Simplified link budget (Friis) + ground contact minutes/day | US Government | Data backlog model |
 | Cost | [Aerospace SSCM19 paper](https://aerospace.org/sites/default/files/2020-05/SSCM19%20paper.pdf), [NASA cost models overview](https://www.nasa.gov/sites/default/files/atoms/files/saing_nasa_and_smallsat_cost_estimation_overview_and_model_tools_s3vi_webinar_series_10_jun_2020.pdf) | Simplify published mass-based cost relationships | Paper public; model tool restricted | Cost formula per subsystem |
@@ -164,7 +164,7 @@ None of these projects combines **mission design + resource trade-offs + team ro
 ```
 scripts/ (offline)                  packages/data  (Zod-validated JSON)
   LL2 API → launchers.json    ──►     parts, instruments, launchers,
-  GMAT/astropy → orbits.json          orbits, porkchops, scenarios,
+  formulas → orbits.json (GMAT-checked) orbits, porkchops, scenarios,
   Orrery → missions + porkchops       events, missions
   SST-SOA → parts.json (manual)             │
                                     packages/sim/vendor/orrery (MIT physics)
@@ -233,7 +233,7 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 | **M2 – Simulation & feedback** | Events, scoring, cause chains, tests | Report screen, tutorial | Mission matcher | Launch animation, Eyes embed |
 | **M3 – Team play** | Role-based validation | Lobby, role UI | Colyseus rooms + roles | Presence indicators |
 | **M4 – Content & balance** | Scenarios, difficulty levels, sandbox | Share / compare designs | Supabase leaderboard (nicknames) | Sound, polish |
-| **M5 – Extras** | — | Accessibility, mobile | Optional 24-hour online deploy | AI Flight Director (`claude -p`) + template fallback |
+| **M5 – Extras** | — | Accessibility, mobile | Optional 24-hour online deploy | AI Flight Director (`claude -p`) + template fallback; real satellites (ISS) in LEO view |
 | **M6 – Presentation** | GMAT validation slide | Project page | CREDITS + data sources | Demo video + slides |
 
 ---
@@ -283,7 +283,9 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 | D3 | Game language | **English.** |
 | D4 | AI Flight Director | **Claude Code headless mode (`claude -p`)**, with a template-based fallback so the game works without it. |
 | D5 | Database | **Supabase**, run locally with the Supabase CLI (Docker); Supabase cloud only for the optional online deploy. |
-| D6 | Competitive mode (team vs team) | **Out of scope for now.** README lists it only as an optional idea. Can be added later as asynchronous competition (same scenario + seed, compared on the leaderboard). |
+| D6 | Competitive mode (team vs team) | **Out of scope for now.** README lists it only as an optional idea. Can be added later as asynchronous competition (same scenario + seed, compared on the leaderboard). Cooperative team mode (up to 4) stays. |
+| D7 | Data scripts language | **TypeScript only.** No Python; GMAT is used manually for validation. |
+| D8 | Real satellites (satellite.js) | **Moved to M5 extras**; revisit after the core game is done. |
 
 ## Sources
 
