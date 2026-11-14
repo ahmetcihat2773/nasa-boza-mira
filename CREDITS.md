@@ -48,7 +48,11 @@ Add every asset, dataset and library here **when it is added to the repo**. Entr
 | [Hono](https://github.com/honojs/hono) | MIT |
 | [Orrery](https://github.com/chipi/orrery) – orbital mechanics modules and mission/porkchop data (planned, later missions) | MIT, © 2026 Marko Dragoljevic |
 | [satellite.js](https://github.com/shashwatak/satellite-js) (planned extra) | MIT |
-| React, Three.js, React Three Fiber, Zustand, Zod | MIT |
+| [Zod](https://github.com/colinhacks/zod) – data validation | MIT |
+| [Drizzle ORM](https://github.com/drizzle-team/drizzle-orm) – database access | Apache-2.0 |
+| [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) – SQLite driver (bundles SQLite, public domain) | MIT |
+| Development tools: Turborepo, TypeScript (Apache-2.0), ESLint, typescript-eslint, Prettier, Vitest, drizzle-kit | MIT unless noted |
+| React, Three.js, React Three Fiber, Zustand (planned, web app) | MIT |
 
 ## Licence rules for contributors
 

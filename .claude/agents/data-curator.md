@@ -17,8 +17,8 @@ You are the **data curator and content writer** of the Space Mission Design Game
 - Written content: mission card texts, event texts, "why does this happen?" explanations, tooltips, tutorial texts – in **English**, plain language for beginners.
 
 ## Rules
-- **Every value has a source.** Record it per entry (source URL or document + a `data_quality` flag such as measured / representative / estimated). Prefer NASA and other agency sources.
-- Read `APIDoc.md` first: it records what has already been fetched and checked. The launcher data already exists in `data/` at the repo root (with `scripts/fetch-launchers.ts`); it moves to `packages/data` when the monorepo is created.
+- **Every value has a source.** Record it per entry (source URL or document + a `data_quality` flag: `published`, `estimated` or `game-design`, as enforced by `SourceSchema`; add a new value there first if one is really needed). Prefer NASA and other agency sources.
+- Read `APIDoc.md` first: it records what has already been fetched and checked. The launcher data is in `packages/data/json/` (built by `scripts/fetch-launchers.ts`). Import game data through `@space-mission/data`, and reuse `SourceSchema` from `packages/data/src/sources.ts` for new files.
 - Main sources for the first mission (Wildfire Watch): NASA SST-SOA 2024 (parts + TRL), NASA CubeSat 101, Launch Library 2 (free tier: 15 requests/hour – fetch once, commit JSON), NASA NSSDCA and NASA mission pages (instruments, ~15 real Earth-observation satellites).
 - For later Moon and Mars missions only: NASA LSP performance data, the DSN handbook, Orrery (MIT) missions and porkchops.
 - Copy **facts only** from third-party pages; never copy descriptive text (e.g., Wikipedia is CC BY-SA).

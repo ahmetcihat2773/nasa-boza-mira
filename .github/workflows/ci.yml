@@ -49,4 +49,4 @@ jobs:
       - name: Launcher data is reproducible
         run: |
           node --experimental-strip-types scripts/fetch-launchers.ts --offline
-          git diff --exit-code -- data/
+          git diff --exit-code -- packages/data/json/

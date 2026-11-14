@@ -6,17 +6,19 @@
  *   node --experimental-strip-types scripts/fetch-launchers.ts --live      real API: current data, 15 calls per hour
  *   node --experimental-strip-types scripts/fetch-launchers.ts --dev       development mirror: no rate limit, stale data
  *
- * An API run (--live or --dev) makes two requests and writes two files:
- *   data/launchers.raw.json  every vehicle that has both a low-Earth-orbit capacity
- *                            and a launch cost (the game needs both)
- *   data/launchers.json      the vehicles the game uses: those picked in
- *                            data/launchers.curation.json, plus its manual entries
+ * The files live in packages/data/json/. An API run (--live or --dev) makes two
+ * requests and writes two files:
+ *   launchers.raw.json  every vehicle that has both a low-Earth-orbit capacity
+ *                       and a launch cost (the game needs both)
+ *   launchers.json      the vehicles the game uses: those picked in
+ *                       launchers.curation.json, plus its manual entries
  *
- * An --offline run reads data/launchers.raw.json as it is and only rewrites
- * data/launchers.json. Use it after every edit of data/launchers.curation.json,
+ * An --offline run reads launchers.raw.json as it is and only rewrites
+ * launchers.json. Use it after every edit of launchers.curation.json,
  * so the Launch Library 2 values stay as they were when they were fetched.
  *
- * To change which rockets are in the game, edit data/launchers.curation.json.
+ * To change which rockets are in the game, edit packages/data/json/launchers.curation.json.
+ * The Zod schema in packages/data/src/launchers.ts checks the result when the game loads it.
  * Data: Launch Library 2 by The Space Devs (https://thespacedevs.com/llapi).
  *
  * Launch Library 2 has no capacity to sun-synchronous orbit. A picked vehicle
@@ -33,7 +35,7 @@ import { fileURLToPath } from "node:url";
 
 const HOSTS = { dev: "https://lldev.thespacedevs.com", live: "https://ll.thespacedevs.com" };
 const QUERY = "/2.2.0/config/launcher/?mode=detailed&active=true&limit=100&format=json";
-const DATA = join(dirname(fileURLToPath(import.meta.url)), "..", "data");
+const DATA = join(dirname(fileURLToPath(import.meta.url)), "..", "packages", "data", "json");
 const RAW = join(DATA, "launchers.raw.json");
 const CURATION = join(DATA, "launchers.curation.json");
 const OUTPUT = join(DATA, "launchers.json");
@@ -190,11 +192,12 @@ function show(records: Launcher[]): void {
 }
 
 const args = process.argv.slice(2);
-if (args.length !== 1 || !MODES.includes(args[0])) {
+const mode = args[0];
+if (args.length !== 1 || mode === undefined || !MODES.includes(mode)) {
   console.error(
     [
       "Give exactly one mode:",
-      "  --offline  no API call: rebuild data/launchers.json from the committed files",
+      "  --offline  no API call: rebuild packages/data/json/launchers.json from the committed files",
       "  --live     real API: current data, 15 calls per hour",
       "  --dev      development mirror: no rate limit, stale data",
       "Nothing was changed.",
@@ -202,7 +205,6 @@ if (args.length !== 1 || !MODES.includes(args[0])) {
   );
   process.exit(1);
 }
-const mode = args[0];
 
 let records: Launcher[];
 if (mode === "--offline") {

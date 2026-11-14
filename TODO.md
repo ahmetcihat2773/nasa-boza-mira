@@ -6,8 +6,8 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 - Open tasks are split into numbered **subtasks** (T4.1, T4.2, …). Do them in order unless a subtask says otherwise, and tick each one when it is finished. Each subtask is small enough to review on its own.
 - A task is done when all its subtasks are ticked and its "Done when" list holds. There is no routine review step for now: review and debugging happen later, on request. The user makes the commits.
-- T1 and T2 were done before the monorepo exists, so they use `data/` at the repo root. T5 moves it to `packages/data`.
-- After every edit of `data/launchers.curation.json`, rebuild with `node --experimental-strip-types scripts/fetch-launchers.ts --offline`. It does not call the API, so the Launch Library 2 values stay as they were fetched.
+- T1–T3 were done before the monorepo existed, so their text names `data/` at the repo root. T5 moved the data to `packages/data/json/`.
+- After every edit of `packages/data/json/launchers.curation.json`, rebuild with `node --experimental-strip-types scripts/fetch-launchers.ts --offline`. It does not call the API, so the Launch Library 2 values stay as they were fetched.
 - This list covers the launcher data, the platform and data parts of M0, and the first M1 data files. The other M0 work in [tech.md](tech.md) section 7 (`sim` API, app shell, style guide) and the M1 mission card have no tasks yet.
 
 ---
@@ -91,20 +91,20 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
   - CI passes on push.
   - No Docker and no Python are needed.
 
-### [ ] T5 – Move the data into `packages/data`
+### [x] T5 – Move the data into `packages/data`
 
 - **Owner:** `data-curator`
 - **Needs:** T4.
 - **Why:** [tech.md](tech.md) section 5 puts all game data in `packages/data`, validated with Zod. The data files are still in `data/` at the repo root.
 - **Input:** `data/`, `scripts/fetch-launchers.ts`, [APIDoc.md](APIDoc.md) ("Fields we add").
 - **Subtasks:**
-  - [ ] **T5.1 – Move the files.** Use `git mv` to move everything in `data/` into `packages/data` (JSON files in one folder, e.g. `packages/data/json/`): the three launcher files and any T6 or T7 files written there. `scripts/` stays at the repo root.
-  - [ ] **T5.2 – Fix the script paths.** Update the paths in `scripts/fetch-launchers.ts`. *Check:* an `--offline` rebuild leaves `launchers.json` unchanged (`git diff` shows nothing).
-  - [ ] **T5.3 – Shared source schema.** A Zod schema for one `sources` entry (`fields`, `data_quality`, `source`, optional `url`, `checked`, `note`), written once so the parts and instruments files can reuse it.
-  - [ ] **T5.4 – Launcher schema.** A Zod schema for a launcher, including `ssoCapacityKg`, `sources` and the rideshare-only fields (`costPerKgUsd`, `includedKg`, `fixedOrbit`, `note`).
-  - [ ] **T5.5 – Typed export.** `packages/data` exports the validated launcher list and its TypeScript type, so `sim` and the web app never read the JSON file directly.
-  - [ ] **T5.6 – Schema test.** A test that validates `launchers.json` against the schema; the CI from T4 runs it.
-  - [ ] **T5.7 – Update the docs.** Fix the paths in APIDoc.md and tick its "move the `data/` files" item. Search the repo for the old `data/` path and report every other place that still names it (TODO.md, README.md, tech.md, the agent files) for the coordinator to fix.
+  - [x] **T5.1 – Move the files.** Use `git mv` to move everything in `data/` into `packages/data` (JSON files in one folder, e.g. `packages/data/json/`): the three launcher files and any T6 or T7 files written there. `scripts/` stays at the repo root.
+  - [x] **T5.2 – Fix the script paths.** Update the paths in `scripts/fetch-launchers.ts`. *Check:* an `--offline` rebuild leaves `launchers.json` unchanged (`git diff` shows nothing).
+  - [x] **T5.3 – Shared source schema.** A Zod schema for one `sources` entry (`fields`, `data_quality`, `source`, optional `url`, `checked`, `note`), written once so the parts and instruments files can reuse it.
+  - [x] **T5.4 – Launcher schema.** A Zod schema for a launcher, including `ssoCapacityKg`, `sources` and the rideshare-only fields (`costPerKgUsd`, `includedKg`, `fixedOrbit`, `note`).
+  - [x] **T5.5 – Typed export.** `packages/data` exports the validated launcher list and its TypeScript type, so `sim` and the web app never read the JSON file directly.
+  - [x] **T5.6 – Schema test.** A test that validates `launchers.json` against the schema; the CI from T4 runs it.
+  - [x] **T5.7 – Update the docs.** Fix the paths in APIDoc.md and tick its "move the `data/` files" item. Search the repo for the old `data/` path and report every other place that still names it (TODO.md, README.md, tech.md, the agent files) for the coordinator to fix.
 - **Done when:**
   - An `--offline` rebuild at the new path leaves `launchers.json` unchanged (`git diff` shows nothing).
   - The schema test passes in CI.
@@ -114,7 +114,7 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 ## Data (M1)
 
-Write these files in `packages/data` if T5 is done, otherwise in `data/` at the repo root.
+Write these files in `packages/data/json/`, with their Zod schema in `packages/data/src/`.
 
 ### [ ] T6 – Build the parts catalogue (`parts.json`)
 

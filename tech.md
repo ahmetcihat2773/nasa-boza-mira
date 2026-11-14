@@ -21,7 +21,7 @@
 **Top 5 time-saving resources (first version, Wildfire Watch):**
 
 1. **NASA State-of-the-Art of Small Spacecraft Technology (2024)** – real specs for every subsystem, ready to become the parts catalogue. [Landing page](https://www.nasa.gov/smallsat-institute/sst-soa) · [PDF](https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf)
-2. **Launch Library 2 API (The Space Devs)** – launch vehicles with `leo_capacity`, `gto_capacity`, `launch_cost` and launch counts, as JSON. Already imported into `data/launchers.json` (see [APIDoc.md](APIDoc.md)). [Example record](https://ll.thespacedevs.com/2.2.0/config/launcher/324/?format=api)
+2. **Launch Library 2 API (The Space Devs)** – launch vehicles with `leo_capacity`, `gto_capacity`, `launch_cost` and launch counts, as JSON. Already imported into `packages/data/json/launchers.json` (see [APIDoc.md](APIDoc.md)). [Example record](https://ll.thespacedevs.com/2.2.0/config/launcher/324/?format=api)
 3. **NASA CubeSat 101** – CubeSat sizes, limits and concepts for the builder and the tooltips. [PDF](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf)
 4. **NASA mission archive (NSSDCA) and mission pages** – real instruments and about 15 real Earth-observation satellites for the "your design resembles mission X" comparison. [NSSDCA](https://nssdc.gsfc.nasa.gov/nmc/)
 5. **NASA 3D Resources** – spacecraft models and Earth textures for the 3D view. [GitHub](https://github.com/nasa/NASA-3D-Resources)
@@ -184,7 +184,7 @@ apps/api (Hono, Node) ──► SQLite file (designs, runs, leaderboard)
 ```
 
 - Data is fetched or curated once, offline, and committed as JSON, so the running game never depends on external APIs. How each file is produced is recorded in [APIDoc.md](APIDoc.md).
-- The existing `data/` and `scripts/` folders at the repo root move into this layout when the monorepo is created.
+- Game data lives in `packages/data` (JSON in `packages/data/json/`, Zod schemas and a typed export in `src/`). `scripts/` stays at the repo root and writes into it.
 - The sim runs entirely in the browser; the API only stores results and calls Claude.
 
 ### Running locally
@@ -233,7 +233,7 @@ M1–M3 are built around a **single mission, Wildfire Watch** (Earth orbit only 
 
 | Milestone | Sim | Web | Data & Server | Visuals |
 |---|---|---|---|---|
-| **M0 – Foundation** | `sim` API | App shell | Monorepo, CI, local API skeleton + SQLite; Zod schemas; move the existing `data/` and `scripts/` into the monorepo layout | Style guide |
+| **M0 – Foundation** | `sim` API | App shell | Monorepo, CI, local API skeleton + SQLite; Zod schemas; data moved to `packages/data` (done) | Style guide |
 | **M1 – Single-player loop** | Budgets, R1–R4 validation, launcher checks (mass, orbit, cost), Earth-orbit formulas (period, eclipse, decay, revisit, ground contact), TRL and development time | Builder + dashboard | Launchers (done, with a sourced rideshare price and capacity to sun-synchronous orbit), SST-SOA parts with TRL, instruments, Wildfire Watch mission card | R3F scene with NASA GLBs |
 | **M2 – Simulation & feedback** | Events incl. launch failure, deadline penalty, scoring, cause chains, tests | Results and report screen, retry / compare, leaderboard, tooltips, glossary, first-play tour | ~15 curated real missions + matcher; save attempts and nickname leaderboard in SQLite | Launch animation; optional NASA Eyes link |
 | **M3 – Team play (hot-seat)** | Role-based validation, budget allocations, requests and trades | Player setup, role turns, voting UI | Save runs per team | Turn / role indicators |

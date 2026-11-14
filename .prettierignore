@@ -1,9 +1,9 @@
 # Generated or curated data: written by scripts, not by hand.
-data/
+packages/data/json/
 **/drizzle/meta/
 pnpm-lock.yaml
 
-# Existing files kept in their current style (scripts/ moves into packages/data in T5).
+# Existing files kept in their current style.
 scripts/
 *.md
 .claude/

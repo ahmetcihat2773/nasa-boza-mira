@@ -1,10 +1,8 @@
 {
-  // Typecheck for the root-level scripts/ folder (moves into packages/data in T5).
+  // Typecheck for the root-level scripts/ folder.
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "types": ["node"],
-    // scripts/fetch-launchers.ts predates the base config; drop this override once it is moved and adjusted.
-    "noUncheckedIndexedAccess": false
+    "types": ["node"]
   },
   "include": ["scripts/**/*.ts"]
 }
