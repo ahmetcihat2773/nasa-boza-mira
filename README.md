@@ -1,98 +1,75 @@
-Designing a space mission requires careful consideration of competing demands, including mission objectives, spacecraft design, scientific instruments, launch vehicles, budgets, power, mass, communications, and orbital constraints. For students who rarely get to experiment with an entire mission from concept to operation, these trade-offs often remain abstract. Your challenge is to create an interactive game that allows participants to design, manage, and simulate a complete space mission while making engineering decisions, managing limited resources, and evaluating how each choice shapes the success of their mission.
+# Space Mission Design Game
 
+An open-source, browser-based game where you design, manage and simulate a complete space mission – alone or as a team of up to four.
 
+Choose a mission objective, build a spacecraft from real components, pick a launch vehicle and orbit, and balance **mass, power, budget, data, communications and time**. Then launch, survive random events, and get a post-mission report that explains *why* your mission succeeded or failed.
 
+Built for the [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/) – see [CHALLENGE.md](CHALLENGE.md).
 
-## Background
+> 🚧 **Status: early development.** The design and tech plan are written; code is coming next.
 
-Space missions are complex systems in which scientific objectives, engineering requirements, available resources, and operational constraints must work together. Designing a mission involves decisions about the spacecraft, scientific instruments, launch vehicle, orbit, power, mass, communications, budget, and mission lifetime. A decision that improves one aspect of a mission can create limitations in another. For example, adding a more capable instrument may increase scientific value while also increasing mass, power consumption, data volume, and cost. Understanding these trade-offs is essential to developing successful space missions.
+---
 
-However, learning space mission design is often limited to theoretical exercises because students and aspiring engineers rarely have access to an environment where they can experiment with an entire mission from concept to operation. Existing tools often focus on individual topics such as orbital mechanics, spacecraft design, or rocket launches without demonstrating how these elements interact as a complete system. This leaves a gap between learning individual space concepts and understanding how mission teams make integrated engineering decisions.
+## Features (planned)
 
-An interactive game can help address this gap by allowing participants to experiment, make decisions, encounter constraints, and learn from both successful and unsuccessful missions. Players could design missions individually or collaborate in teams of up to four people, with each participant contributing to the mission strategy and working together to achieve the best possible result. Potential approaches could include mission planning, spacecraft configuration, instrument selection, resource management, orbital selection, launch planning, communications, and mission simulation. You are encouraged to develop creative alternatives that make the experience engaging while preserving the fundamental trade-offs of real-world space mission design.
+- **Mission phases** modelled on NASA JPL's Concept Maturity Levels: Idea → Feasibility → Trade Study → Point Design → Launch & Simulate.
+- **Team play for up to 4** with roles based on NASA's mission segments: Launch, Spacecraft, Ground, Science. Solo players handle all four.
+- **Real trade-offs:** every part changes mass, power, cost, data and development time. Newer technology performs better but takes longer and carries more risk.
+- **Real data:** spacecraft parts from NASA's small spacecraft technology report, launch vehicles from Launch Library 2, interplanetary transfers and real missions from Orrery.
+- **Live resource dashboard** showing the effect of every decision before you make it.
+- **Mission simulation** with random events and a post-mission report, including "your design resembles real mission X".
+- **Scenarios** from an easy CubeSat in low Earth orbit to a Mars orbiter with launch windows.
+- **Nickname leaderboards** – no login, no personal data.
 
-## Objectives
+## Getting started
 
-Your challenge is to create an interactive Space Mission Design Game that allows participants to experience the process of designing and managing a complete space mission. You may consider enabling a player to participate individually or collaborate with a team of up to four people, with participants working together to make strategic decisions and achieve the highest possible mission performance.
+> These steps describe the planned setup and will work once the code is in place.
 
-The game could allow participants to define a mission objective, establish mission requirements, design a spacecraft, select scientific instruments, choose a launch vehicle and orbit, and manage key constraints such as budget, mass, power, communications, data, and mission lifetime. Players benefit from seeing how their decisions affect other parts of the mission, and from understanding the trade-offs involved in real-world space mission design.
+**Requirements:** Node.js, pnpm, Docker. Optional: [Claude Code](https://claude.com/claude-code) CLI for the AI Flight Director debrief.
 
-A strong solution might include a functional interactive game or simulation with a clear user interface, mission configuration system, resource management mechanisms, collaboration or multiplayer functionality for up to four participants, and a mission simulation and evaluation system. The game could provide feedback on mission performance and reward effective engineering decisions, efficient resource management, successful collaboration, and achievement of mission objectives. Participants are encouraged to develop creative game mechanics, visualizations, scoring systems, and mission scenarios that make the experience engaging while requiring players to solve problems, make trade-offs, and collaborate to achieve mission success.
+```bash
+pnpm install
+supabase start   # local database (Docker)
+pnpm dev         # web app + multiplayer server
+```
 
-## Potential Considerations
+Then open the URL shown in the terminal. For team play, open up to four browser windows, or have players on the same network join via your machine's local IP address.
 
-*You may (but are not required to) consider the following:*
+## Project structure (planned)
 
-**Game design and experience**
+```
+apps/web        React web app (UI, dashboard, 3D view)
+apps/server     Colyseus multiplayer server
+packages/sim    Deterministic simulation and orbital mechanics
+packages/data   Validated game data (parts, launchers, orbits, scenarios, missions)
+scripts/        Offline scripts that convert source data to JSON
+```
 
-* The game could be accessible to participants with different levels of knowledge about space science and engineering.
-* The game could support both single-player and team play, allowing up to four participants to collaborate on the same mission.
-* Team members could have different responsibilities, such as mission planning, spacecraft design, science, communications, or resource management.
-* Clear objectives and feedback help participants understand why a mission succeeds or fails.
-* Consider making the game interactive, allowing participants to modify their mission design and simulate it multiple times.
-* A scoring system could reward mission success, scientific value, efficient use of resources, and effective decision making.
-* The game could include different difficulty levels, mission types, or scenarios.
+## Documentation
 
-**Mission design**
+| Document | Contents |
+|---|---|
+| [design.md](design.md) | Game design: rules, roles, scenarios, scoring |
+| [tech.md](tech.md) | Tech stack, architecture, reused tools and data |
+| [CHALLENGE.md](CHALLENGE.md) | Original NASA Space Apps challenge text |
+| [CREDITS.md](CREDITS.md) | Data sources, assets and libraries with their licences |
 
-* Participants could begin by defining a mission objective before making spacecraft and engineering decisions.
-* Consider giving every major design decision a consequence. For example, increasing the number of instruments could increase scientific capabilities but also increase mass, power consumption, cost, and data generation.
-* Consider demonstrating that there is rarely a single perfect solution. Different combinations of spacecraft, instruments, orbits, and launch vehicles could achieve the same mission objective.
-* Consider including realistic constraints such as limited budget, spacecraft mass, available power, communications capacity, and mission lifetime.
+## Data sources
 
-**Spacecraft and payload**
+Main sources (full list with licences in [CREDITS.md](CREDITS.md)):
 
-* The spacecraft could include components such as structure, power systems, batteries, communications, onboard computers, attitude control, and scientific instruments.
-* Scientific instruments could have different characteristics, including mass, power consumption, cost, data generation, and scientific value.
-* Consider allowing participants to choose between simple and advanced spacecraft components depending on the difficulty level.
+- [NASA State-of-the-Art of Small Spacecraft Technology 2024](https://www.nasa.gov/smallsat-institute/sst-soa) – spacecraft components and TRL
+- [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf) – CubeSat concepts
+- [Launch Library 2 – The Space Devs](https://thespacedevs.com/) – launch vehicles
+- [NASA Launch Services Program performance data](https://elvperf.ksc.nasa.gov/) – deep-space launch capability
+- [Orrery](https://github.com/chipi/orrery) – orbital mechanics, launch windows and real-mission data
+- [NASA GMAT](https://software.nasa.gov/) – trajectory validation
+- [NASA 3D Resources](https://github.com/nasa/NASA-3D-Resources) – 3D models and textures
 
-**Orbit and launch**
+## License
 
-* The game could provide several orbital options and explain their basic characteristics.
-* Participants could consider how the selected orbit affects coverage, observation opportunities, communications, mission lifetime, and other mission requirements.
-* Launch vehicles could have different payload capacities, costs, and orbital capabilities.
-* Consider building in a check that the spacecraft mass and selected orbit are compatible with the chosen launch vehicle.
+Code: [MIT](LICENSE). Original content (texts, scenarios, tutorials): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Third-party material keeps its own licence – see [CREDITS.md](CREDITS.md).
 
-**Resource Management**
+## Disclaimer
 
-* The game should clearly display the main resources available to the mission team.
-* Important resources could include:
-  * Mass: the total mass of the spacecraft and payload.
-  * Power: the energy available to operate spacecraft systems and instruments.
-  * Budget: the financial resources available to develop and operate the mission.
-  * Data: the amount of information generated by scientific instruments.
-  * Communications: the spacecraft's ability to transmit data to ground stations.
-  * Time: The planned development and operational lifetime of the mission.
-* You may consider identifying which resources are most critical to your specific mission.
-
-**Collaboration**
-
-* In team mode, up to four participants could work together on the same mission.
-* Consider giving team members different roles or responsibilities while asking them to make decisions collectively.
-* The game could include situations where team members must negotiate between competing priorities.
-* The final mission result could depend on how effectively the team coordinates its decisions.
-
-**Educational value**
-
-* Scientific and engineering concepts work best when explained in simple terms rather than assuming advanced knowledge.
-* Complex concepts such as orbital altitude, payload capacity, power consumption, data rate, and communications could be introduced through the game itself.
-* Consider including short explanations, tutorials, visual indicators, or optional learning resources.
-* Consider teaching participants why a particular decision affects mission performance, rather than simply indicating whether the decision is correct or incorrect.
-
-**You may consider adding features such as:**
-
-* Multiple mission scenarios with different objectives
-* Random events or unexpected mission constraints
-* Different difficulty levels
-* Realistic or simplified spacecraft models
-* Interactive spacecraft visualizations
-* Mission dashboards showing real-time resource consumption
-* Leaderboards or mission rankings
-* Mission reports generated at the end of each simulation
-* The ability to save, share, and compare mission designs
-* Cooperative missions for teams of up to four participants
-* Competitive scenarios where different teams design missions to solve the same objective
-* A sandbox mode that allows participants to experiment without predefined constraints
-* A post-mission analysis explaining why the mission succeeded or failed
-
-*For data and resources related to this challenge, refer to the Resources tab at the top of the page. More resources may be added before the hackathon begins.*
+This is an independent, open-source educational project created for the NASA Space Apps Challenge. It is not endorsed by NASA or any other space agency.

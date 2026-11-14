@@ -268,7 +268,8 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 ### Checklist
 - [x] `LICENSE` file for code (MIT)
 - [x] `CREDITS.md` created – keep it updated as assets, datasets and libraries are added
-- [ ] "Data sources" section in README and on the project page
+- [x] "Data sources" section in README
+- [ ] "Data sources" section on the Space Apps project page
 - [x] Launch Library 2 checked: free, 15 requests/hour; no formal attribution terms found – credit The Space Devs anyway
 - [ ] MIT credits for Orrery, Colyseus, satellite.js
 
@@ -283,7 +284,7 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 | D3 | Game language | **English.** |
 | D4 | AI Flight Director | **Claude Code headless mode (`claude -p`)**, with a template-based fallback so the game works without it. |
 | D5 | Database | **Supabase**, run locally with the Supabase CLI (Docker); Supabase cloud only for the optional online deploy. |
-| D6 | Competitive mode (team vs team) | **Out of scope for now.** README lists it only as an optional idea. Can be added later as asynchronous competition (same scenario + seed, compared on the leaderboard). Cooperative team mode (up to 4) stays. |
+| D6 | Competitive mode (team vs team) | **Out of scope for now.** [CHALLENGE.md](CHALLENGE.md) lists it only as an optional idea. Can be added later as asynchronous competition (same scenario + seed, compared on the leaderboard). Cooperative team mode (up to 4) stays. |
 | D7 | Data scripts language | **TypeScript only.** No Python; GMAT is used manually for validation. |
 | D8 | Real satellites (satellite.js) | **Moved to M5 extras**; revisit after the core game is done. |
 
