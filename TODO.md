@@ -116,25 +116,25 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 Write these files in `packages/data/json/`, with their Zod schema in `packages/data/src/`.
 
-### [ ] T6 – Build the parts catalogue (`parts.json`)
+### [x] T6 – Build the parts catalogue (`parts.json`)
 
 - **Owner:** `data-curator`
 - **Why:** The builder, the budgets and the TRL rules all need parts. Nobody has read the NASA report yet ([APIDoc.md](APIDoc.md)).
 - **Input:** [NASA Small Spacecraft report 2024](https://www.nasa.gov/smallsat-institute/sst-soa), NASA CubeSat 101, [tech.md](tech.md) section 3, [design.md](design.md) sections 1, 2 and 4.3.
 - **Subtasks:**
-  - [ ] **T6.1 – Read the report.** Read the subsystem chapters of the NASA Small Spacecraft report and CubeSat 101. Note in APIDoc.md which chapters and tables are usable, and how the report states TRL.
-  - [ ] **T6.2 – Propose the part record.** Before typing any data, write down the fields of one part: id, name, subsystem, owning role (design.md section 2), tier, mass, power (used or produced), cost, main performance value and its unit, TRL, which spacecraft sizes it fits (6U / 12U / small satellite), `sources`. Also write down the tier rule and the cost method (e.g., the SSCM19 paper or published list prices). **Stop and report this to the coordinator for approval before T6.3.**
-  - [ ] **T6.3 – Structure.** Frames and buses for 6U, 12U and the ~150 kg small satellite.
-  - [ ] **T6.4 – Power generation.** Solar panels (body-mounted and deployable).
-  - [ ] **T6.5 – Batteries.**
-  - [ ] **T6.6 – Onboard computers.**
-  - [ ] **T6.7 – Attitude control.** Reaction wheels, magnetorquers, star trackers or integrated units.
-  - [ ] **T6.8 – Propulsion.** Including "none", because a CubeSat can fly without it (this matters for the space-debris event and for orbit decay).
-  - [ ] **T6.9 – Communications.** Radios and antennas with their data rates. These belong to the Ground role.
-  - [ ] **T6.10 – Coverage check.** At least one part per tier in every subsystem; parts in every TRL band of design.md section 1, including a few at TRL ≤ 4; every subsystem offers something for each spacecraft size. List the gaps and fill them.
-  - [ ] **T6.11 – Sources.** Every part has a `sources` entry with a `data_quality` flag, and the file says how each cost was derived.
-  - [ ] **T6.12 – Schema and test.** A Zod schema for a part (reusing the source schema from T5.3) and a test that validates the file. *Needs T5;* if T5 is not done yet, leave this subtask open and finish the rest.
-  - [ ] **T6.13 – Update the docs.** Add the sources to CREDITS.md, describe the method in APIDoc.md and tick its "extract parts" item.
+  - [x] **T6.1 – Read the report.** Read the subsystem chapters of the NASA Small Spacecraft report and CubeSat 101. Note in APIDoc.md which chapters and tables are usable, and how the report states TRL.
+  - [x] **T6.2 – Propose the part record.** Before typing any data, write down the fields of one part: id, name, subsystem, owning role (design.md section 2), tier, mass, power (used or produced), cost, main performance value and its unit, TRL, which spacecraft sizes it fits (6U / 12U / small satellite), `sources`. Also write down the tier rule and the cost method (e.g., the SSCM19 paper or published list prices). **Stop and report this to the coordinator for approval before T6.3.**
+  - [x] **T6.3 – Structure.** Frames and buses for 6U, 12U and the ~150 kg small satellite.
+  - [x] **T6.4 – Power generation.** Solar panels (body-mounted and deployable).
+  - [x] **T6.5 – Batteries.**
+  - [x] **T6.6 – Onboard computers.**
+  - [x] **T6.7 – Attitude control.** Reaction wheels, magnetorquers, star trackers or integrated units.
+  - [x] **T6.8 – Propulsion.** Including "none", because a CubeSat can fly without it (this matters for the space-debris event and for orbit decay).
+  - [x] **T6.9 – Communications.** Radios and antennas with their data rates. These belong to the Ground role.
+  - [x] **T6.10 – Coverage check.** At least one part per tier in every subsystem; parts in every TRL band of design.md section 1, including a few at TRL ≤ 4; every subsystem offers something for each spacecraft size. List the gaps and fill them.
+  - [x] **T6.11 – Sources.** Every part has a `sources` entry with a `data_quality` flag, and the file says how each cost was derived.
+  - [x] **T6.12 – Schema and test.** A Zod schema for a part (reusing the source schema from T5.3) and a test that validates the file. *Needs T5;* if T5 is not done yet, leave this subtask open and finish the rest.
+  - [x] **T6.13 – Update the docs.** Add the sources to CREDITS.md, describe the method in APIDoc.md and tick its "extract parts" item.
 
   T6.3 to T6.9 can be done in any order, and each can be reviewed on its own.
 - **Done when:**
@@ -148,14 +148,14 @@ Write these files in `packages/data/json/`, with their Zod schema in `packages/d
 - **Why:** Requirement R2, the night-detection bonus and the revisit-versus-sharpness trade-off all depend on the instrument ([design.md](design.md) section 4.3).
 - **Input:** [NASA mission archive (NSSDCA)](https://nssdc.gsfc.nasa.gov/nmc/) and NASA mission pages, [tech.md](tech.md) section 3, [design.md](design.md) sections 1 and 4.3.
 - **Scope:** only what the first mission, Wildfire Watch, needs: **6–8 instruments**. More are added when later missions need them.
-- **Open question for the user:** flown instruments are all TRL 9, so the "new technology is better but takes longer" trade-off (design.md section 1) would not apply to instruments. Recommended: 2–3 of the 6–8 are not-yet-flown or recently demonstrated instruments. T7.2 proposes candidates and stops for the user's decision.
+- **Decided by the user (14 November 2026):** 2–3 of the 6–8 instruments are not-yet-flown or recently demonstrated instruments, so the "new technology is better but takes longer" trade-off (design.md section 1) also applies to instruments. The user accepts the recommendations for all of T7: there are no approval stops, the agent decides and records each decision with its reason.
 - **Subtasks:**
   - [ ] **T7.1 – Find candidates.** From NASA mission pages and the NASA mission archive, list real instruments of these kinds, with the mission each flew on:
     - visible-light cameras, one narrow and one wide field of view;
     - short-wave or mid-wave infrared imagers that detect active fires in daylight (R2), one CubeSat-sized and one larger;
     - thermal infrared imagers for night detection (the bonus objective), one CubeSat-sized and one larger;
     - one large multi-band instrument that only fits the ~150 kg satellite.
-  - [ ] **T7.2 – Propose the record and the list.** Write down the fields of one instrument: id, name, kind, mass, power, data rate, cost, TRL, field of view, ground sharpness at a reference altitude, what it can detect (daylight fire, night fire), which spacecraft sizes it fits, `sources`. Give the proposed 6–8 instruments, and 2–3 lower-TRL candidates with their source (for example NASA Earth Science Technology Office projects, if their data is usable). **Stop and report to the coordinator for the user's approval before T7.3.**
+  - [ ] **T7.2 – Propose the record and the list.** Write down the fields of one instrument: id, name, kind, mass, power, data rate, cost, TRL, field of view, ground sharpness at a reference altitude, what it can detect (daylight fire, night fire), which spacecraft sizes it fits, `sources`. Give the proposed 6–8 instruments, and 2–3 lower-TRL candidates with their source (for example NASA Earth Science Technology Office projects, if their data is usable). Record the choice and its reasons in APIDoc.md, then continue (no approval stop).
   - [ ] **T7.3 – Record the instruments.** Fill in every field for the approved list.
   - [ ] **T7.4 – Game-design values.** Add the science value of each instrument for Wildfire Watch and mark it as a game-design number.
   - [ ] **T7.5 – Sources.** Every instrument has a `sources` entry with a `data_quality` flag, and the file says how each cost was derived.

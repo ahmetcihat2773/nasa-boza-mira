@@ -15,8 +15,8 @@ Add every asset, dataset and library here **when it is added to the repo**. Entr
 
 | Source | Used for | Licence / terms | Credit |
 |---|---|---|---|
-| [NASA State-of-the-Art of Small Spacecraft Technology (2024)](https://www.nasa.gov/smallsat-institute/sst-soa) | Spacecraft part specs | US Government work | NASA Small Spacecraft Systems Virtual Institute |
-| [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf) | CubeSat concepts and values | US Government work | NASA CubeSat Launch Initiative |
+| [NASA State-of-the-Art of Small Spacecraft Technology (2024)](https://www.nasa.gov/smallsat-institute/sst-soa) | Spacecraft part specs and TRL hints for `packages/data/json/parts.json` (figures only) | US Government work | NASA Small Spacecraft Systems Virtual Institute |
+| [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf) | CubeSat concepts and values; the "no propulsion" part | US Government work | NASA CubeSat Launch Initiative |
 | [Launch Library 2 – The Space Devs](https://thespacedevs.com/) | Launch vehicle capacities and costs | Free to use and share; attribution encouraged, not required ([terms](https://github.com/TheSpaceDevs/Tutorials/blob/main/faqs/faq_TSD.md#terms-of-use)) | Data from Launch Library 2 by The Space Devs |
 | [SpaceX Smallsat Rideshare Program](https://rideshare.spacex.com/search) | Rideshare launch price | Published price; figures only, no text or images copied | SpaceX |
 | [Rocket Lab – Electron Payload User's Guide 7.0](https://rocketlabcorp.com/assets/Electron-Payload-User-Guide-7.0-v6.pdf) | Electron capacity to sun-synchronous orbit | Published figure; figures only, no text or images copied | Rocket Lab |
@@ -26,7 +26,10 @@ Add every asset, dataset and library here **when it is added to the repo**. Entr
 | [NASA LSP Performance](https://elvperf.ksc.nasa.gov/) | Payload mass vs C3 (planned, later missions) | US Government work | NASA Launch Services Program |
 | [NASA GMAT](https://software.nasa.gov/) | Offline trajectory data / validation | Apache-2.0 | NASA Goddard Space Flight Center |
 | [DSN Telecommunications Link Design Handbook 810-005](https://deepspace.jpl.nasa.gov/dsndocs/810-005/) | Deep-space comms reference values (planned, later missions) | US Government work | NASA JPL |
-| [Aerospace Corp. SSCM19 paper](https://aerospace.org/sites/default/files/2020-05/SSCM19%20paper.pdf) | Simplified cost formulas | Public paper | The Aerospace Corporation |
+| [EnduroSat product list prices](https://www.endurosat.com/products-category/antennas/) | Anchor prices for part costs in `parts.json` (structures, solar panels, computer, radios, antennas) | Published prices; figures only, no text or images copied | EnduroSat |
+| [NanoAvionics component prices](https://nanoavionics.com/cubesat-components/cubesat-smallsat-battery-pack/) | Anchor prices for part costs (battery, computer, magnetorquer, reaction wheel) | Published starting prices; figures only | NanoAvionics |
+| [satcatalog – Starling 1U](https://www.satcatalog.com/component/starling-1u/) | Anchor price for the cold-gas thruster part | Published average cost; figures only | satcatalog |
+| [Aerospace Corp. SSCM19 paper](https://aerospace.org/sites/default/files/2020-05/SSCM19%20paper.pdf) | Read for the cost method; not used for numbers, because it publishes no cost formulas | Public paper | The Aerospace Corporation |
 
 ## Visual assets
 

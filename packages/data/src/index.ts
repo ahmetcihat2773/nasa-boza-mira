@@ -4,3 +4,20 @@
  */
 export { DataQualitySchema, SourceSchema, type DataQuality, type Source } from "./sources.ts";
 export { FixedOrbitSchema, LauncherListSchema, LauncherSchema, launchers, type Launcher } from "./launchers.ts";
+export {
+  CostMethodSchema,
+  PartRoleSchema,
+  PartSchema,
+  PartsFileSchema,
+  PerformanceSchema,
+  SpacecraftSizeSchema,
+  SubsystemSchema,
+  TierSchema,
+  parts,
+  partsCostMethod,
+  type CostMethod,
+  type Part,
+  type SpacecraftSize,
+  type Subsystem,
+  type Tier,
+} from "./parts.ts";

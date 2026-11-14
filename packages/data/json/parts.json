@@ -1,0 +1,2067 @@
+{
+  "costMethod": {
+    "integrationAndTestFactor": 10,
+    "eurToUsd": 1.1,
+    "data_quality": "game-design",
+    "note": "costUsd is the part's share of development cost, not its price. costUsd = anchor price × integrationAndTestFactor. The anchor is a public vendor list price (copied as a figure, named in each part's costUsd source note) or, where no price is public, our own value. The factor stands for integration, testing, spares and engineering labour; it is a starting value, tuned in TODO T7.6. Euro prices are converted at eurToUsd."
+  },
+  "parts": [
+    {
+      "id": "structure-6u-frame",
+      "name": "6U aluminium frame",
+      "subsystem": "structure",
+      "role": "spacecraft",
+      "tier": "basic",
+      "massKg": 1,
+      "powerW": 0,
+      "performance": {
+        "value": 12,
+        "unit": "kg",
+        "label": "Maximum spacecraft mass"
+      },
+      "trl": 9,
+      "fits": [
+        "6U"
+      ],
+      "basedOn": "Table 6-1 (6U structure 0.916–1.94 kg), Table 6-2 (commercial 6U frames)",
+      "costUsd": 80000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 6-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Mass from the 6U range in Table 6-1. The 12 kg limit is our round figure of about 2 kg per U, below common deployer limits (Table 6-3); check against a deployer guide before relying on it."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 6-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Many vendors sell flown 6U frames; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/8u-structure/",
+          "checked": "2026-11-14",
+          "note": "Anchor $8,000: EnduroSat 8U CubeSat Structure list price $11,000, scaled to 6U (× 0.75, rounded)."
+        }
+      ]
+    },
+    {
+      "id": "structure-12u-frame",
+      "name": "12U aluminium frame",
+      "subsystem": "structure",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 1.9,
+      "powerW": 0,
+      "performance": {
+        "value": 24,
+        "unit": "kg",
+        "label": "Maximum spacecraft mass"
+      },
+      "trl": 9,
+      "fits": [
+        "12U"
+      ],
+      "basedOn": "Table 6-1 (12U structure 1.84 kg), Table 6-2 (commercial 12U frames)",
+      "costUsd": 160000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 6-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Mass rounded from Table 6-1. The 24 kg limit is our round figure of about 2 kg per U."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 6-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Several vendors sell flown 12U frames; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/16u-structure/",
+          "checked": "2026-11-14",
+          "note": "Anchor $16,000: EnduroSat 16U CubeSat Structure list price $21,000, scaled to 12U (× 0.75, rounded)."
+        }
+      ]
+    },
+    {
+      "id": "structure-12u-printed",
+      "name": "Lightweight 3D-printed 12U frame",
+      "subsystem": "structure",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 1.2,
+      "powerW": 0,
+      "performance": {
+        "value": 24,
+        "unit": "kg",
+        "label": "Maximum spacecraft mass"
+      },
+      "trl": 6,
+      "fits": [
+        "12U"
+      ],
+      "basedOn": "Chapter 6 additive-manufacturing materials (Tables 6-12 PEI, 6-13 PAEK filaments)",
+      "costUsd": 240000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Chapter 6, Tables 6-12 and 6-13",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "About one third lighter than the aluminium 12U frame; our estimate for a high-performance printed polymer frame."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Chapter 6",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Printed polymer structures have flown mostly as experiments; read as TRL 6."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/16u-structure/",
+          "checked": "2026-11-14",
+          "note": "Anchor $24,000: 12U frame anchor ($16,000, see structure-12u-frame) × 1.5 for a newer process."
+        }
+      ]
+    },
+    {
+      "id": "structure-smallsat-bus",
+      "name": "Small-satellite bus structure",
+      "subsystem": "structure",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 18,
+      "powerW": 0,
+      "performance": {
+        "value": 150,
+        "unit": "kg",
+        "label": "Maximum spacecraft mass"
+      },
+      "trl": 9,
+      "fits": [
+        "smallsat"
+      ],
+      "basedOn": "Table 2-7 (ESPA-class buses)",
+      "costUsd": 600000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 2-7",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "The report gives whole ESPA-class buses, not structure masses. 18 kg is our estimate of about 12% of a 150 kg spacecraft; 150 kg is the mission card's small-satellite size."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 2-7",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Many ESPA-class buses are listed as flown in LEO; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $60,000: no public list price for the structure alone; our value, about three 16U frames ($21,000 each)."
+        }
+      ]
+    },
+    {
+      "id": "structure-smallsat-composite",
+      "name": "Lightweight composite small-satellite structure",
+      "subsystem": "structure",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 12,
+      "powerW": 0,
+      "performance": {
+        "value": 150,
+        "unit": "kg",
+        "label": "Maximum spacecraft mass"
+      },
+      "trl": 7,
+      "fits": [
+        "smallsat"
+      ],
+      "basedOn": "Table 2-7 (ESPA-class buses); Chapter 6 materials",
+      "costUsd": 900000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 2-7",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "One third lighter than the aluminium bus structure; our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Chapter 6",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Composite panels are used in flight but less often on this class; read as TRL 7."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $90,000: no public list price; small-satellite structure anchor ($60,000) × 1.5."
+        }
+      ]
+    },
+    {
+      "id": "solar-6u-body",
+      "name": "Body-mounted solar panels (6U)",
+      "subsystem": "solar",
+      "role": "spacecraft",
+      "tier": "basic",
+      "massKg": 0.5,
+      "powerW": 0,
+      "powerProducedW": 20,
+      "performance": {
+        "value": 20,
+        "unit": "W",
+        "label": "Peak power in sunlight"
+      },
+      "trl": 9,
+      "fits": [
+        "6U"
+      ],
+      "basedOn": "Table 3-1 (triple-junction cells, about 29–32% efficient), Table 3-2 (CubeSat body panels)",
+      "costUsd": 200000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance",
+            "powerProducedW"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Tables 3-1 and 3-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Our estimate: one large 6U face (about 0.08 m²) of 29% cells at 1361 W/m² with packing losses gives about 25–30 W; 20 W allows for the angle to the Sun."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Body-mounted CubeSat panels are flown routinely; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/6u-solar-panel/",
+          "checked": "2026-11-14",
+          "note": "Anchor $20,000: EnduroSat 6U Solar Panel list price."
+        }
+      ]
+    },
+    {
+      "id": "solar-12u-body",
+      "name": "Body-mounted solar panels (12U)",
+      "subsystem": "solar",
+      "role": "spacecraft",
+      "tier": "basic",
+      "massKg": 0.8,
+      "powerW": 0,
+      "powerProducedW": 35,
+      "performance": {
+        "value": 35,
+        "unit": "W",
+        "label": "Peak power in sunlight"
+      },
+      "trl": 9,
+      "fits": [
+        "12U"
+      ],
+      "basedOn": "Tables 3-1 and 3-2",
+      "costUsd": 300000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance",
+            "powerProducedW"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Tables 3-1 and 3-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Same method as the 6U panels with the larger 12U faces; our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Flown routinely; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/6u-solar-panel/",
+          "checked": "2026-11-14",
+          "note": "Anchor $30,000: EnduroSat 6U Solar Panel $20,000 × 1.5 for the larger area."
+        }
+      ]
+    },
+    {
+      "id": "solar-6u-deployable",
+      "name": "Deployable solar wings (6U)",
+      "subsystem": "solar",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 1.2,
+      "powerW": 0,
+      "powerProducedW": 60,
+      "performance": {
+        "value": 60,
+        "unit": "W",
+        "label": "Peak power in sunlight"
+      },
+      "trl": 9,
+      "fits": [
+        "6U"
+      ],
+      "basedOn": "Table 3-2 (deployable CubeSat arrays); Table 2-4 (6U buses up to 80–180 W peak)",
+      "costUsd": 590000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance",
+            "powerProducedW"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Tables 3-2 and 2-4",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Our representative value for two deployed 6U wings; 6U buses in Table 2-4 reach 80–180 W peak."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 2-4",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "6U buses with deployed wings are listed as flown in LEO; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/6u-deployable-solar-array/",
+          "checked": "2026-11-14",
+          "note": "Anchor $59,000: EnduroSat 6U Deployable Solar Array, lower list price ($59,000–88,000)."
+        }
+      ]
+    },
+    {
+      "id": "solar-12u-deployable",
+      "name": "Deployable solar wings (12U)",
+      "subsystem": "solar",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 2,
+      "powerW": 0,
+      "powerProducedW": 100,
+      "performance": {
+        "value": 100,
+        "unit": "W",
+        "label": "Peak power in sunlight"
+      },
+      "trl": 8,
+      "fits": [
+        "12U"
+      ],
+      "basedOn": "Table 3-2; Table 2-5 (12U buses)",
+      "costUsd": 950000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance",
+            "powerProducedW"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Tables 3-2 and 2-5",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Our representative value for deployed 12U wings (about 50 W/kg)."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 2-5",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Flown, but less often than 6U wings; read as TRL 8."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/8u-deployable-solar-array/",
+          "checked": "2026-11-14",
+          "note": "Anchor $95,000: EnduroSat 8U Deployable Solar Array $73,000 × 1.3 for 12U, rounded."
+        }
+      ]
+    },
+    {
+      "id": "solar-smallsat-deployable",
+      "name": "Deployable rigid solar array (small satellite)",
+      "subsystem": "solar",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 8,
+      "powerW": 0,
+      "powerProducedW": 300,
+      "performance": {
+        "value": 300,
+        "unit": "W",
+        "label": "Peak power in sunlight"
+      },
+      "trl": 9,
+      "fits": [
+        "smallsat"
+      ],
+      "basedOn": "Table 3-2 (rigid deployed panels, 18–39 W/kg, 88–309 W per panel)",
+      "costUsd": 2500000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance",
+            "powerProducedW"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "About 37 W/kg, inside the range of the rigid panels in Table 3-2; our representative value."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Rigid deployed panels of this size are flown routinely; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $250,000: no public list price at this size; our value, about three 8U deployable arrays."
+        }
+      ]
+    },
+    {
+      "id": "solar-rollout-flexible",
+      "name": "Roll-out flexible solar array (prototype)",
+      "subsystem": "solar",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 2,
+      "powerW": 0,
+      "powerProducedW": 250,
+      "performance": {
+        "value": 250,
+        "unit": "W",
+        "label": "Peak power in sunlight"
+      },
+      "trl": 4,
+      "fits": [
+        "12U",
+        "smallsat"
+      ],
+      "basedOn": "Table 3-2 (flexible deployed arrays, 100–140 W/kg)",
+      "costUsd": 1500000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance",
+            "powerProducedW"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "125 W/kg, between the flexible arrays in Table 3-2; our estimate for a small-spacecraft version."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Large roll-out arrays have flown, but a version this small is treated as a lab prototype; read as TRL 4 (locked on easy)."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $150,000: no public list price; our value, between the 12U and small-satellite arrays."
+        }
+      ]
+    },
+    {
+      "id": "battery-40wh",
+      "name": "Li-ion battery pack, 40 Wh",
+      "subsystem": "battery",
+      "role": "spacecraft",
+      "tier": "basic",
+      "massKg": 0.35,
+      "powerW": 0,
+      "performance": {
+        "value": 40,
+        "unit": "Wh",
+        "label": "Energy storage"
+      },
+      "trl": 9,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Table 3-3 (CubeSat packs, about 110–155 Wh/kg), Table 3-4 (18650 cells)",
+      "costUsd": 30000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "About 115 Wh/kg, inside the pack range of Table 3-3."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-4",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "18650 cells with flight heritage; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://nanoavionics.com/cubesat-components/cubesat-smallsat-battery-pack/",
+          "checked": "2026-11-14",
+          "note": "Anchor $3,000: NanoAvionics battery pack starting price €2,750 × 1.1 USD/EUR, rounded."
+        }
+      ]
+    },
+    {
+      "id": "battery-90wh",
+      "name": "Li-ion battery pack, 90 Wh",
+      "subsystem": "battery",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 0.65,
+      "powerW": 0,
+      "performance": {
+        "value": 90,
+        "unit": "Wh",
+        "label": "Energy storage"
+      },
+      "trl": 9,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Table 3-3",
+      "costUsd": 75000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "About 140 Wh/kg, inside the pack range of Table 3-3."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-4",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Flight-heritage cells; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://nanoavionics.com/cubesat-components/cubesat-smallsat-battery-pack/",
+          "checked": "2026-11-14",
+          "note": "Anchor $7,500: 40 Wh pack anchor ($3,000) × 2.5 for the larger pack."
+        }
+      ]
+    },
+    {
+      "id": "battery-600wh",
+      "name": "Li-ion battery pack, 600 Wh (small satellite)",
+      "subsystem": "battery",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 4.5,
+      "powerW": 0,
+      "performance": {
+        "value": 600,
+        "unit": "Wh",
+        "label": "Energy storage"
+      },
+      "trl": 9,
+      "fits": [
+        "smallsat"
+      ],
+      "basedOn": "Table 3-3 (larger modular packs)",
+      "costUsd": 400000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "About 135 Wh/kg, inside the pack range of Table 3-3."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-4",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Flight-heritage cells; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://nanoavionics.com/cubesat-components/cubesat-smallsat-battery-pack/",
+          "checked": "2026-11-14",
+          "note": "Anchor $40,000: NanoAvionics lists small-satellite packs up to 600 Wh without a price; our value."
+        }
+      ]
+    },
+    {
+      "id": "battery-high-density",
+      "name": "High-energy-density Li-ion pack, 150 Wh",
+      "subsystem": "battery",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 0.75,
+      "powerW": 0,
+      "performance": {
+        "value": 150,
+        "unit": "Wh",
+        "label": "Energy storage"
+      },
+      "trl": 7,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Chapter 3 text (latest cells above 240 Wh/kg), Table 3-4",
+      "costUsd": 150000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Chapter 3, Table 3-4",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "200 Wh/kg at pack level, from the newest cells; our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-4",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Newer cells with limited flight time; read as TRL 7."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://nanoavionics.com/cubesat-components/cubesat-smallsat-battery-pack/",
+          "checked": "2026-11-14",
+          "note": "Anchor $15,000: 90 Wh pack anchor ($7,500) × 2 for the newer cells."
+        }
+      ]
+    },
+    {
+      "id": "battery-solid-state",
+      "name": "Solid-state battery pack, 200 Wh (prototype)",
+      "subsystem": "battery",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 0.6,
+      "powerW": 0,
+      "performance": {
+        "value": 200,
+        "unit": "Wh",
+        "label": "Energy storage"
+      },
+      "trl": 4,
+      "fits": [
+        "6U",
+        "12U",
+        "smallsat"
+      ],
+      "basedOn": "Table 3-7 (solid-state cells, 390–440 Wh/kg)",
+      "costUsd": 300000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-7",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "About 330 Wh/kg at pack level, below the cell figures of Table 3-7; our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 3-7",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Ground cells developed for electric vehicles, not flown; read as TRL 4 (locked on easy)."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $30,000: no public list price; our value, twice the high-density pack."
+        }
+      ]
+    },
+    {
+      "id": "obc-microcontroller",
+      "name": "Microcontroller onboard computer",
+      "subsystem": "obc",
+      "role": "spacecraft",
+      "tier": "basic",
+      "massKg": 0.06,
+      "powerW": 0.4,
+      "performance": {
+        "value": 10,
+        "unit": "krad",
+        "label": "Radiation tolerance (total dose)"
+      },
+      "trl": 9,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Table 8-1 (ARM Cortex-M boards, 0.28–0.4 W)",
+      "costUsd": 49000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 8-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Power from Table 8-1. Mass and radiation tolerance are our estimates for a commercial board."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 8-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Boards of this class are listed as flown in LEO; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://nanoavionics.com/cubesat-components/satbus-3c2/",
+          "checked": "2026-11-14",
+          "note": "Anchor $4,900: NanoAvionics on-board computer starting price €4,460 × 1.1 USD/EUR, rounded."
+        }
+      ]
+    },
+    {
+      "id": "obc-rad-tolerant",
+      "name": "Radiation-tolerant onboard computer",
+      "subsystem": "obc",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 0.13,
+      "powerW": 1.3,
+      "performance": {
+        "value": 20,
+        "unit": "krad",
+        "label": "Radiation tolerance (total dose)"
+      },
+      "trl": 9,
+      "fits": [
+        "6U",
+        "12U",
+        "smallsat"
+      ],
+      "basedOn": "Table 8-1 (fault-tolerant LEON3FT board, 1.3 W, 20 krad)",
+      "costUsd": 160000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 8-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Power and total dose from Table 8-1; mass is our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 8-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Flown in LEO and on a lunar lander; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/onboard-computer/",
+          "checked": "2026-11-14",
+          "note": "Anchor $16,000: EnduroSat Onboard Computer, lower list price ($16,000–26,000)."
+        }
+      ]
+    },
+    {
+      "id": "obc-redundant-smallsat",
+      "name": "Redundant onboard computer (small satellite)",
+      "subsystem": "obc",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 1.5,
+      "powerW": 6,
+      "performance": {
+        "value": 50,
+        "unit": "krad",
+        "label": "Radiation tolerance (total dose)"
+      },
+      "trl": 8,
+      "fits": [
+        "smallsat"
+      ],
+      "basedOn": "Table 8-1; Table 2-7 (ESPA-class buses)",
+      "costUsd": 520000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 8-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Two boards with a housing; our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 8-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Built from flown boards; read as TRL 8 for the combined unit."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/onboard-computer/",
+          "checked": "2026-11-14",
+          "note": "Anchor $52,000: two EnduroSat Onboard Computers at the upper list price ($26,000 each)."
+        }
+      ]
+    },
+    {
+      "id": "obc-edge-processor",
+      "name": "High-performance processor for onboard fire detection",
+      "subsystem": "obc",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 0.3,
+      "powerW": 10,
+      "performance": {
+        "value": 5,
+        "unit": "krad",
+        "label": "Radiation tolerance (total dose)"
+      },
+      "trl": 6,
+      "fits": [
+        "6U",
+        "12U",
+        "smallsat"
+      ],
+      "basedOn": "Chapter 8 (high-performance and AI processors)",
+      "costUsd": 600000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Chapter 8",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Our estimate for a commercial high-performance processor board. It can find fires on board and send short alerts instead of full images; the simulation decides how much downlink this saves."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Chapter 8",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Demonstrated on a few missions only; read as TRL 6."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $60,000: no public list price; our value, about four radiation-tolerant computers."
+        }
+      ]
+    },
+    {
+      "id": "adcs-magnetic",
+      "name": "Magnetorquers with sun sensors",
+      "subsystem": "adcs",
+      "role": "spacecraft",
+      "tier": "basic",
+      "massKg": 0.3,
+      "powerW": 0.8,
+      "performance": {
+        "value": 5,
+        "unit": "deg",
+        "label": "Pointing accuracy"
+      },
+      "trl": 9,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Table 5-4 (magnetorquers), Table 5-7 (sun sensors)",
+      "costUsd": 50000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Tables 5-4 and 5-7",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Coarse magnetic control; mass, power and accuracy are our estimates."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 5-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Table 5-1 gives TRL 7–9 for magnetorquers and sun sensors; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://nanoavionics.com/cubesat-components/cubesat-magnetorquer-satbus-mtq/",
+          "checked": "2026-11-14",
+          "note": "Anchor $5,000: NanoAvionics magnetorquer starting price €1,330 × 1.1 USD/EUR, plus about $3,500 for sun sensors (our value)."
+        }
+      ]
+    },
+    {
+      "id": "adcs-integrated-cubesat",
+      "name": "Integrated attitude unit with reaction wheels and star tracker (CubeSat)",
+      "subsystem": "adcs",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 1.7,
+      "powerW": 3,
+      "performance": {
+        "value": 1,
+        "unit": "deg",
+        "label": "Pointing accuracy"
+      },
+      "trl": 9,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Table 5-2 (integrated units with 3 wheels, star tracker; 1.7 kg, better than 1°)",
+      "costUsd": 600000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 5-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Mass and pointing from Table 5-2; power is our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 5-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Table 5-1 gives TRL 7–9 for integrated units; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://nanoavionics.com/cubesat-components/cubesat-reaction-wheels-control-system-satbus-4rw/",
+          "checked": "2026-11-14",
+          "note": "Anchor $60,000: NanoAvionics reaction wheel starting price €4,100 per wheel; three or four wheels plus a star tracker and magnetorquers, our value."
+        }
+      ]
+    },
+    {
+      "id": "adcs-precision-cubesat",
+      "name": "High-precision attitude unit with two star trackers (CubeSat)",
+      "subsystem": "adcs",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 2.5,
+      "powerW": 5,
+      "performance": {
+        "value": 0.01,
+        "unit": "deg",
+        "label": "Pointing accuracy"
+      },
+      "trl": 7,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Table 5-1 (integrated units 0.002–5°), Table 5-5 (star trackers)",
+      "costUsd": 1200000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Tables 5-1 and 5-5",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Pointing inside the Table 5-1 range; mass and power are our estimates."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 5-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Table 5-1 gives TRL 7–9; read as TRL 7 for the finest pointing."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $120,000: no public list price; our value, twice the integrated unit."
+        }
+      ]
+    },
+    {
+      "id": "adcs-wheels-smallsat",
+      "name": "Reaction-wheel set with star tracker (small satellite)",
+      "subsystem": "adcs",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 8,
+      "powerW": 20,
+      "performance": {
+        "value": 0.05,
+        "unit": "deg",
+        "label": "Pointing accuracy"
+      },
+      "trl": 9,
+      "fits": [
+        "smallsat"
+      ],
+      "basedOn": "Table 5-3 (larger wheels, about 1.5 kg and up to 24 W each), Table 5-5",
+      "costUsd": 1500000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Tables 5-3 and 5-5",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Four larger wheels plus a star tracker and magnetorquers; our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 5-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Table 5-1 gives TRL 7–9; high-heritage wheels, read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $150,000: no public list price; our value."
+        }
+      ]
+    },
+    {
+      "id": "adcs-agile-smallsat",
+      "name": "High-agility attitude system (small satellite)",
+      "subsystem": "adcs",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 12,
+      "powerW": 40,
+      "performance": {
+        "value": 0.005,
+        "unit": "deg",
+        "label": "Pointing accuracy"
+      },
+      "trl": 7,
+      "fits": [
+        "smallsat"
+      ],
+      "basedOn": "Table 5-1, Table 5-3 (high-torque wheels), Table 5-5",
+      "costUsd": 3000000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Tables 5-1, 5-3 and 5-5",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "High-torque wheels for fast re-pointing; our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 5-1",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Table 5-1 gives TRL 7–9; read as TRL 7."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $300,000: no public list price; our value, twice the small-satellite wheel set."
+        }
+      ]
+    },
+    {
+      "id": "propulsion-none",
+      "name": "No propulsion",
+      "subsystem": "propulsion",
+      "role": "spacecraft",
+      "tier": "basic",
+      "massKg": 0,
+      "powerW": 0,
+      "performance": {
+        "value": 0,
+        "unit": "Ns",
+        "label": "Total impulse"
+      },
+      "trl": 9,
+      "fits": [
+        "6U",
+        "12U",
+        "smallsat"
+      ],
+      "basedOn": "CubeSat 101 (most CubeSats fly without propulsion)",
+      "costUsd": 0,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "game-design",
+          "source": "CubeSat 101",
+          "note": "Choosing no propulsion: no mass, power or impulse. The spacecraft cannot raise its orbit or deorbit itself.",
+          "url": "https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf",
+          "checked": "2026-11-14"
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "game-design",
+          "source": "Our choice",
+          "note": "Nothing to develop, so no TRL penalty."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $0: no hardware."
+        }
+      ]
+    },
+    {
+      "id": "propulsion-cold-gas",
+      "name": "Cold-gas thruster module",
+      "subsystem": "propulsion",
+      "role": "spacecraft",
+      "tier": "basic",
+      "massKg": 0.5,
+      "powerW": 2,
+      "performance": {
+        "value": 40,
+        "unit": "Ns",
+        "label": "Total impulse"
+      },
+      "trl": 7,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Table 4-5 (cold gas, e.g. 0.35 kg, 40 N·s, under 2 W)",
+      "costUsd": 500000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-5",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Impulse and power from a Table 4-5 row; mass rounded up for tank and valves."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-5",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Mix of PMI E and F products; read as TRL 7."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.satcatalog.com/component/starling-1u/",
+          "checked": "2026-11-14",
+          "note": "Anchor $50,000: satcatalog average cost for a 1U cold-gas system (FY2021)."
+        }
+      ]
+    },
+    {
+      "id": "propulsion-green-mono",
+      "name": "Green monopropellant module (1U)",
+      "subsystem": "propulsion",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 1.5,
+      "powerW": 20,
+      "performance": {
+        "value": 570,
+        "unit": "Ns",
+        "label": "Total impulse"
+      },
+      "trl": 6,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Table 4-3 (1U green monopropellant, 0.5 N, 220 s, 1.5 kg, 20 W)",
+      "costUsd": 1000000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Values from a 1U row of Table 4-3; 20 W is the catalyst-bed preheat."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "CubeSat-size modules are PMI D or E (TRL 4–6); read as TRL 6."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $100,000: no public list price; our value, twice the cold-gas anchor."
+        }
+      ]
+    },
+    {
+      "id": "propulsion-hydrazine-smallsat",
+      "name": "Hydrazine thruster system (small satellite)",
+      "subsystem": "propulsion",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 15,
+      "powerW": 15,
+      "performance": {
+        "value": 20000,
+        "unit": "Ns",
+        "label": "Total impulse"
+      },
+      "trl": 9,
+      "fits": [
+        "smallsat"
+      ],
+      "basedOn": "Table 4-2 (1 N hydrazine thrusters, 200–224 s, under 16 W)",
+      "costUsd": 3000000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Four 1 N thrusters with tank and about 9 kg of hydrazine; our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-2",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "PMI F with numerous flights; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $300,000: no public list price; our value."
+        }
+      ]
+    },
+    {
+      "id": "propulsion-feep-cubesat",
+      "name": "Field-emission electric thruster (CubeSat)",
+      "subsystem": "propulsion",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 0.9,
+      "powerW": 40,
+      "performance": {
+        "value": 5000,
+        "unit": "Ns",
+        "label": "Total impulse"
+      },
+      "trl": 7,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Table 4-8 (indium FEEP, 0.9 kg, 40 W, PMI F)",
+      "costUsd": 1500000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-8",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Mass and power from Table 4-8; total impulse is our estimate."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-8",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "PMI F (flown); read as TRL 7."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $150,000: no public list price; our value."
+        }
+      ]
+    },
+    {
+      "id": "propulsion-hall-smallsat",
+      "name": "Hall-effect thruster system (small satellite)",
+      "subsystem": "propulsion",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 8,
+      "powerW": 250,
+      "performance": {
+        "value": 50000,
+        "unit": "Ns",
+        "label": "Total impulse"
+      },
+      "trl": 8,
+      "fits": [
+        "smallsat"
+      ],
+      "basedOn": "Table 4-10 (200 W class Hall thruster, 1.2 kg, 1,390 s, PMI F)",
+      "costUsd": 5000000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-10",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Thruster from Table 4-10; mass of power unit, tank and xenon and the total impulse are our estimates."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-10",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "PMI F (flown); read as TRL 8."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $500,000: no public list price; our value."
+        }
+      ]
+    },
+    {
+      "id": "propulsion-iodine-rf",
+      "name": "Iodine RF thruster (prototype)",
+      "subsystem": "propulsion",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 3,
+      "powerW": 150,
+      "performance": {
+        "value": 10000,
+        "unit": "Ns",
+        "label": "Total impulse"
+      },
+      "trl": 4,
+      "fits": [
+        "12U",
+        "smallsat"
+      ],
+      "basedOn": "Table 4-12 (iodine RF thruster, 150 W, PMI D)",
+      "costUsd": 2000000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-12",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Power from Table 4-12; mass and total impulse are our estimates."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 4-12",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "PMI D (in development, TRL 4–5); read as TRL 4 (locked on easy)."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $200,000: no public list price; our value."
+        }
+      ]
+    },
+    {
+      "id": "comms-uhf",
+      "name": "UHF radio with deployable antenna",
+      "subsystem": "comms",
+      "role": "ground",
+      "tier": "basic",
+      "massKg": 0.18,
+      "powerW": 5,
+      "performance": {
+        "value": 9.6,
+        "unit": "kbps",
+        "label": "Downlink data rate"
+      },
+      "trl": 9,
+      "fits": [
+        "6U",
+        "12U",
+        "smallsat"
+      ],
+      "basedOn": "Table 9-3 (UHF radios, 9.6 kbps, 1 W), Table 9-2 (UHF antennas)",
+      "costUsd": 183000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Tables 9-2 and 9-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Data rate from Table 9-3. Power drawn = transmit power ÷ 0.25 + 1 W (our rule): 1 W → 5 W."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 9-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Flight heritage Y; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/uhf-transceiver-ii/",
+          "checked": "2026-11-14",
+          "note": "Anchor $18,300: EnduroSat UHF Transceiver $7,900 + UHF Antenna 2U $10,400 (lower list price)."
+        }
+      ]
+    },
+    {
+      "id": "comms-sband",
+      "name": "S-band radio with patch antenna",
+      "subsystem": "comms",
+      "role": "ground",
+      "tier": "standard",
+      "massKg": 0.35,
+      "powerW": 5,
+      "performance": {
+        "value": 5000,
+        "unit": "kbps",
+        "label": "Downlink data rate"
+      },
+      "trl": 9,
+      "fits": [
+        "6U",
+        "12U",
+        "smallsat"
+      ],
+      "basedOn": "Table 9-3 (S-band radios, 1 W, a few Mbps), Table 9-2",
+      "costUsd": 219000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Tables 9-2 and 9-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Representative rate inside the S-band rows of Table 9-3. Power drawn = 1 W ÷ 0.25 + 1 W = 5 W (our rule)."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 9-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Flight heritage Y; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/s-band-transceiver/",
+          "checked": "2026-11-14",
+          "note": "Anchor $21,900: EnduroSat S-Band Transceiver $17,500 + S-Band Antenna $4,400."
+        }
+      ]
+    },
+    {
+      "id": "comms-xband-cubesat",
+      "name": "X-band transmitter with patch antenna (CubeSat)",
+      "subsystem": "comms",
+      "role": "ground",
+      "tier": "standard",
+      "massKg": 0.35,
+      "powerW": 9,
+      "performance": {
+        "value": 50000,
+        "unit": "kbps",
+        "label": "Downlink data rate"
+      },
+      "trl": 9,
+      "fits": [
+        "6U",
+        "12U"
+      ],
+      "basedOn": "Table 9-3 (X-band CubeSat transmitters, 50–150 Mbps, 2 W)",
+      "costUsd": 397000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 9-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Rate from a Table 9-3 row. Power drawn = 2 W ÷ 0.25 + 1 W = 9 W (our rule)."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 9-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Flight heritage Y; read as TRL 9."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/x-band-transmitter/",
+          "checked": "2026-11-14",
+          "note": "Anchor $39,700: EnduroSat X-Band Transmitter $34,300 + X-Band Patch Antenna $5,400 (lower list price)."
+        }
+      ]
+    },
+    {
+      "id": "comms-xband-smallsat",
+      "name": "High-rate X-band transmitter (small satellite)",
+      "subsystem": "comms",
+      "role": "ground",
+      "tier": "advanced",
+      "massKg": 1.5,
+      "powerW": 21,
+      "performance": {
+        "value": 300000,
+        "unit": "kbps",
+        "label": "Downlink data rate"
+      },
+      "trl": 8,
+      "fits": [
+        "smallsat"
+      ],
+      "basedOn": "Table 9-3 (X-band up to 350 Mbps); Chapter 9 text (320 Mbps demonstrated)",
+      "costUsd": 2025000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 9-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Rate between the Table 9-3 row and the demonstrated 320 Mbps. Power drawn = 5 W ÷ 0.25 + 1 W = 21 W (our rule)."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Chapter 9",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Rates of this size demonstrated in flight; read as TRL 8."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/x-band-sdr/",
+          "checked": "2026-11-14",
+          "note": "Anchor $202,500: EnduroSat X-Band Software Defined Radio $180,000 + X-Band Patch Antenna $22,500 (upper list price)."
+        }
+      ]
+    },
+    {
+      "id": "comms-ka-band",
+      "name": "K/Ka-band radio",
+      "subsystem": "comms",
+      "role": "ground",
+      "tier": "advanced",
+      "massKg": 0.5,
+      "powerW": 9,
+      "performance": {
+        "value": 1000000,
+        "unit": "kbps",
+        "label": "Downlink data rate"
+      },
+      "trl": 6,
+      "fits": [
+        "12U",
+        "smallsat"
+      ],
+      "basedOn": "Table 9-3 (K-band transmitter, 1,000 Mbps, flight heritage N)",
+      "costUsd": 1130000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 9-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Rate from Table 9-3; mass is our estimate. Power drawn = 2 W ÷ 0.25 + 1 W = 9 W (our rule)."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 9-3",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Flight heritage N; read as TRL 6."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "url": "https://www.endurosat.com/products/k-band-4x4-patch-array/",
+          "checked": "2026-11-14",
+          "note": "Anchor $113,000: EnduroSat K-Band 4×4 Patch Array $13,000 + about $100,000 for the radio (our value)."
+        }
+      ]
+    },
+    {
+      "id": "comms-laser",
+      "name": "Laser communication terminal (CubeSat)",
+      "subsystem": "comms",
+      "role": "ground",
+      "tier": "advanced",
+      "massKg": 1.3,
+      "powerW": 15,
+      "performance": {
+        "value": 1000000,
+        "unit": "kbps",
+        "label": "Downlink data rate"
+      },
+      "trl": 7,
+      "fits": [
+        "12U",
+        "smallsat"
+      ],
+      "basedOn": "Table 9-4 (CubeSat laser terminal, 1,000 Mbps, under 1.33 kg, 15 W, flown 2023)",
+      "costUsd": 2500000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 9-4",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Values from a Table 9-4 row. Needs an optical ground station."
+        },
+        {
+          "fields": [
+            "trl"
+          ],
+          "data_quality": "estimated",
+          "source": "NASA State-of-the-Art of Small Spacecraft Technology 2024, Table 9-4",
+          "url": "https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf",
+          "checked": "2026-11-14",
+          "note": "Demonstrated in orbit (2023); read as TRL 7."
+        },
+        {
+          "fields": [
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Anchor price × integration-and-test factor 10 (costMethod)",
+          "note": "Anchor $250,000: no public list price; our value."
+        }
+      ]
+    }
+  ]
+}
