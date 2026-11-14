@@ -1,12 +1,14 @@
 import { parts, type Subsystem } from "@space-mission/data";
 import { SUBSYSTEMS, formatUsd, type Budget, type BudgetRole, type Mission } from "@space-mission/sim";
-import { useState, type ReactNode } from "react";
+import { lazy, Suspense, useState, type ReactNode } from "react";
 import { useGame } from "../store.ts";
 import { ROLE_LABEL, ROLE_ORDER, ownerOf, useTeam } from "../team.ts";
 import { AdvisorPanel, RequestsPanel, TurnBar, useActiveRoles, type Prefill } from "./Team.tsx";
 import { Term } from "./Glossary.tsx";
 import { Meter } from "./Meter.tsx";
 import { GroundPicker, InstrumentPicker, LauncherPicker, OrbitPicker, PartPicker } from "./Pickers.tsx";
+
+const SpacecraftPreview = lazy(() => import("../scene/SpacecraftPreview.tsx"));
 
 const fmtPct = (x: number) => String(Math.round(x * 10) / 10);
 
@@ -76,7 +78,16 @@ export function RoleTabs({ b, mission }: { b: Budget; mission: Mission }) {
         <OrbitPicker b={b} />
       </>
     ),
-    spacecraft: subsystemsOf("spacecraft").map((s) => <PartPicker key={s} subsystem={s} />),
+    spacecraft: (
+      <>
+        <Suspense fallback={<div className="sc-preview" />}>
+          <SpacecraftPreview />
+        </Suspense>
+        {subsystemsOf("spacecraft").map((s) => (
+          <PartPicker key={s} subsystem={s} />
+        ))}
+      </>
+    ),
     ground: (
       <>
         {subsystemsOf("ground").map((s) => (

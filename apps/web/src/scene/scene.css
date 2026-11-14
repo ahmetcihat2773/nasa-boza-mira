@@ -108,3 +108,23 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
+.sc-preview {
+  position: relative;
+  grid-column: 1 / -1;
+  height: 220px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #05080e;
+}
+.sc-label {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  font: 11px var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  pointer-events: none;
+}

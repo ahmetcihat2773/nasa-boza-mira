@@ -195,12 +195,12 @@ The first web screen (built quickly, outside this list) has a placeholder 2D CSS
   - [x] **T9.2 – Outcome.** PASS: the rocket climbs, the camera pulls back to the curved Earth and the satellite separates into its orbit (hand-off to the T8 orbit view). FAIL: the launch is scrubbed on the pad with a clear message.
   - [x] **T9.3 – Replace the placeholder.** Remove the CSS `LaunchSequence` and its styles from `apps/web/src/App.tsx` and `styles.css`; keep "click to skip".
 
-### [ ] T10 – Spacecraft view
+### [x] T10 – Spacecraft view
 
 - **Owner:** `visuals-developer`
 - **Subtasks:**
-  - [ ] **T10.1 – Bus by size.** A 6U, 12U or small-satellite body that changes with the chosen structure.
-  - [ ] **T10.2 – Parts on the model.** Solar panels (body-mounted or deployable wings), antenna and instrument aperture appear as the parts are chosen.
+  - [x] **T10.1 – Bus by size.** A 6U, 12U or small-satellite body that changes with the chosen structure.
+  - [x] **T10.2 – Parts on the model.** Solar panels (body-mounted or deployable wings), antenna and instrument aperture appear as the parts are chosen.
 
 ---
 
@@ -345,7 +345,7 @@ Plausible values are enough (no research): mark them `estimated` or `game-design
 - **Subtasks:**
   - [x] **T23.1 – README and tech.md:** Node 22.12 or newer; run pnpm as `npx --yes pnpm@10.34.9` (or `pnpm` once corepack works); project structure now has `apps/web`, `apps/api`, `packages/sim`, `packages/data`; API port 8787.
   - [ ] **T23.2 – Decide on corepack:** `npm i -g corepack@latest` (user-level global install) so plain `pnpm` works.
-  - [ ] **T23.3 – First CI run:** push and check the GitHub Actions run on Ubuntu and Windows.
+  - [x] **T23.3 – CI:** dropped by the user (no tests or CI needed). The workflow now runs only when started by hand.
 
 ---
 

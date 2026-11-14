@@ -46,7 +46,7 @@
 | Local API | [Hono](https://hono.dev/) on Node | Tiny HTTP service for SQLite and for running `claude -p`, which the browser cannot do |
 | Database | **SQLite** + Drizzle (`better-sqlite3`) | Saved designs, runs, nickname leaderboard – one file, no Docker |
 | Running | **Local only** – `pnpm dev` starts everything (see section 5) | The submission is a video recorded on one PC |
-| Quality | Vitest (sim), Playwright (main game path), GitHub Actions CI | Main flow tested on every push |
+| Quality | TypeScript type checks; existing Vitest tests kept but not run routinely. No automatic CI: the GitHub Actions workflow runs only when started by hand | The user tries the game and reports bugs (decided 14 November 2026) |
 | AI layer (optional) | "Flight Director" narrating the post-mission report, run with **Claude Code headless mode (`claude -p`)** via the local API | The sim decides outcomes; the LLM only explains them. The game works without it |
 
 **Engines considered:** Godot is viable, but the game is mostly dashboards and forms, so a web stack running locally in the browser wins. Unity WebGL and Bevy are not worth the load times or build friction.

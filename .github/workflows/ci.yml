@@ -1,8 +1,8 @@
 name: CI
 
+# Runs only when started by hand (Actions tab -> CI -> Run workflow): the project does not use automatic CI.
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read

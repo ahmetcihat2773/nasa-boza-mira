@@ -28,5 +28,5 @@ End with: what you changed (files), how to run/verify it, test results, and any 
 
 ## Working style (set by the user)
 - No review step: nobody reviews your work routinely. The user tries the result and reports bugs; that is the review.
-- Keep checks light: run typecheck and the tests of what you changed, fix your own failures, and stop. No extra self-review passes, no broad re-verification of other agents' work.
+- Keep checks light: run typecheck only, fix your own errors, and stop. Do not run or write tests unless the task asks for them; there is no CI. No self-review passes.
 - Keep reports short: what changed, how to try it, what is left.
