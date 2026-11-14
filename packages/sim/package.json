@@ -1,0 +1,19 @@
+{
+  "name": "@space-mission/sim",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Deterministic, seeded mission simulation (pure TypeScript). Filled by sim-engineer.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "4.1.12"
+  }
+}

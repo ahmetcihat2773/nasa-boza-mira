@@ -293,7 +293,7 @@ M1–M3 are built around a **single mission, Wildfire Watch** (Earth orbit only 
 | D7 | Data scripts language | **TypeScript only.** No Python; GMAT is used manually for validation. |
 | D8 | Real satellites (satellite.js) | **Moved to M5 extras**; revisit after the core game is done. |
 | D9 | Player modes | **One PC, hot-seat.** Solo (one player, all four roles) or team (2–4 players on the same screen, one role each). No network multiplayer – Colyseus removed. Shared decisions by voting in turn. |
-| D10 | Development team | **Six Claude Code agents** defined in `.claude/agents/`: `platform-engineer`, `sim-engineer`, `data-curator`, `web-developer`, `visuals-developer`, `reviewer` (read-only). All use the session's model. The main session coordinates: it assigns tasks, has `reviewer` check each result, and reports to the user, who makes the commits. Agents working in parallel use separate git worktrees. |
+| D10 | Development team | **Six Claude Code agents** defined in `.claude/agents/`: `platform-engineer`, `sim-engineer`, `data-curator`, `web-developer`, `visuals-developer`, `reviewer` (read-only). All use the session's model. The main session coordinates: it assigns tasks and reports to the user, who makes the commits. No routine review step for now; `reviewer` is used later, on request. Agents working in parallel use separate git worktrees. |
 
 ## Sources
 

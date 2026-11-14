@@ -1,0 +1,12 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# pnpm 10 runs no dependency install scripts unless listed here.
+# better-sqlite3 needs its install script to fetch the prebuilt SQLite binary for this Node version.
+onlyBuiltDependencies:
+  - better-sqlite3
+
+# esbuild (used by drizzle-kit and Vite) works from its platform package; its postinstall check is not needed.
+ignoredBuiltDependencies:
+  - esbuild

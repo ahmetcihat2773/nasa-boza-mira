@@ -5,7 +5,7 @@ Tasks for the Space Mission Design Game. Each task names who owns it (an agent f
 Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 - Open tasks are split into numbered **subtasks** (T4.1, T4.2, …). Do them in order unless a subtask says otherwise, and tick each one when it is finished. Each subtask is small enough to review on its own.
-- A task is done when all its subtasks are ticked, its "Done when" list holds and `reviewer` has checked the result. The user makes the commits.
+- A task is done when all its subtasks are ticked and its "Done when" list holds. There is no routine review step for now: review and debugging happen later, on request. The user makes the commits.
 - T1 and T2 were done before the monorepo exists, so they use `data/` at the repo root. T5 moves it to `packages/data`.
 - After every edit of `data/launchers.curation.json`, rebuild with `node --experimental-strip-types scripts/fetch-launchers.ts --offline`. It does not call the API, so the Launch Library 2 values stay as they were fetched.
 - This list covers the launcher data, the platform and data parts of M0, and the first M1 data files. The other M0 work in [tech.md](tech.md) section 7 (`sim` API, app shell, style guide) and the M1 mission card have no tasks yet.
@@ -69,23 +69,23 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 ## Foundation (M0)
 
-### [ ] T4 – Create the monorepo foundation
+### [x] T4 – Create the monorepo foundation
 
 - **Owner:** `platform-engineer`
 - **Why:** No game code can be written until the monorepo exists. This is the platform part of milestone M0 in [tech.md](tech.md) section 7.
 - **Input:** [tech.md](tech.md) sections 2, 5 and 7.
 - **Subtasks:**
-  - [ ] **T4.1 – Workspace root.** Root `package.json`, `pnpm-workspace.yaml` (`apps/*`, `packages/*`) and the required Node version (22.6 or newer, as the data script needs). *Output:* `pnpm install` runs cleanly.
-  - [ ] **T4.2 – Turborepo.** `turbo.json` with the tasks `dev`, `build`, `test`, `typecheck` and `lint`, and matching root scripts. *Output:* `pnpm test` and `pnpm typecheck` run across all packages (with nothing to do yet).
-  - [ ] **T4.3 – Shared TypeScript config.** One strict base `tsconfig` that every package extends.
-  - [ ] **T4.4 – Linting and formatting.** ESLint and Prettier at the root, with `pnpm lint` and `pnpm format`. The existing files (`scripts/`, `data/`, the Markdown docs) must pass or be explicitly excluded.
-  - [ ] **T4.5 – Line endings.** A `.gitattributes` that keeps `*.json` and `*.ts` files on LF, so generated data files do not change between Windows and other machines. *Check:* an `--offline` rebuild of the launcher data still shows no `git diff`.
-  - [ ] **T4.6 – Empty package shells.** `packages/sim` and `packages/data`, each with `package.json`, `tsconfig`, Vitest and one placeholder test. Their owners fill them later (T5, and the `sim` tasks to come). Do not create `apps/web`: `web-developer` owns it.
-  - [ ] **T4.7 – API skeleton.** `apps/api` with Hono on Node, a `GET /health` route and its test.
-  - [ ] **T4.8 – SQLite.** Drizzle with `better-sqlite3` in `apps/api`: where the database file lives (already ignored by `.gitignore`), a first placeholder table with its migration, and a test that runs against an in-memory database. *Check:* `better-sqlite3` installs on Windows without extra build tools; if it does not, report it before going further.
-  - [ ] **T4.9 – One command to run.** `pnpm dev` starts the API through Turborepo (and will start the web app once it exists).
-  - [ ] **T4.10 – CI.** A GitHub Actions workflow that runs install, typecheck, lint and tests on every push.
-  - [ ] **T4.11 – Report.** List every new dependency with its licence (for `data-curator` to add to CREDITS.md), and say whether the "Getting started" steps in README.md are still correct.
+  - [x] **T4.1 – Workspace root.** Root `package.json`, `pnpm-workspace.yaml` (`apps/*`, `packages/*`) and the required Node version (22.6 or newer, as the data script needs). *Output:* `pnpm install` runs cleanly.
+  - [x] **T4.2 – Turborepo.** `turbo.json` with the tasks `dev`, `build`, `test`, `typecheck` and `lint`, and matching root scripts. *Output:* `pnpm test` and `pnpm typecheck` run across all packages (with nothing to do yet).
+  - [x] **T4.3 – Shared TypeScript config.** One strict base `tsconfig` that every package extends.
+  - [x] **T4.4 – Linting and formatting.** ESLint and Prettier at the root, with `pnpm lint` and `pnpm format`. The existing files (`scripts/`, `data/`, the Markdown docs) must pass or be explicitly excluded.
+  - [x] **T4.5 – Line endings.** A `.gitattributes` that keeps `*.json` and `*.ts` files on LF, so generated data files do not change between Windows and other machines. *Check:* an `--offline` rebuild of the launcher data still shows no `git diff`.
+  - [x] **T4.6 – Empty package shells.** `packages/sim` and `packages/data`, each with `package.json`, `tsconfig`, Vitest and one placeholder test. Their owners fill them later (T5, and the `sim` tasks to come). Do not create `apps/web`: `web-developer` owns it.
+  - [x] **T4.7 – API skeleton.** `apps/api` with Hono on Node, a `GET /health` route and its test.
+  - [x] **T4.8 – SQLite.** Drizzle with `better-sqlite3` in `apps/api`: where the database file lives (already ignored by `.gitignore`), a first placeholder table with its migration, and a test that runs against an in-memory database. *Check:* `better-sqlite3` installs on Windows without extra build tools; if it does not, report it before going further.
+  - [x] **T4.9 – One command to run.** `pnpm dev` starts the API through Turborepo (and will start the web app once it exists).
+  - [x] **T4.10 – CI.** A GitHub Actions workflow that runs install, typecheck, lint and tests on every push.
+  - [x] **T4.11 – Report.** List every new dependency with its licence (for `data-curator` to add to CREDITS.md), and say whether the "Getting started" steps in README.md are still correct.
 - **Done when:**
   - `pnpm install` and `pnpm dev` work from a clean clone and start the API (and the web app, once `web-developer` adds the app shell).
   - CI passes on push.

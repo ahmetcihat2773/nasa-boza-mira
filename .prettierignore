@@ -1,0 +1,14 @@
+# Generated or curated data: written by scripts, not by hand.
+data/
+**/drizzle/meta/
+pnpm-lock.yaml
+
+# Existing files kept in their current style (scripts/ moves into packages/data in T5).
+scripts/
+*.md
+.claude/
+
+# Build output
+**/dist/
+**/coverage/
+**/.turbo/

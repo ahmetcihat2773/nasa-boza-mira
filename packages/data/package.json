@@ -1,0 +1,19 @@
+{
+  "name": "@space-mission/data",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Zod-validated game data (launchers, parts, orbits, missions). Filled by data-curator in T5.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "4.1.12"
+  }
+}
