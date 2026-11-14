@@ -16,7 +16,8 @@ Items marked *(unverified)* could not be confirmed during research and should be
 - `packages/data` – Zod-validated JSON game data (parts, launchers, orbits, scenarios, events, real missions).
 - `apps/web` – React + Vite + React Three Fiber + Tailwind/shadcn/ui + visx.
 - `apps/server` – Colyseus authoritative multiplayer server.
-- Storage – Postgres (Neon or Supabase) + Drizzle ORM.
+- Storage – Supabase (Postgres) + Drizzle ORM, run locally via the Supabase CLI.
+- Runs **locally** with one command; the hackathon submission is a recorded video.
 - `scripts/` – Python, run **offline** to convert real NASA and industry data into JSON.
 
 **Top 5 time-saving resources:**
@@ -24,7 +25,7 @@ Items marked *(unverified)* could not be confirmed during research and should be
 1. **NASA State-of-the-Art of Small Spacecraft Technology (2024)** – real specs for every subsystem, ready to become the parts catalogue. [Landing page](https://www.nasa.gov/smallsat-institute/sst-soa) · [PDF](https://www.nasa.gov/wp-content/uploads/2025/02/soa-2024.pdf)
 2. **Launch Library 2 API (The Space Devs)** – launch vehicles with `leo_capacity`, `gto_capacity`, `launch_cost` and launch counts, as JSON. [Example record](https://ll.thespacedevs.com/2.2.0/config/launcher/324/?format=api)
 3. **NASA LSP Performance website** – official payload mass vs C3 (launch energy) curves for deep-space launch checks. [elvperf.ksc.nasa.gov](https://elvperf.ksc.nasa.gov/)
-4. **astronomy-engine** (MIT, runs in the browser) – real planet positions for launch windows and the orbit view. [npm](https://npmjs.com/package/astronomy-engine)
+4. **Orrery** (MIT, TypeScript) – ready-made Kepler ephemeris, Lambert solver, precomputed porkchop grids and 113 real missions (see section 4). [GitHub](https://github.com/chipi/orrery)
 5. **NASA Eyes on the Solar System, embeddable** – add `?embed=true` to an Eyes URL to show a real mission in an iframe (e.g., for the "your design resembles mission X" moment). [How-to](https://www.vaticanobservatory.org/sacred-space-astronomy/nasas-web-based-eyes-apps-are-great-educational-tools/) · [Deep-link examples](https://science.nasa.gov/eyes/museums)
 
 ---
@@ -36,16 +37,16 @@ Items marked *(unverified)* could not be confirmed during research and should be
 | Repo | pnpm workspaces + Turborepo | Shared types and simulation across client and server |
 | Language | TypeScript (strict) + Zod | One language everywhere; JSON game data validated at load |
 | Simulation | `packages/sim`: pure TS, seeded RNG, Vitest | Identical results on client and server; replayable runs; tested balance |
-| Orbital math | [Orrery](https://github.com/chipi/orrery)'s Kepler, Lambert and porkchop modules (vendored, MIT) + astronomy-engine; our own small additions for Earth orbits (J2, drag/decay) | Real computation enables a sandbox with custom orbits; validated against GMAT |
+| Orbital math | [Orrery](https://github.com/chipi/orrery)'s Kepler, Lambert and porkchop modules (vendored, MIT); our own small additions for Earth orbits (J2, drag/decay) | One ephemeris source keeps planet positions and porkchop grids consistent; real computation enables a sandbox with custom orbits; validated against GMAT |
 | Real satellites (optional) | satellite.js + CelesTrak TLE data | Show the ISS and real satellites in the LEO scenario |
 | Frontend | React + Vite, Zustand, Tailwind + shadcn/ui, Framer Motion | Fast way to a polished interface |
 | Charts | visx (D3-based) | Custom mission-control gauges |
 | 3D | React Three Fiber + drei + postprocessing | Orbits, launch sequence, spacecraft model |
 | Multiplayer | Colyseus | Authoritative rooms, delta state sync, reconnection, `maxClients = 4`; server runs the sim so competitive mode and leaderboards can't be cheated |
-| Database | Postgres (Neon / Supabase) + Drizzle | Saved designs, runs, leaderboards |
-| Hosting | Web: Vercel or Cloudflare Pages · Server: Fly.io / Railway (always-on) | Avoid cold starts from sleeping free tiers |
+| Database | Supabase (Postgres) + Drizzle · **local via Supabase CLI** | Saved designs, runs, nickname leaderboards; same code locally and online |
+| Running | **Local first** (one command starts everything, see section 5) · optional 24-hour online deploy: web on Vercel, server on Railway / Fly.io, Supabase cloud | Submission is a video, so the demo is recorded locally |
 | Quality | Vitest (sim), Playwright (main game path), GitHub Actions CI | Main flow tested on every push |
-| AI layer (optional) | LLM "Flight Director" narrating the post-mission report from the sim's cause chain | The sim decides outcomes; the LLM only explains them |
+| AI layer (optional) | "Flight Director" narrating the post-mission report, run with **Claude Code headless mode (`claude -p`)** on the server | The sim decides outcomes; the LLM only explains them. The game works without it |
 
 **Engines considered:** Godot is viable, but the game is mostly dashboards and forms and must open instantly from a link, so a web stack wins. Unity WebGL and Bevy are not worth the load times or build friction.
 
@@ -56,12 +57,12 @@ Items marked *(unverified)* could not be confirmed during research and should be
 | Game feature | Existing resource | Integration | Licence | What we build |
 |---|---|---|---|---|
 | Parts catalogue (power, batteries, radios, OBC, ADCS, propulsion, structure) | [NASA SST-SOA 2024](https://www.nasa.gov/smallsat-institute/sst-soa) + NASA CubeSat 101 (challenge resource) | Extract representative values into `parts.json` | US Government work | ~30–50 parts in 3 tiers (basic / standard / advanced) |
+| Scientific instruments (mass, power, data rate, science value) | Instruments of real flown missions: NASA NSSDCA experiment entries and NASA mission pages (e.g., cameras, spectrometers, magnetometers, radar) | Curate ~15–25 representative instruments into `instruments.json`, each tagged with the objectives it serves | US Government work (facts) | Science value per objective, locking rules |
 | Launch vehicles | [Launch Library 2](https://ll.thespacedevs.com/2.2.0/config/launcher/75/?format=api) | Python script → `launchers.json` (handle null capacities) | Check LL2 terms *(unverified)* | ~10 curated vehicles + rideshare option |
 | Deep-space launch capability | [NASA LSP Performance](https://elvperf.ksc.nasa.gov/) | Copy several mass-vs-C3 points per vehicle | US Government | Interpolation in `sim` |
-| Orbits and transfers | GMAT (challenge resource), astropy | **Offline**: generate delta-v and transfer times per destination → `orbits.json` | Apache-2.0 / BSD | Small TS Kepler + Hohmann functions for sandbox |
-| Planet positions / launch windows | [astronomy-engine](https://npmjs.com/package/astronomy-engine) | npm library in the browser | MIT | Window → delta-v penalty formula |
+| Earth orbits (LEO, SSO, GEO, Moon) | GMAT (challenge resource), astropy | **Offline**: generate delta-v, periods and eclipse fractions → `orbits.json`; GMAT also validates Orrery's interplanetary values | Apache-2.0 / BSD | Orbit option table |
 | Real satellites in LEO view | satellite.js + CelesTrak TLEs | npm + fetch (cache locally) | MIT / free | Optional ISS fly-by |
-| Power, eclipse, decay | Standard formulas (solar flux ∝ 1/r², eclipse geometry, decay table by altitude) | Implemented in `sim` | — | ~150 lines TS + tests |
+| Power, eclipse, decay | Standard formulas (solar flux ∝ 1/r², eclipse geometry, decay table by altitude) | Implemented in `sim` | — | Formulas + tests |
 | Comms and ground segment | [DSN Link Design Handbook 810-005](https://deepspace.jpl.nasa.gov/dsndocs/810-005/) | Simplified link budget (Friis) + ground contact minutes/day | US Government | Data backlog model |
 | Cost | [Aerospace SSCM19 paper](https://aerospace.org/sites/default/files/2020-05/SSCM19%20paper.pdf), [NASA cost models overview](https://www.nasa.gov/sites/default/files/atoms/files/saing_nasa_and_smallsat_cost_estimation_overview_and_model_tools_s3vi_webinar_series_10_jun_2020.pdf) | Simplify published mass-based cost relationships | Paper public; model tool restricted | Cost formula per subsystem |
 | Interplanetary transfers, launch windows | [Orrery](https://github.com/chipi/orrery) Lambert solver, Kepler ephemeris, porkchop grids | Copy selected modules into `packages/sim/vendor/orrery/` (see section 4) | MIT | Wrappers + tests |
@@ -70,6 +71,7 @@ Items marked *(unverified)* could not be confirmed during research and should be
 | Mission visualisation | [NASA Eyes embed](https://science.nasa.gov/eyes/museums) | iframe with `?embed=true&locked=true` | NASA | Pick deep link per scenario |
 | Multiplayer rooms | [Colyseus](https://docs.colyseus.io/) | `npm create colyseus-app@latest` | MIT | Room schema, roles, intents |
 | Game phases and roles | JPL CML paper, NASA MDL, "Design and Develop Science Missions" (challenge resources) | Structure for game flow and explanations | — | Phase screens and explanation texts |
+| Tutorials, tooltips, glossary | NASA/JPL "Basics of Space Flight" *(check current URL)*, NASA CubeSat 101, Orrery's glossary pattern | Link as "learn more"; write our own short explanations | US Government work | Plain-language texts for every resource and decision |
 
 ### Too heavy to use live (use offline or cite)
 
@@ -162,10 +164,13 @@ None of these projects combines **mission design + resource trade-offs + team ro
 ## 5. Architecture
 
 ```
-scripts/ (Python, offline)          packages/data  (Zod-validated JSON)
-  LL2 API → launchers.json    ──►     parts, launchers, orbits,
-  GMAT/astropy → orbits.json          scenarios, events, missions
+scripts/ (offline)                  packages/data  (Zod-validated JSON)
+  LL2 API → launchers.json    ──►     parts, instruments, launchers,
+  GMAT/astropy → orbits.json          orbits, porkchops, scenarios,
+  Orrery → missions + porkchops       events, missions
   SST-SOA → parts.json (manual)             │
+                                    packages/sim/vendor/orrery (MIT physics)
+                                            │
                                             ▼
 apps/web (React, R3F, visx) ◄── packages/sim (deterministic, seeded) ──► apps/server (Colyseus)
   single-player runs sim locally            ▲                              │
@@ -175,6 +180,33 @@ apps/web (React, R3F, visx) ◄── packages/sim (deterministic, seeded) ─�
 ```
 
 - Data is generated at build time, so the running game never depends on external APIs.
+
+### Running locally (primary)
+
+The hackathon submission is a **video**, so the game is built to run fully on one laptop:
+
+```
+pnpm install
+supabase start        # local Supabase (Postgres) in Docker
+pnpm dev              # web (Vite) + Colyseus server + sim, in parallel via Turborepo
+```
+
+- **Requirements:** Node, pnpm, Docker (for Supabase CLI), and optionally the Claude Code CLI for the Flight Director.
+- **Team mode on video:** open 4 browser windows side by side, or let 4 people on the same Wi-Fi join via the laptop's local IP.
+- **Config:** one `.env` switches between local Supabase and Supabase cloud; no code changes.
+- **No login:** players pick a **nickname**; no personal data is stored.
+
+### Online (optional, ~24 hours)
+
+If we want a public link during judging: web → Vercel, Colyseus → Railway / Fly.io, database → Supabase cloud free tier. Cost for one day is negligible. Shut everything down afterwards; the GitHub repo and video remain the permanent deliverables.
+
+### AI Flight Director (`claude -p`)
+
+- After a run, the server sends the sim's **result + cause chain (JSON)** to `claude -p` and gets back a short, plain-language debrief.
+- The sim result is shown **immediately**; the narration appears when ready (it takes a few seconds).
+- **Fallback:** if the Claude CLI is not installed or fails, a template-based debrief is shown from the same cause chain. The open-source game must work without it.
+- Run it with no tools enabled and a fixed prompt file, so it only writes text.
+- Online: the server host must have the Claude CLI installed and authenticated; otherwise leave it local-only.
 - **Single-player** runs the sim in the browser (works offline).
 - **Team mode**: Colyseus room; each role edits only its part of the design; the server validates intents and broadcasts state.
 - **Competitive mode**: two rooms, same scenario, same seed.
@@ -184,7 +216,7 @@ apps/web (React, R3F, visx) ◄── packages/sim (deterministic, seeded) ─�
 ## 6. What we build ourselves
 
 - `sim`: budgets, validation, events, scoring, cause chain
-- Curating `parts.json`, `launchers.json`, `orbits.json`, `missions.json`
+- Curating `parts.json`, `instruments.json`, `launchers.json`, `orbits.json`, `missions.json`
 - Mission builder UI + live deltas + dashboard
 - Colyseus room: roles, intents, validation
 - 3D orbit view + launch sequence
@@ -203,7 +235,7 @@ apps/web (React, R3F, visx) ◄── packages/sim (deterministic, seeded) ─�
 | **M2 – Simulation & feedback** | Events, scoring, cause chains, tests | Report screen, tutorial | Mission matcher | Launch animation, Eyes embed |
 | **M3 – Team play** | Role-based validation | Lobby, role UI | Colyseus rooms + roles | Presence indicators |
 | **M4 – Content & balance** | Scenarios, difficulty levels, sandbox | Share / compare designs | Postgres leaderboard | Sound, polish |
-| **M5 – Extras** | Competitive mode | Accessibility, mobile | Backup static deploy | AI Flight Director (optional) |
+| **M5 – Extras** | Competitive mode | Accessibility, mobile | Optional 24-hour online deploy | AI Flight Director (`claude -p`) + template fallback |
 | **M6 – Presentation** | GMAT validation slide | Project page | CREDITS + data sources | Demo video + slides |
 
 ---
@@ -240,9 +272,19 @@ apps/web (React, R3F, visx) ◄── packages/sim (deterministic, seeded) ─�
 - [x] `CREDITS.md` created – keep it updated as assets, datasets and libraries are added
 - [ ] "Data sources" section in README and on the project page
 - [ ] Launch Library 2 terms checked and The Space Devs credited *(unverified)*
-- [ ] MIT credits for astronomy-engine, Colyseus, satellite.js
+- [ ] MIT credits for Orrery, Colyseus, satellite.js
 
 ---
+
+## 10. Decisions
+
+| # | Topic | Decision |
+|---|---|---|
+| D1 | Hosting | **Local first.** The submission is a video. An online deploy is optional and runs for about 24 hours only, so cost is negligible. |
+| D2 | Leaderboard identity | **Nicknames only**, no login and no personal data. |
+| D3 | Game language | **English.** |
+| D4 | AI Flight Director | **Claude Code headless mode (`claude -p`)**, with a template-based fallback so the game works without it. |
+| D5 | Database | **Supabase**, run locally with the Supabase CLI (Docker); Supabase cloud only for the optional online deploy. |
 
 ## Sources
 
@@ -261,7 +303,6 @@ apps/web (React, R3F, visx) ◄── packages/sim (deterministic, seeded) ─�
 [Satellite kit](https://science.nasa.gov/3d-resources/satellite-kit/) ·
 [Eyes embed how-to](https://www.vaticanobservatory.org/sacred-space-astronomy/nasas-web-based-eyes-apps-are-great-educational-tools/) ·
 [Eyes deep links](https://science.nasa.gov/eyes/museums) ·
-[astronomy-engine](https://npmjs.com/package/astronomy-engine) ·
 [Colyseus docs](https://docs.colyseus.io/) ·
 [Judging guide](https://www.spaceappschallenge.org/resources/judging-awards-guide) ·
 [Submission guide](https://www.spaceappschallenge.org/resources/project-submission-guide/) ·
@@ -269,6 +310,6 @@ apps/web (React, R3F, visx) ◄── packages/sim (deterministic, seeded) ─�
 [Psyche game](https://psyche.ssl.berkeley.edu/?p=13715) ·
 [Psyche Simulator](https://psyche.asu.edu/get-involved/capstone-projects/capstone-projects-tungsten-class/web-based-game-psyche-simulator-asu) ·
 [Telescope game](https://science.nasa.gov/?p=367433) ·
-[Orrery](https://awesome.ecosyste.ms/projects/github.com%2Fchipi%2Forrery) ·
+[Orrery](https://github.com/chipi/orrery) ·
 [The Oregon Trajectory](https://2015.spaceappschallenge.org/project/the-oregon-trajectory/) ·
 [Start to Finish NASA Mission](https://2015.spaceappschallenge.org/project/start-to-finish-nasa-mission)
