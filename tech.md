@@ -57,17 +57,18 @@
 |---|---|---|---|---|
 | Parts catalogue (power, batteries, radios, OBC, ADCS, propulsion, structure) | [NASA SST-SOA 2024](https://www.nasa.gov/smallsat-institute/sst-soa) + [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf) (challenge resource) | Extract representative values into `parts.json` | US Government work | ~30–50 parts in 3 tiers (basic / standard / advanced) |
 | Scientific instruments (mass, power, data rate, science value) | Instruments of real flown missions: NASA NSSDCA experiment entries and NASA mission pages (e.g., cameras, spectrometers, magnetometers, radar) | Curate ~15–25 representative instruments into `instruments.json`, each tagged with the objectives it serves | US Government work (facts) | Science value per objective, locking rules |
-| Launch vehicles | [Launch Library 2](https://ll.thespacedevs.com/2.2.0/config/launcher/75/?format=api) | Script → `launchers.json` (handle null capacities). Free tier: 15 requests/hour per IP, so fetch once and commit the JSON | Free access; formal attribution terms not published – credit The Space Devs | ~10 curated vehicles + rideshare option |
-| Deep-space launch capability | [NASA LSP Performance](https://elvperf.ksc.nasa.gov/) | Copy several mass-vs-C3 points per vehicle | US Government | Interpolation in `sim` |
+| Launch vehicles | [Launch Library 2](https://ll.thespacedevs.com/2.2.0/config/launcher/75/?format=api) | Script → `launchers.json` (handle null capacities). Free tier: 15 requests/hour per IP, so fetch once and commit the JSON | Free access; formal attribution terms not published – credit The Space Devs | ~10 curated vehicles + rideshare option. **Open:** LL2 has no rideshare prices – `data-curator` must find a citable source (e.g., a launch provider's published rideshare price list) |
+| Deep-space launch capability | [NASA LSP Performance](https://elvperf.ksc.nasa.gov/) | **M4 (deep-space missions only):** copy several mass-vs-C3 points per vehicle | US Government | Interpolation in `sim` |
 | Earth orbits (LEO, SSO, GEO, Moon) | Standard orbital formulas; GMAT (challenge resource) for validation | **Offline** TS script computes delta-v, periods and eclipse fractions → `orbits.json`; selected values cross-checked manually in GMAT (also Orrery's interplanetary values) | GMAT: Apache-2.0 | Orbit option table |
 | Real satellites in LEO view | satellite.js + CelesTrak TLEs | npm + fetch (cache locally) | MIT / free | ISS fly-by (M5 extra) |
 | Power, eclipse, decay | Standard formulas (solar flux ∝ 1/r², eclipse geometry, decay table by altitude) | Implemented in `sim` | — | Formulas + tests |
-| Comms and ground segment | [DSN Link Design Handbook 810-005](https://deepspace.jpl.nasa.gov/dsndocs/810-005/) | Simplified link budget (Friis) + ground contact minutes/day | US Government | Data backlog model |
+| Comms and ground segment | NASA SST-SOA 2024 communications chapter (radios, data rates, ground networks); [DSN Link Design Handbook 810-005](https://deepspace.jpl.nasa.gov/dsndocs/810-005/) for deep-space missions in M4 | Simplified link budget (Friis) + ground contact minutes/day by orbit and number of stations | US Government | Data backlog model |
+| Revisit / coverage (R1) | Standard geometry: swath width from instrument field of view and altitude; revisit from swath, orbit and target latitude | Implemented in `sim` | — | Formulas + tests |
 | Cost | [Aerospace SSCM19 paper](https://aerospace.org/sites/default/files/2020-05/SSCM19%20paper.pdf), [NASA cost models overview](https://www.nasa.gov/sites/default/files/atoms/files/saing_nasa_and_smallsat_cost_estimation_overview_and_model_tools_s3vi_webinar_series_10_jun_2020.pdf) | Simplify published mass-based cost relationships | Paper public; model tool restricted | Cost formula per subsystem |
-| Interplanetary transfers, launch windows | [Orrery](https://github.com/chipi/orrery) Lambert solver, Kepler ephemeris, porkchop grids | Copy selected modules into `packages/sim/vendor/orrery/` (see section 4) | MIT | Wrappers + tests |
-| Real-mission matching | [Orrery](https://github.com/chipi/orrery) mission data (113 missions); NASA NSSDCA; NASA telescope learning game (idea) | Import script → `missions.json` | MIT (facts only) | Nearest-neighbour matcher |
+| Interplanetary transfers, launch windows | [Orrery](https://github.com/chipi/orrery) Lambert solver, Kepler ephemeris, porkchop grids | **M4 (Lunar / Mars missions):** copy selected modules into `packages/sim/vendor/orrery/` (see section 4). Not needed for Wildfire Watch | MIT | Wrappers + tests |
+| Real-mission matching | [Orrery](https://github.com/chipi/orrery) data: 113 missions plus Earth-observation entries useful for Wildfire Watch (Landsat, Sentinel, GOES, Planet Labs); NASA NSSDCA; NASA telescope learning game (idea) | Import script → `missions.json` | MIT (facts only) | Nearest-neighbour matcher |
 | 3D models and textures | [NASA 3D Resources](https://github.com/nasa/NASA-3D-Resources), [Satellite kit](https://science.nasa.gov/3d-resources/satellite-kit/) | GLB → React Three Fiber | NASA media guidelines + per-asset credit line ([example](https://nasa3d.arc.nasa.gov/detail/saturn-v)) | Scene, launch animation |
-| Mission visualisation | [NASA Eyes embed](https://science.nasa.gov/eyes/museums) | iframe with `?embed=true&locked=true` | NASA | Pick deep link per scenario |
+| Mission visualisation | [NASA Eyes embed](https://science.nasa.gov/eyes/museums) | **Optional, needs internet:** link or iframe with `?embed=true&locked=true`; the game must work without it | NASA | Pick deep link per mission |
 | Game phases and roles | JPL CML paper, NASA MDL, "Design and Develop Science Missions" (challenge resources) | Structure for game flow and explanations | — | Phase screens and explanation texts |
 | Tutorials, tooltips, glossary | [NASA/JPL "Basics of Space Flight"](https://science.nasa.gov/learn/basics-of-space-flight), [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf), Orrery's glossary pattern | Link as "learn more"; write our own short explanations | US Government work | Plain-language texts for every resource and decision |
 
@@ -228,10 +229,10 @@ M1–M3 are built around a **single mission, Wildfire Watch** (Earth orbit only 
 | Milestone | Sim | Web | Data & Server | Visuals |
 |---|---|---|---|---|
 | **M0 – Foundation** | `sim` API, Zod schemas | App shell | Monorepo, CI, local API skeleton + SQLite | Style guide |
-| **M1 – Single-player loop** | Budgets, validation, Kepler/Hohmann | Builder + dashboard | LL2 script, SST-SOA parts, LSP C3 points | R3F scene with NASA GLBs |
-| **M2 – Simulation & feedback** | Events, scoring, cause chains, tests | Report screen, tutorial | Mission matcher | Launch animation, Eyes embed |
-| **M3 – Team play (hot-seat)** | Role-based validation | Player setup, role turns, voting UI | Save runs per team | Turn / role indicators |
-| **M4 – Content & balance** | More missions (Lunar, Mars – uses Orrery interplanetary modules), difficulty levels, sandbox | Share / compare designs | SQLite leaderboard (nicknames) | Sound, polish |
+| **M1 – Single-player loop** | Budgets, R1–R5 validation, Earth-orbit formulas (period, eclipse, decay, revisit, ground contact), TRL and development time | Builder + dashboard | LL2 script + rideshare prices, SST-SOA parts with TRL, instruments, Wildfire Watch mission card | R3F scene with NASA GLBs |
+| **M2 – Simulation & feedback** | Events, scoring, cause chains, tests | Report screen, tutorial | Mission matcher (Earth-observation missions) | Launch animation; optional NASA Eyes link |
+| **M3 – Team play (hot-seat)** | Role-based validation, budget allocations, requests and trades | Player setup, role turns, voting UI | Save runs per team | Turn / role indicators |
+| **M4 – Content & balance** | More missions (Lunar, Mars): vendor Orrery's interplanetary modules, NASA LSP C3 data, DSN values; difficulty levels, sandbox | Share / compare designs | SQLite leaderboard (nicknames) | Sound, polish |
 | **M5 – Extras** | — | Accessibility | — | AI Flight Director (`claude -p`) + template fallback; real satellites (ISS) in LEO view |
 | **M6 – Presentation** | GMAT validation slide | Project page | CREDITS + data sources | Demo video + slides |
 
@@ -287,6 +288,7 @@ M1–M3 are built around a **single mission, Wildfire Watch** (Earth orbit only 
 | D7 | Data scripts language | **TypeScript only.** No Python; GMAT is used manually for validation. |
 | D8 | Real satellites (satellite.js) | **Moved to M5 extras**; revisit after the core game is done. |
 | D9 | Player modes | **One PC, hot-seat.** Solo (one player, all four roles) or team (2–4 players on the same screen, one role each). No network multiplayer – Colyseus removed. Shared decisions by voting in turn. |
+| D10 | Development team | **Six Claude Code agents** defined in `.claude/agents/`: `platform-engineer`, `sim-engineer`, `data-curator`, `web-developer`, `visuals-developer`, `reviewer` (read-only). All use the session's model. The main session coordinates: it assigns tasks, has `reviewer` check each result, and merges. Agents working in parallel use separate git worktrees. |
 
 ## Sources
 
