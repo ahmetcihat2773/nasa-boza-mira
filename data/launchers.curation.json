@@ -1,9 +1,63 @@
 {
+  "ssoCapacity": {
+    "generalFactor": 0.6,
+    "data_quality": "estimated",
+    "method": "Mean of published sun-synchronous capacity ÷ leoCapacityKg for Electron (200 ÷ 300 = 0.67), Firefly Alpha (630 ÷ 1000 = 0.63) and PSLV (1750 ÷ 3800 = 0.46): 0.59, rounded to 0.6. The script applies it to every picked rocket that has no ssoCapacityKg override.",
+    "checked": "2026-11-14"
+  },
   "include": [
-    { "id": 26, "why": "Smallest dedicated launcher: cheap, small capacity" },
-    { "id": 179, "why": "Cheap per kg but a poor success record: the risky choice" },
+    {
+      "id": 26,
+      "why": "Smallest dedicated launcher: cheap, small capacity",
+      "override": {
+        "ssoCapacityKg": 200,
+        "sources": [
+          {
+            "fields": ["ssoCapacityKg"],
+            "data_quality": "published",
+            "source": "Rocket Lab, Electron Payload User's Guide 7.0",
+            "url": "https://rocketlabcorp.com/assets/Electron-Payload-User-Guide-7.0-v6.pdf",
+            "checked": "2026-11-14",
+            "note": "Quoted for a 500 km sun-synchronous orbit. The same guide gives up to 300 kg to lower orbits, which matches leoCapacityKg. Read from search-engine copies of the guide, because Rocket Lab's site refuses automated access; still to be confirmed in a browser (TODO T3)."
+          }
+        ]
+      }
+    },
+    {
+      "id": 179,
+      "why": "Cheap per kg but a poor success record: the risky choice",
+      "override": {
+        "ssoCapacityKg": 630,
+        "sources": [
+          {
+            "fields": ["ssoCapacityKg"],
+            "data_quality": "published",
+            "source": "Firefly Aerospace, Alpha vehicle page, Performance section",
+            "url": "https://fireflyspace.com/alpha/",
+            "checked": "2026-11-14",
+            "note": "Quoted for a 500 km sun-synchronous orbit. The same page gives 1,030 kg to a 300 km low Earth orbit; Launch Library 2 lists 1,000 kg."
+          }
+        ]
+      }
+    },
     { "id": 127, "why": "European small launcher" },
-    { "id": 7, "why": "Low-cost medium launcher" },
+    {
+      "id": 7,
+      "why": "Low-cost medium launcher",
+      "override": {
+        "ssoCapacityKg": 1750,
+        "sources": [
+          {
+            "fields": ["ssoCapacityKg"],
+            "data_quality": "published",
+            "source": "ISRO, Polar Satellite Launch Vehicle page",
+            "url": "https://www.isro.gov.in/PSLV_CON.html",
+            "checked": "2026-11-14",
+            "note": "Quoted for a 600 km sun-synchronous polar orbit, in the section on the PSLV-XL configuration. ISRO publishes no low-Earth-orbit figure."
+          }
+        ]
+      }
+    },
     { "id": 15, "why": "Reliable medium launcher, expensive for its size" },
     { "id": 172, "why": "Good value for heavier spacecraft", "override": { "name": "LVM3" } },
     { "id": 121, "why": "European medium-heavy launcher" },
@@ -17,18 +71,35 @@
       "name": "Rideshare (shared launch)",
       "manufacturer": null,
       "leoCapacityKg": 200,
+      "ssoCapacityKg": 200,
       "gtoCapacityKg": null,
-      "launchCostUsd": 325000,
-      "costPerKgUsd": 6500,
+      "launchCostUsd": 350000,
+      "costPerKgUsd": 7000,
       "includedKg": 50,
-      "fixedOrbit": true,
+      "fixedOrbit": { "type": "sun-synchronous", "altitudeKm": 525 },
       "successfulLaunches": null,
       "failedLaunches": null,
       "successRate": 0.98,
       "reusable": true,
       "imageUrl": null,
       "infoUrl": null,
-      "note": "Not from Launch Library 2. Price is approximate (about $325k for the first 50 kg, then about $6,500 per kg) and must be checked against a published rideshare price list. The 200 kg limit and 98% success rate are game-design values. The player cannot choose the orbit."
+      "sources": [
+        {
+          "fields": ["launchCostUsd", "includedKg", "costPerKgUsd"],
+          "data_quality": "published",
+          "source": "SpaceX Smallsat Rideshare Program, online price tool: price for 2026 flights to sun-synchronous orbit",
+          "url": "https://rideshare.spacex.com/search",
+          "checked": "2026-11-14",
+          "note": "$350,000 for up to 50 kg, then $7,000 for each extra kg. The price depends on the flight year; this is the 2026 price. Read from search-engine copies of the tool's result pages, because the tool needs a browser; still to be confirmed in a browser (TODO T3)."
+        },
+        {
+          "fields": ["leoCapacityKg", "ssoCapacityKg", "successRate", "fixedOrbit", "reusable"],
+          "data_quality": "game-design",
+          "source": "Our own choice",
+          "note": "A 200 kg limit, a 98% success rate, a reusable rocket and a fixed 525 km sun-synchronous orbit (the orbit is on the mission card, design.md section 4.3). Both capacity fields hold the same limit, because this option only flies to its fixed orbit."
+        }
+      ],
+      "note": "Not from Launch Library 2. The player cannot choose the orbit. The launch price is launchCostUsd for a satellite of up to includedKg, plus costPerKgUsd for each kg above that."
     }
   ]
 }

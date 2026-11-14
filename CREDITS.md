@@ -18,6 +18,10 @@ Add every asset, dataset and library here **when it is added to the repo**. Entr
 | [NASA State-of-the-Art of Small Spacecraft Technology (2024)](https://www.nasa.gov/smallsat-institute/sst-soa) | Spacecraft part specs | US Government work | NASA Small Spacecraft Systems Virtual Institute |
 | [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf) | CubeSat concepts and values | US Government work | NASA CubeSat Launch Initiative |
 | [Launch Library 2 – The Space Devs](https://thespacedevs.com/) | Launch vehicle capacities and costs | Free to use and share; attribution encouraged, not required ([terms](https://github.com/TheSpaceDevs/Tutorials/blob/main/faqs/faq_TSD.md#terms-of-use)) | Data from Launch Library 2 by The Space Devs |
+| [SpaceX Smallsat Rideshare Program](https://rideshare.spacex.com/search) | Rideshare launch price | Published price; figures only, no text or images copied | SpaceX |
+| [Rocket Lab – Electron Payload User's Guide 7.0](https://rocketlabcorp.com/assets/Electron-Payload-User-Guide-7.0-v6.pdf) | Electron capacity to sun-synchronous orbit | Published figure; figures only, no text or images copied | Rocket Lab |
+| [Firefly Aerospace – Alpha](https://fireflyspace.com/alpha/) | Firefly Alpha capacity to sun-synchronous orbit | Published figure; figures only, no text or images copied | Firefly Aerospace |
+| [ISRO – Polar Satellite Launch Vehicle](https://www.isro.gov.in/PSLV_CON.html) | PSLV capacity to sun-synchronous orbit | Published figure; figures only, no text or images copied | Indian Space Research Organisation (ISRO) |
 | [NASA mission archive (NSSDCA)](https://nssdc.gsfc.nasa.gov/nmc/) and NASA mission pages | Instruments and real missions (planned) | US Government work | NASA |
 | [NASA LSP Performance](https://elvperf.ksc.nasa.gov/) | Payload mass vs C3 (planned, later missions) | US Government work | NASA Launch Services Program |
 | [NASA GMAT](https://software.nasa.gov/) | Offline trajectory data / validation | Apache-2.0 | NASA Goddard Space Flight Center |

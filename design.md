@@ -179,7 +179,7 @@ How well the resources themselves are used is scored separately, under resource 
 | Development deadline | 30 months (next fire season) – missing it means a 12-month wait at the team's monthly cost: a penalty, not a failure (section 1)     |
 | Parts available      | TRL ≥ 5 (TRL ≤ 4 locked on easy)                                                          |
 | Team cost            | $0.2M per month of development or waiting, charged to the roles in proportion to their allocations |
-| Launch options       | Launchers that cost more than the whole budget are shown locked ("too expensive for this mission"). **Rideshare** is cheapest but goes to a fixed ~525 km sun-synchronous orbit. A launcher's capacity to sun-synchronous orbit is lower than its listed LEO capacity (fixed reduction factor, to be sourced). |
+| Launch options       | Launchers that cost more than the whole budget are shown locked ("too expensive for this mission"). **Rideshare** is cheapest but goes to a fixed 525 km sun-synchronous orbit. A launcher's capacity to sun-synchronous orbit is lower than its listed LEO capacity: the game uses the capacity published by the launch provider where we have one, and otherwise 0.6 × the LEO capacity, marked as an estimate ([APIDoc.md](APIDoc.md)). |
 | Budget allocations   | Launch 35% · Spacecraft 30% · Science 25% · Ground 10% (section 3)                          |
 
 **Bonus objectives (extra science score):**

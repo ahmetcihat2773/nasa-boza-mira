@@ -4,18 +4,48 @@
     "name": "Rideshare (shared launch)",
     "manufacturer": null,
     "leoCapacityKg": 200,
+    "ssoCapacityKg": 200,
     "gtoCapacityKg": null,
-    "launchCostUsd": 325000,
-    "costPerKgUsd": 6500,
+    "launchCostUsd": 350000,
+    "costPerKgUsd": 7000,
     "includedKg": 50,
-    "fixedOrbit": true,
+    "fixedOrbit": {
+      "type": "sun-synchronous",
+      "altitudeKm": 525
+    },
     "successfulLaunches": null,
     "failedLaunches": null,
     "successRate": 0.98,
     "reusable": true,
     "imageUrl": null,
     "infoUrl": null,
-    "note": "Not from Launch Library 2. Price is approximate (about $325k for the first 50 kg, then about $6,500 per kg) and must be checked against a published rideshare price list. The 200 kg limit and 98% success rate are game-design values. The player cannot choose the orbit."
+    "sources": [
+      {
+        "fields": [
+          "launchCostUsd",
+          "includedKg",
+          "costPerKgUsd"
+        ],
+        "data_quality": "published",
+        "source": "SpaceX Smallsat Rideshare Program, online price tool: price for 2026 flights to sun-synchronous orbit",
+        "url": "https://rideshare.spacex.com/search",
+        "checked": "2026-11-14",
+        "note": "$350,000 for up to 50 kg, then $7,000 for each extra kg. The price depends on the flight year; this is the 2026 price. Read from search-engine copies of the tool's result pages, because the tool needs a browser; still to be confirmed in a browser (TODO T3)."
+      },
+      {
+        "fields": [
+          "leoCapacityKg",
+          "ssoCapacityKg",
+          "successRate",
+          "fixedOrbit",
+          "reusable"
+        ],
+        "data_quality": "game-design",
+        "source": "Our own choice",
+        "note": "A 200 kg limit, a 98% success rate, a reusable rocket and a fixed 525 km sun-synchronous orbit (the orbit is on the mission card, design.md section 4.3). Both capacity fields hold the same limit, because this option only flies to its fixed orbit."
+      }
+    ],
+    "note": "Not from Launch Library 2. The player cannot choose the orbit. The launch price is launchCostUsd for a satellite of up to includedKg, plus costPerKgUsd for each kg above that."
   },
   {
     "id": 26,
@@ -29,7 +59,20 @@
     "successRate": 0.96,
     "reusable": false,
     "imageUrl": "https://thespacedevs-prod.nyc3.digitaloceanspaces.com/media/images/electron_image_20190705175640.jpeg",
-    "infoUrl": "https://www.rocketlabusa.com/electron/"
+    "infoUrl": "https://www.rocketlabusa.com/electron/",
+    "ssoCapacityKg": 200,
+    "sources": [
+      {
+        "fields": [
+          "ssoCapacityKg"
+        ],
+        "data_quality": "published",
+        "source": "Rocket Lab, Electron Payload User's Guide 7.0",
+        "url": "https://rocketlabcorp.com/assets/Electron-Payload-User-Guide-7.0-v6.pdf",
+        "checked": "2026-11-14",
+        "note": "Quoted for a 500 km sun-synchronous orbit. The same guide gives up to 300 kg to lower orbits, which matches leoCapacityKg. Read from search-engine copies of the guide, because Rocket Lab's site refuses automated access; still to be confirmed in a browser (TODO T3)."
+      }
+    ]
   },
   {
     "id": 179,
@@ -43,7 +86,20 @@
     "successRate": 0.571,
     "reusable": false,
     "imageUrl": "https://thespacedevs-prod.nyc3.digitaloceanspaces.com/media/images/firefly_alpha_l_image_20240605174156.jpeg",
-    "infoUrl": "https://fireflyspace.com/alpha/"
+    "infoUrl": "https://fireflyspace.com/alpha/",
+    "ssoCapacityKg": 630,
+    "sources": [
+      {
+        "fields": [
+          "ssoCapacityKg"
+        ],
+        "data_quality": "published",
+        "source": "Firefly Aerospace, Alpha vehicle page, Performance section",
+        "url": "https://fireflyspace.com/alpha/",
+        "checked": "2026-11-14",
+        "note": "Quoted for a 500 km sun-synchronous orbit. The same page gives 1,030 kg to a 300 km low Earth orbit; Launch Library 2 lists 1,000 kg."
+      }
+    ]
   },
   {
     "id": 127,
@@ -57,7 +113,17 @@
     "successRate": 0.875,
     "reusable": false,
     "imageUrl": "https://thespacedevs-prod.nyc3.digitaloceanspaces.com/media/images/vega-c_image_20220713154437.jpg",
-    "infoUrl": "https://www.arianespace.com/vehicle/vega/"
+    "infoUrl": "https://www.arianespace.com/vehicle/vega/",
+    "ssoCapacityKg": 1980,
+    "sources": [
+      {
+        "fields": [
+          "ssoCapacityKg"
+        ],
+        "data_quality": "estimated",
+        "source": "leoCapacityKg × 0.6, the general factor in launchers.curation.json"
+      }
+    ]
   },
   {
     "id": 7,
@@ -71,7 +137,20 @@
     "successRate": 0.833,
     "reusable": false,
     "imageUrl": "https://thespacedevs-prod.nyc3.digitaloceanspaces.com/media/images/pslv_image_20190508083736.jpeg",
-    "infoUrl": "https://en.wikipedia.org/wiki/Polar_Satellite_Launch_Vehicle?wprov=sfla1"
+    "infoUrl": "https://en.wikipedia.org/wiki/Polar_Satellite_Launch_Vehicle?wprov=sfla1",
+    "ssoCapacityKg": 1750,
+    "sources": [
+      {
+        "fields": [
+          "ssoCapacityKg"
+        ],
+        "data_quality": "published",
+        "source": "ISRO, Polar Satellite Launch Vehicle page",
+        "url": "https://www.isro.gov.in/PSLV_CON.html",
+        "checked": "2026-11-14",
+        "note": "Quoted for a 600 km sun-synchronous polar orbit, in the section on the PSLV-XL configuration. ISRO publishes no low-Earth-orbit figure."
+      }
+    ]
   },
   {
     "id": 15,
@@ -85,7 +164,17 @@
     "successRate": 1,
     "reusable": false,
     "imageUrl": "https://thespacedevs-prod.nyc3.digitaloceanspaces.com/media/images/soyuz_2.1b_image_20230802085331.jpg",
-    "infoUrl": "http://en.wikipedia.org/wiki/Soyuz-2_(rocket)"
+    "infoUrl": "http://en.wikipedia.org/wiki/Soyuz-2_(rocket)",
+    "ssoCapacityKg": 4920,
+    "sources": [
+      {
+        "fields": [
+          "ssoCapacityKg"
+        ],
+        "data_quality": "estimated",
+        "source": "leoCapacityKg × 0.6, the general factor in launchers.curation.json"
+      }
+    ]
   },
   {
     "id": 172,
@@ -99,7 +188,17 @@
     "successRate": 1,
     "reusable": false,
     "imageUrl": "https://thespacedevs-prod.nyc3.digitaloceanspaces.com/media/images/gslv2520mk2520iii_image_20190604000938.jpg",
-    "infoUrl": "https://en.wikipedia.org/wiki/Geosynchronous_Satellite_Launch_Vehicle"
+    "infoUrl": "https://en.wikipedia.org/wiki/Geosynchronous_Satellite_Launch_Vehicle",
+    "ssoCapacityKg": 6000,
+    "sources": [
+      {
+        "fields": [
+          "ssoCapacityKg"
+        ],
+        "data_quality": "estimated",
+        "source": "leoCapacityKg × 0.6, the general factor in launchers.curation.json"
+      }
+    ]
   },
   {
     "id": 121,
@@ -113,7 +212,17 @@
     "successRate": 1,
     "reusable": false,
     "imageUrl": "https://thespacedevs-prod.nyc3.digitaloceanspaces.com/media/images/ariane_62_lifto_image_20240711132056.jpeg",
-    "infoUrl": "https://www.arianespace.com/wp-content/uploads/2017/02/Ariane6_Users-Manual_February2017.pdf"
+    "infoUrl": "https://www.arianespace.com/wp-content/uploads/2017/02/Ariane6_Users-Manual_February2017.pdf",
+    "ssoCapacityKg": 6540,
+    "sources": [
+      {
+        "fields": [
+          "ssoCapacityKg"
+        ],
+        "data_quality": "estimated",
+        "source": "leoCapacityKg × 0.6, the general factor in launchers.curation.json"
+      }
+    ]
   },
   {
     "id": 164,
@@ -127,7 +236,17 @@
     "successRate": 0.998,
     "reusable": true,
     "imageUrl": "https://thespacedevs-prod.nyc3.digitaloceanspaces.com/media/images/falcon_9_image_20230807133459.jpeg",
-    "infoUrl": "https://www.spacex.com/vehicles/falcon-9/"
+    "infoUrl": "https://www.spacex.com/vehicles/falcon-9/",
+    "ssoCapacityKg": 13680,
+    "sources": [
+      {
+        "fields": [
+          "ssoCapacityKg"
+        ],
+        "data_quality": "estimated",
+        "source": "leoCapacityKg × 0.6, the general factor in launchers.curation.json"
+      }
+    ]
   },
   {
     "id": 161,
@@ -141,7 +260,17 @@
     "successRate": 1,
     "reusable": true,
     "imageUrl": "https://thespacedevs-prod.nyc3.digitaloceanspaces.com/media/images/falcon_heavy_image_20220129192819.jpeg",
-    "infoUrl": "https://www.spacex.com/vehicles/falcon-heavy/index.html"
+    "infoUrl": "https://www.spacex.com/vehicles/falcon-heavy/index.html",
+    "ssoCapacityKg": 38280,
+    "sources": [
+      {
+        "fields": [
+          "ssoCapacityKg"
+        ],
+        "data_quality": "estimated",
+        "source": "leoCapacityKg × 0.6, the general factor in launchers.curation.json"
+      }
+    ]
   },
   {
     "id": 143,
@@ -155,6 +284,16 @@
     "successRate": 1,
     "reusable": false,
     "imageUrl": "https://thespacedevs-prod.nyc3.digitaloceanspaces.com/media/images/space_launch_sy_image_20260405204639.jpg",
-    "infoUrl": "https://www.nasa.gov/exploration/systems/sls/fs/sls.html"
+    "infoUrl": "https://www.nasa.gov/exploration/systems/sls/fs/sls.html",
+    "ssoCapacityKg": 57000,
+    "sources": [
+      {
+        "fields": [
+          "ssoCapacityKg"
+        ],
+        "data_quality": "estimated",
+        "source": "leoCapacityKg × 0.6, the general factor in launchers.curation.json"
+      }
+    ]
   }
 ]
