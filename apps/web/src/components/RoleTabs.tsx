@@ -75,7 +75,7 @@ export function RoleTabs({ b, mission }: { b: Budget; mission: Mission }) {
     launch: (
       <>
         <LauncherPicker b={b} mission={mission} />
-        <OrbitPicker b={b} />
+        <OrbitPicker b={b} mission={mission} />
       </>
     ),
     spacecraft: (
@@ -84,14 +84,14 @@ export function RoleTabs({ b, mission }: { b: Budget; mission: Mission }) {
           <SpacecraftPreview />
         </Suspense>
         {subsystemsOf("spacecraft").map((s) => (
-          <PartPicker key={s} subsystem={s} />
+          <PartPicker key={s} subsystem={s} mission={mission} />
         ))}
       </>
     ),
     ground: (
       <>
         {subsystemsOf("ground").map((s) => (
-          <PartPicker key={s} subsystem={s} />
+          <PartPicker key={s} subsystem={s} mission={mission} />
         ))}
         <GroundPicker b={b} />
       </>
@@ -99,7 +99,7 @@ export function RoleTabs({ b, mission }: { b: Budget; mission: Mission }) {
     science: (
       <>
         {subsystemsOf("science").map((s) => (
-          <PartPicker key={s} subsystem={s} />
+          <PartPicker key={s} subsystem={s} mission={mission} />
         ))}
         <InstrumentPicker b={b} />
       </>

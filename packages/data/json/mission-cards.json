@@ -6,7 +6,8 @@
       "difficulty": "easy",
       "objective": "Detect wildfires early from space over a target region.",
       "whyItMatters": "Early detection gives firefighters hours instead of days. A satellite can watch remote forests that no lookout tower or patrol covers.",
-      "destination": "Low Earth orbit (LEO). You choose the orbit type and altitude.",
+      "destination": "earth-orbit",
+      "destinationText": "Low Earth orbit (LEO). You choose the orbit type and altitude.",
       "targetRegion": {
         "name": "Western United States",
         "latDeg": 40,
@@ -18,67 +19,128 @@
           "id": "R1",
           "title": "Daily revisit",
           "text": "See the target region at least once per day.",
-          "check": { "kind": "min", "metric": "revisitsPerDay", "value": 1, "unit": "per day" },
-          "roles": ["launch", "science"],
+          "check": {
+            "kind": "min",
+            "metric": "revisitsPerDay",
+            "value": 1,
+            "unit": "per day"
+          },
+          "roles": [
+            "launch",
+            "science"
+          ],
           "failText": "The satellite does not pass over the region every day. Pick a wider-angle instrument or a higher orbit so each pass covers a wider strip."
         },
         {
           "id": "R2",
           "title": "Daylight fire detection",
           "text": "Carry an instrument able to detect active fires in daylight.",
-          "check": { "kind": "detects", "detection": "daylightFire" },
-          "roles": ["science"],
+          "check": {
+            "kind": "detects",
+            "detection": "daylightFire"
+          },
+          "roles": [
+            "science"
+          ],
           "failText": "None of the chosen instruments can spot an active fire. A shortwave or thermal infrared instrument can, because fires are very bright at those wavelengths."
         },
         {
           "id": "R3",
           "title": "Enough data on the ground",
           "text": "Downlink at least 1 GB of data per day.",
-          "check": { "kind": "min", "metric": "downlinkGbPerDay", "value": 1, "unit": "GB per day" },
-          "roles": ["ground", "spacecraft"],
+          "check": {
+            "kind": "min",
+            "metric": "downlinkGbPerDay",
+            "value": 1,
+            "unit": "GB per day"
+          },
+          "roles": [
+            "ground",
+            "spacecraft"
+          ],
           "failText": "Too little data reaches the ground each day. Add a ground station for more contact time, or a faster radio."
         },
         {
           "id": "R4",
           "title": "One year in orbit",
           "text": "Operate for at least 1 year.",
-          "check": { "kind": "min", "metric": "lifetimeYears", "value": 1, "unit": "years" },
-          "roles": ["spacecraft", "launch"],
+          "check": {
+            "kind": "min",
+            "metric": "lifetimeYears",
+            "value": 1,
+            "unit": "years"
+          },
+          "roles": [
+            "spacecraft",
+            "launch"
+          ],
           "failText": "The orbit decays too fast and the satellite re-enters the atmosphere too early. Fly higher, or carry propulsion to raise the orbit."
         }
       ],
       "constraints": {
         "budgetUsd": 30000000,
-        "sizes": ["6U", "12U", "smallsat"],
+        "sizes": [
+          "6U",
+          "12U",
+          "smallsat"
+        ],
         "maxSmallsatMassKg": 150,
         "satellites": 1,
         "minTrl": 5,
         "lockLaunchersOverBudget": true
       },
-      "allocationsPct": { "launch": 35, "spacecraft": 30, "science": 25, "ground": 10 },
+      "allocationsPct": {
+        "launch": 35,
+        "spacecraft": 30,
+        "science": 25,
+        "ground": 10
+      },
       "teamCostPerMonthUsd": 200000,
-      "baseDevMonths": { "6U": 15, "12U": 15, "smallsat": 24 },
+      "baseDevMonths": {
+        "6U": 15,
+        "12U": 15,
+        "smallsat": 24
+      },
       "deadlineMonths": 30,
       "lateWaitMonths": 12,
-      "scoreWeights": { "science": 40, "efficiency": 20, "schedule": 15, "risk": 15, "coordination": 10 },
+      "scoreWeights": {
+        "science": 40,
+        "efficiency": 20,
+        "schedule": 15,
+        "risk": 15,
+        "coordination": 10
+      },
       "bonusObjectives": [
         {
           "id": "night-detection",
           "name": "Night detection",
           "text": "Carry a thermal infrared instrument, so fires are also seen at night.",
-          "check": { "kind": "detects", "detection": "nightFire" }
+          "check": {
+            "kind": "detects",
+            "detection": "nightFire"
+          }
         },
         {
           "id": "twice-daily-revisit",
           "name": "Twice-daily revisit",
           "text": "See the region at least twice per day.",
-          "check": { "kind": "min", "metric": "revisitsPerDay", "value": 2, "unit": "per day" }
+          "check": {
+            "kind": "min",
+            "metric": "revisitsPerDay",
+            "value": 2,
+            "unit": "per day"
+          }
         },
         {
           "id": "fast-alerts",
           "name": "Fast alerts",
           "text": "Deliver data to the ground within 1 hour of an observation. This needs more ground station contacts.",
-          "check": { "kind": "max", "metric": "alertLatencyHours", "value": 1, "unit": "hours" }
+          "check": {
+            "kind": "max",
+            "metric": "alertLatencyHours",
+            "value": 1,
+            "unit": "hours"
+          }
         }
       ],
       "tradeOffs": [
@@ -91,16 +153,296 @@
       ],
       "sources": [
         {
-          "fields": ["requirements", "constraints", "allocationsPct", "teamCostPerMonthUsd", "baseDevMonths", "deadlineMonths", "lateWaitMonths", "scoreWeights", "bonusObjectives"],
+          "fields": [
+            "requirements",
+            "constraints",
+            "allocationsPct",
+            "teamCostPerMonthUsd",
+            "baseDevMonths",
+            "deadlineMonths",
+            "lateWaitMonths",
+            "scoreWeights",
+            "bonusObjectives"
+          ],
           "data_quality": "game-design",
           "source": "design.md sections 1, 4.3 and 5",
           "note": "Starting values for balancing; not real-world figures."
         },
         {
-          "fields": ["targetRegion"],
+          "fields": [
+            "targetRegion"
+          ],
           "data_quality": "game-design",
           "source": "Chosen for the game",
           "note": "A fire-prone region at mid-latitude, so orbit type matters for revisit and ground contact."
+        }
+      ]
+    },
+    {
+      "id": "lunar-ice-hunter",
+      "name": "Lunar Ice Hunter",
+      "difficulty": "medium",
+      "objective": "Map water ice in the permanently shadowed craters at the Moon's poles.",
+      "whyItMatters": "Ice at the poles could give future crews water, oxygen and rocket fuel. It also records the history of water in the inner Solar System.",
+      "destination": "lunar-orbit",
+      "destinationText": "Low polar lunar orbit, 384,000 km from Earth. You choose the altitude, 50 to 200 km above the surface.",
+      "transfer": {
+        "tliCapacityFactor": 0.3,
+        "loiDeltaVKmS": [
+          {
+            "altitudeKm": 50,
+            "kmS": 0.85
+          },
+          {
+            "altitudeKm": 75,
+            "kmS": 0.83
+          },
+          {
+            "altitudeKm": 100,
+            "kmS": 0.81
+          },
+          {
+            "altitudeKm": 150,
+            "kmS": 0.79
+          },
+          {
+            "altitudeKm": 200,
+            "kmS": 0.77
+          }
+        ],
+        "stationKeepingKmSPerYear": [
+          {
+            "altitudeKm": 50,
+            "kmSPerYear": 0.15
+          },
+          {
+            "altitudeKm": 75,
+            "kmSPerYear": 0.12
+          },
+          {
+            "altitudeKm": 100,
+            "kmSPerYear": 0.1
+          },
+          {
+            "altitudeKm": 150,
+            "kmSPerYear": 0.07
+          },
+          {
+            "altitudeKm": 200,
+            "kmSPerYear": 0.05
+          }
+        ],
+        "distanceKm": 384400,
+        "altitudesKm": [
+          50,
+          75,
+          100,
+          150,
+          200
+        ]
+      },
+      "locked": [
+        {
+          "kind": "size",
+          "id": "6U",
+          "reason": "A 6U CubeSat has no room for an ice-detecting instrument together with the propulsion and fuel needed to stop at the Moon."
+        },
+        {
+          "kind": "part",
+          "id": "propulsion-none",
+          "reason": "Without propulsion the spacecraft flies past the Moon. It must fire a thruster to brake into lunar orbit."
+        }
+      ],
+      "targetRegion": {
+        "name": "Lunar south pole",
+        "latDeg": -89.5,
+        "lonDeg": 0,
+        "widthKm": 200
+      },
+      "requirements": [
+        {
+          "id": "L1",
+          "title": "Polar lunar orbit",
+          "text": "Reach a polar orbit around the Moon (inclination at least 85°).",
+          "check": {
+            "kind": "min",
+            "metric": "inclinationDeg",
+            "value": 85,
+            "unit": "degrees"
+          },
+          "roles": [
+            "launch",
+            "spacecraft"
+          ],
+          "failText": "The orbit does not pass over the poles, so the shadowed craters are never seen. Aim the insertion burn for a polar orbit."
+        },
+        {
+          "id": "L2",
+          "title": "Ice detection",
+          "text": "Carry an instrument able to detect water ice.",
+          "check": {
+            "kind": "detects",
+            "detection": "waterIce"
+          },
+          "roles": [
+            "science"
+          ],
+          "failText": "None of the chosen instruments can find ice. A neutron spectrometer, a shortwave infrared spectrometer or a small radar can."
+        },
+        {
+          "id": "L3",
+          "title": "Enough data on Earth",
+          "text": "Send at least 0.2 GB of data per day to Earth.",
+          "check": {
+            "kind": "min",
+            "metric": "downlinkGbPerDay",
+            "value": 0.2,
+            "unit": "GB per day"
+          },
+          "roles": [
+            "ground",
+            "spacecraft"
+          ],
+          "failText": "Too little data reaches Earth. At the Moon's distance radios are much slower; pick an S-band or faster radio, or add deep-space stations."
+        },
+        {
+          "id": "L4",
+          "title": "One year at the Moon",
+          "text": "Operate for at least 1 year in lunar orbit.",
+          "check": {
+            "kind": "min",
+            "metric": "lifetimeYears",
+            "value": 1,
+            "unit": "years"
+          },
+          "roles": [
+            "spacecraft"
+          ],
+          "failText": "The fuel for keeping the orbit runs out before a year. The Moon's lumpy gravity pulls low orbits down; carry more fuel or fly higher."
+        },
+        {
+          "id": "L5",
+          "title": "Enough delta-v",
+          "text": "Carry enough delta-v for lunar orbit insertion and one year of station-keeping.",
+          "check": {
+            "kind": "min",
+            "metric": "deltaVMarginKmS",
+            "value": 0,
+            "unit": "km/s"
+          },
+          "roles": [
+            "spacecraft",
+            "launch"
+          ],
+          "failText": "The spacecraft cannot brake into lunar orbit and keep it for a year. Pick a thruster with a higher specific impulse, carry more fuel, or make the spacecraft lighter."
+        }
+      ],
+      "constraints": {
+        "budgetUsd": 60000000,
+        "sizes": [
+          "12U",
+          "smallsat"
+        ],
+        "maxSmallsatMassKg": 150,
+        "satellites": 1,
+        "minTrl": 5,
+        "lockLaunchersOverBudget": true
+      },
+      "allocationsPct": {
+        "launch": 30,
+        "spacecraft": 35,
+        "science": 25,
+        "ground": 10
+      },
+      "teamCostPerMonthUsd": 300000,
+      "baseDevMonths": {
+        "12U": 20,
+        "smallsat": 30
+      },
+      "deadlineMonths": 36,
+      "lateWaitMonths": 12,
+      "scoreWeights": {
+        "science": 40,
+        "efficiency": 20,
+        "schedule": 15,
+        "risk": 15,
+        "coordination": 10
+      },
+      "bonusObjectives": [
+        {
+          "id": "second-ice-method",
+          "name": "Second ice method",
+          "text": "Carry a second, different kind of ice-detecting instrument, so each finding can be checked.",
+          "check": {
+            "kind": "min",
+            "metric": "iceDetectionMethods",
+            "value": 2,
+            "unit": "methods"
+          }
+        },
+        {
+          "id": "low-orbit",
+          "name": "Low orbit",
+          "text": "Fly at or below 100 km for sharper maps. This needs more fuel.",
+          "check": {
+            "kind": "max",
+            "metric": "altitudeKm",
+            "value": 100,
+            "unit": "km"
+          }
+        },
+        {
+          "id": "fast-data",
+          "name": "Next-day data",
+          "text": "Deliver data to Earth within 24 hours of each pass.",
+          "check": {
+            "kind": "max",
+            "metric": "alertLatencyHours",
+            "value": 24,
+            "unit": "hours"
+          }
+        }
+      ],
+      "tradeOffs": [
+        "Fuel vs mass: more fuel means more delta-v, but the extra mass needs a bigger rocket and more fuel again (the rocket equation).",
+        "Altitude: a lower orbit gives sharper ice maps but costs more fuel to keep.",
+        "Rideshare vs dedicated launch: the lunar rideshare is cheap but small and flies on a fixed date.",
+        "Radio vs distance: at 384,000 km every radio is much slower, so a faster radio or more deep-space contact time is needed.",
+        "Power: a low lunar orbit spends up to 40% of each orbit in shadow, so the battery must carry the instruments through the dark."
+      ],
+      "sources": [
+        {
+          "fields": [
+            "requirements",
+            "constraints",
+            "allocationsPct",
+            "teamCostPerMonthUsd",
+            "baseDevMonths",
+            "deadlineMonths",
+            "lateWaitMonths",
+            "scoreWeights",
+            "bonusObjectives",
+            "locked"
+          ],
+          "data_quality": "game-design",
+          "source": "design.md section 10.1",
+          "note": "Starting values for balancing; not real-world figures."
+        },
+        {
+          "fields": [
+            "transfer"
+          ],
+          "data_quality": "estimated",
+          "source": "Rough textbook values for small lunar orbiters (no research for this version)",
+          "note": "Trans-lunar capacity about 0.3 × low-Earth-orbit capacity; insertion about 0.8 km/s; station-keeping 0.05–0.15 km/s per year. Plausible estimates for balancing; distanceKm is the mean Earth–Moon distance."
+        },
+        {
+          "fields": [
+            "targetRegion"
+          ],
+          "data_quality": "game-design",
+          "source": "Chosen for the game",
+          "note": "The south polar region, where the largest permanently shadowed craters are."
         }
       ]
     }

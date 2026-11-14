@@ -4,9 +4,9 @@ const status = (c: Check) => (c.ok ? "ok" : c.blocking ? "bad" : "warn");
 const ICON = { ok: "✓", bad: "✗", warn: "!" } as const;
 const WORD = { ok: "Met", bad: "Not met", warn: "Warning" } as const;
 
-/** Every check of the design review, live: R1–R4 first, then the engineering checks. */
+/** Every check of the design review, live: mission requirements (R1–R4 or L1–L5) first, then the engineering checks. */
 export function RequirementsPanel({ b }: { b: Budget }) {
-  const isReq = (c: Check) => /^R\d+$/.test(c.id);
+  const isReq = (c: Check) => /^[RL]\d+$/.test(c.id);
   const ordered = [...b.checks.filter(isReq), ...b.checks.filter((c) => !isReq(c))];
   const failing = b.checks.filter((c) => !c.ok && c.blocking).length;
   const warnings = b.checks.filter((c) => !c.ok && !c.blocking).length;

@@ -366,3 +366,50 @@ Plausible values are enough (no research): mark them `estimated` or `game-design
 - More missions: Lunar Ice Hunter, Mars Climate Orbiter (Orrery modules, NASA LSP data), Europa, sandbox.
 - Difficulty levels; export and import of designs; sound; accessibility pass; real satellites (ISS) in the orbit view.
 - Team-vs-team competition (D6).
+
+---
+
+## Second mission: Lunar Ice Hunter
+
+Spec: [design.md](design.md) section 10. Plausible values, no research, no tests unless needed (typecheck only).
+
+**Shared contract (agreed up front so T25–T27 can run in parallel):**
+- The new mission card is exported from `@space-mission/data` as `lunarIceHunter` and included in `missionCards`. It keeps every field Wildfire Watch has and adds `destination: "earth-orbit" | "lunar-orbit"` (Wildfire Watch gets `"earth-orbit"`) and, for the Moon, a `transfer` block: `{ tliCapacityFactor, loiDeltaVKmS, stationKeepingKmSPerYear, distanceKm }` (station-keeping may be a small table by altitude).
+- Instruments gain `detects: "waterIce"` where relevant. Parts gain an optional `specificImpulseS` (propulsion) and an optional `lunarRateFactor` (radios: data rate multiplier at lunar distance). Ground stations gain `kind: "near-earth" | "deep-space"`.
+- The sim exposes `missionFromCard(card)` for both cards; `computeBudget`, `planEvents` and `runMission` work unchanged for Wildfire Watch.
+
+### [ ] T25 – Lunar data
+
+- **Owner:** `data-curator`
+- **Subtasks:**
+  - [ ] **T25.1 – Mission card** `lunarIceHunter` per design.md 10.1 (L1–L5 thresholds, `destination`, `transfer`), and `destination: "earth-orbit"` on Wildfire Watch.
+  - [ ] **T25.2 – Instruments:** 3 ice-detecting instruments (neutron spectrometer, SWIR spectrometer, small radar), sizes 12U and small satellite.
+  - [ ] **T25.3 – Propulsion and radios:** `specificImpulseS` on every propulsion part; `lunarRateFactor` on every radio; one or two higher-thrust propulsion options sized for lunar orbit insertion if the current ones are too weak.
+  - [ ] **T25.4 – Deep-space stations** (3, about 120° apart) and a **lunar rideshare** launcher entry (fixed, small mass, cheaper).
+  - [ ] **T25.5 – Events and texts:** the four lunar events (design.md 10.3) tagged with their mission; glossary terms (TLI, LOI, delta-v, specific impulse, permanently shadowed region); advisor lines for the Moon.
+
+### [ ] T26 – Lunar rules in the sim
+
+- **Owner:** `sim-engineer`
+- **Subtasks:**
+  - [ ] **T26.1 – Mission destination:** `missionFromCard` handles both cards; Earth-orbit rules stay as they are.
+  - [ ] **T26.2 – Transfer and delta-v:** launcher capacity to the Moon (LEO × factor, or the lunar rideshare), insertion and station-keeping delta-v by altitude, propellant mass from the rocket equation, propulsion "none" locked.
+  - [ ] **T26.3 – Lunar orbit model:** period, eclipse fraction, polar coverage, contact time with deep-space stations, data per day with the radio's lunar factor.
+  - [ ] **T26.4 – Checks L1–L5** with plain-English reasons; lunar events in `planEvents` / `runMission`; scoring from the card.
+
+### [ ] T27 – Earth–Moon visuals
+
+- **Owner:** `visuals-developer`
+- **Subtasks:**
+  - [ ] **T27.1 – Moon** (textured, public-domain NASA image or procedural), Earth in the distance, correct-looking scale (not to true distance).
+  - [ ] **T27.2 – Transfer:** after separation, the trans-lunar injection burn, a transfer arc to the Moon, the insertion burn and capture into a polar orbit.
+  - [ ] **T27.3 – Lunar orbit view:** the spacecraft in polar orbit, its ground track over the poles, the link line to Earth.
+  - [ ] **T27.4 – Hook-up:** `OrbitView` and `LaunchScene` pick the Earth or Moon version from the mission's `destination`.
+
+### [ ] T28 – Mission selection in the web app
+
+- **Owner:** `web-developer`
+- **Needs:** T25, T26.
+- **Subtasks:**
+  - [x] **T28.1 – Mission selection screen** before the Briefing (cards for both missions).
+  - [x] **T28.2 – Use the chosen mission everywhere:** briefing, pickers (6U and propulsion "none" locked for the Moon, with reasons), requirements panel (L1–L5), delta-v and propellant on the dashboard, events, results, saved attempts and leaderboard per mission.

@@ -18,6 +18,11 @@ export const EventMarginSchema = z.enum([
   "redundancy",
   "comms",
   "data-capacity",
+  // Lunar Ice Hunter (design.md section 10.3):
+  /** Delta-v margin after insertion and station-keeping. */
+  "delta-v",
+  /** TRL of the propulsion part. */
+  "propulsion-trl",
 ]);
 export type EventMargin = z.infer<typeof EventMarginSchema>;
 
@@ -54,7 +59,10 @@ export type EventOption = z.infer<typeof EventOptionSchema>;
 export const GameEventSchema = z
   .strictObject({
     id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
+    /** The mission the event was written for (kept for older code; prefer `missions`). */
     missionId: z.string().min(1),
+    /** Every mission that draws this event; shared events list both. */
+    missions: z.array(z.string().min(1)).min(1),
     phase: EventPhaseSchema,
     name: z.string().min(1),
     margin: EventMarginSchema,
@@ -67,6 +75,8 @@ export const GameEventSchema = z
     options: z.array(EventOptionSchema).min(1).superRefine(uniqueBy("id")),
   })
   .superRefine((e, ctx) => {
+    if (!e.missions.includes(e.missionId))
+      ctx.addIssue({ code: "custom", path: ["missions"], message: "must include missionId" });
     if (e.decidedBy === null && e.options.length !== 1)
       ctx.addIssue({
         code: "custom",

@@ -3,17 +3,21 @@ import rawInstruments from "../json/instruments.json" with { type: "json" };
 import { SpacecraftSizeSchema } from "./parts.ts";
 import { DataQualitySchema, SourceSchema } from "./sources.ts";
 
-/** Instrument class (design.md section 4.3): what part of the spectrum it observes. */
-export const InstrumentKindSchema = z.enum(["visible", "swir-mwir", "thermal-ir", "multiband"]);
+/** Instrument class (design.md sections 4.3 and 10.2): what it senses. "neutron" and "radar" are for the Moon. */
+export const InstrumentKindSchema = z.enum(["visible", "swir-mwir", "thermal-ir", "multiband", "neutron", "radar"]);
 export type InstrumentKind = z.infer<typeof InstrumentKindSchema>;
 
-/** What an instrument can detect for Wildfire Watch: R2 needs daylightFire; nightFire earns the night bonus. */
-export const DetectionSchema = z.enum(["daylightFire", "nightFire", "smoke"]);
+/**
+ * What an instrument can detect. Wildfire Watch: R2 needs daylightFire; nightFire earns the night bonus.
+ * Lunar Ice Hunter: L2 needs waterIce.
+ */
+export const DetectionSchema = z.enum(["daylightFire", "nightFire", "smoke", "waterIce"]);
 export type Detection = z.infer<typeof DetectionSchema>;
 
-/** Science value per mission (0–100, game-design). One key per mission that uses the instrument. */
+/** Science value per mission (0–100, game-design); 0 means useless for that mission. */
 export const ScienceValueSchema = z.strictObject({
   wildfireWatch: z.int().min(0).max(100),
+  lunarIceHunter: z.int().min(0).max(100),
 });
 
 /** Fields a `sources` entry may name; every one must be covered by at least one entry. */
@@ -79,13 +83,13 @@ export const InstrumentCostMethodSchema = z.strictObject({
 });
 export type InstrumentCostMethod = z.infer<typeof InstrumentCostMethodSchema>;
 
-/** The whole instruments file: the cost method plus 6–8 instruments with unique ids. */
+/** The whole instruments file: the cost method plus 6–12 instruments with unique ids. */
 export const InstrumentsFileSchema = z.strictObject({
   costMethod: InstrumentCostMethodSchema,
   instruments: z
     .array(InstrumentSchema)
     .min(6)
-    .max(8)
+    .max(12)
     .superRefine((list, ctx) => {
       const seen = new Set<string>();
       list.forEach((ins, i) => {

@@ -10,7 +10,19 @@ export const RoleSchema = z.enum(["launch", "spacecraft", "science", "ground"]);
 export type Role = z.infer<typeof RoleSchema>;
 
 /** Quantities the simulation computes and a requirement or bonus can test. */
-export const MetricSchema = z.enum(["revisitsPerDay", "downlinkGbPerDay", "lifetimeYears", "alertLatencyHours"]);
+export const MetricSchema = z.enum([
+  "revisitsPerDay",
+  "downlinkGbPerDay",
+  "lifetimeYears",
+  "alertLatencyHours",
+  // Lunar Ice Hunter (design.md section 10):
+  "inclinationDeg",
+  /** Spacecraft delta-v left after lunar orbit insertion and one year of station-keeping (km/s). */
+  "deltaVMarginKmS",
+  /** Number of different instrument kinds on board that detect water ice. */
+  "iceDetectionMethods",
+  "altitudeKm",
+]);
 export type Metric = z.infer<typeof MetricSchema>;
 
 /** How a requirement or bonus is checked: a metric at least / at most a value, or an instrument detection. */
@@ -18,7 +30,7 @@ export const RequirementCheckSchema = z.discriminatedUnion("kind", [
   z.strictObject({
     kind: z.enum(["min", "max"]),
     metric: MetricSchema,
-    value: z.number().positive(),
+    value: z.number().nonnegative(),
     unit: z.string().min(1),
   }),
   z.strictObject({ kind: z.literal("detects"), detection: DetectionSchema }),
@@ -26,7 +38,8 @@ export const RequirementCheckSchema = z.discriminatedUnion("kind", [
 export type RequirementCheck = z.infer<typeof RequirementCheckSchema>;
 
 export const RequirementSchema = z.strictObject({
-  id: z.string().regex(/^R\d+$/),
+  /** R1… for Wildfire Watch, L1… for Lunar Ice Hunter. */
+  id: z.string().regex(/^[RL]\d+$/),
   title: z.string().min(1),
   text: z.string().min(1),
   check: RequirementCheckSchema,
@@ -51,17 +64,66 @@ const pctSum = (name: string) => (o: Record<string, number>, ctx: z.RefinementCt
 
 const pct = z.int().min(0).max(100);
 
+/** Where the mission flies; the sim picks the Earth-orbit or the lunar rules from this. */
+export const DestinationSchema = z.enum(["earth-orbit", "lunar-orbit"]);
+export type Destination = z.infer<typeof DestinationSchema>;
+
+/** Rows must have rising altitudes; the sim interpolates between them. */
+const risingAltitudes = (list: { altitudeKm: number }[], ctx: z.RefinementCtx) => {
+  list.forEach((r, i) => {
+    if (i > 0 && r.altitudeKm <= list[i - 1]!.altitudeKm)
+      ctx.addIssue({ code: "custom", path: [i, "altitudeKm"], message: "altitudes must rise" });
+  });
+};
+
+/**
+ * Getting to the Moon (design.md section 10.2). Launcher capacity to the Moon is leoCapacityKg × tliCapacityFactor
+ * (or the launcher's own tliCapacityKg); the spacecraft provides lunar orbit insertion plus station-keeping.
+ */
+export const TransferSchema = z.strictObject({
+  tliCapacityFactor: z.number().positive().max(1),
+  /** Lunar orbit insertion delta-v by final altitude (slightly more for lower orbits). */
+  loiDeltaVKmS: z
+    .array(z.strictObject({ altitudeKm: z.number().positive(), kmS: z.number().positive() }))
+    .min(2)
+    .superRefine(risingAltitudes),
+  /** Station-keeping delta-v per year by altitude (more for lower orbits). */
+  stationKeepingKmSPerYear: z
+    .array(z.strictObject({ altitudeKm: z.number().positive(), kmSPerYear: z.number().positive() }))
+    .min(2)
+    .superRefine(risingAltitudes),
+  /** Earth–Moon distance, for the link to Earth. */
+  distanceKm: z.number().positive(),
+  /** Altitudes above the lunar surface the player can pick. */
+  altitudesKm: z.array(z.number().positive()).min(1),
+});
+export type Transfer = z.infer<typeof TransferSchema>;
+
+/** A choice the card locks (a spacecraft size or a part id), with the reason shown to the player. */
+export const LockSchema = z.strictObject({
+  kind: z.enum(["size", "part"]),
+  id: z.string().min(1),
+  reason: z.string().min(1),
+});
+export type Lock = z.infer<typeof LockSchema>;
+
 /**
  * One mission card (design.md section 4.3). Holds every number the sim needs for the mission:
  * budget, allocations, team cost, base times, deadline, score weights, requirements and bonuses.
  */
-export const MissionCardSchema = z.strictObject({
+export const MissionCardSchema = z
+  .strictObject({
   id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
   name: z.string().min(1),
   difficulty: z.enum(["easy", "medium", "hard", "expert"]),
   objective: z.string().min(1),
   whyItMatters: z.string().min(1),
-  destination: z.string().min(1),
+  destination: DestinationSchema,
+  /** Plain-English destination shown on the briefing. */
+  destinationText: z.string().min(1),
+  /** Lunar-orbit cards only. */
+  transfer: TransferSchema.optional(),
+  locked: z.array(LockSchema).optional(),
   targetRegion: z.strictObject({
     name: z.string().min(1),
     latDeg: z.number().min(-90).max(90),
@@ -96,7 +158,11 @@ export const MissionCardSchema = z.strictObject({
   bonusObjectives: z.array(BonusObjectiveSchema).superRefine(uniqueBy("id")),
   tradeOffs: z.array(z.string().min(1)),
   sources: z.array(SourceSchema).min(1),
-});
+  })
+  .superRefine((c, ctx) => {
+    if ((c.destination === "lunar-orbit") !== (c.transfer !== undefined))
+      ctx.addIssue({ code: "custom", path: ["transfer"], message: "required for lunar-orbit cards, and only for them" });
+  });
 export type MissionCard = z.infer<typeof MissionCardSchema>;
 
 export const MissionCardsFileSchema = z.strictObject({
@@ -110,3 +176,8 @@ const ww = missionCards.find((c) => c.id === "wildfire-watch");
 if (!ww) throw new Error("mission-cards.json has no wildfire-watch card");
 /** The first mission. */
 export const wildfireWatch: MissionCard = ww;
+
+const lih = missionCards.find((c) => c.id === "lunar-ice-hunter");
+if (!lih) throw new Error("mission-cards.json has no lunar-ice-hunter card");
+/** The second mission (design.md section 10). */
+export const lunarIceHunter: MissionCard = lih;

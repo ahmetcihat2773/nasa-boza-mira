@@ -311,3 +311,64 @@ Every attempt is saved locally (SQLite) with its design, seed and result.
 - **First-play tour:** a short, skippable introduction (5–6 steps) on first launch: the mission card, roles, the dashboard, making a choice, requests, launching.
 - **"Why?" explanations:** on locked options, on every event, and throughout the post-mission report – the game explains *why* a decision affects the mission, not only whether it was right.
 - All texts are in English and written by `data-curator` in `packages/data`, so they can be reviewed and sourced like other data.
+
+---
+
+## 10. Second mission: Lunar Ice Hunter
+
+**Status: decided (14 November 2026).** All numbers are starting values for balancing. The game rules (sections 1–9) are unchanged; this section only lists what is new or different.
+
+### 10.1 Mission card
+
+| Field | Value |
+|---|---|
+| **Id / name** | `lunar-ice-hunter` · Lunar Ice Hunter |
+| **Difficulty** | Medium |
+| **Objective** | Map water ice in the permanently shadowed craters at the Moon's poles |
+| **Why it matters** | Ice at the poles could give future crews water, oxygen and rocket fuel; it also records the history of water in the inner Solar System |
+| **Destination** | Low polar lunar orbit (the player picks the altitude, 50–200 km) |
+| **Budget** | $60M (development + launch + operations) |
+| **Budget allocations** | Launch 30% · Spacecraft 35% · Science 25% · Ground 10% |
+| **Team cost** | $0.3M per month |
+| **Base development time** | 12U CubeSat 20 months · small satellite 30 months (6U is too small: locked, with a reason) |
+| **Deadline** | 36 months; missing it means a 12-month wait at team cost (same rule as section 1) |
+
+**Requirements (all must be met):**
+
+| # | Requirement | Main roles |
+|---|---|---|
+| L1 | Reach a **polar lunar orbit** (inclination ≥ 85°) | Launch, Spacecraft (propulsion) |
+| L2 | Carry an instrument able to **detect water ice** | Science |
+| L3 | Send **≥ 0.2 GB of data per day** to Earth | Ground, Spacecraft (power) |
+| L4 | Operate **≥ 1 year** in lunar orbit | Spacecraft (fuel for station-keeping) |
+| L5 | Have enough **delta-v** for lunar orbit insertion and one year of station-keeping | Spacecraft, Launch |
+
+**Bonus objectives:** a second, different ice-detection method; an orbit at or below 100 km (sharper maps, more fuel); data within 24 hours of each pass.
+
+### 10.2 What is new in the rules
+
+- **Getting to the Moon:**
+  - The **launcher** places the spacecraft on a trans-lunar trajectory. Its capacity for this is its low-Earth-orbit capacity × a fixed factor (about 0.3, an estimate). A **lunar rideshare** option is cheaper but fixed in date and limited to a small mass.
+  - The **spacecraft** must provide the rest: lunar orbit insertion (about 0.8 km/s, rising slightly for lower orbits) plus station-keeping (about 0.05–0.15 km/s per year, more for lower orbits).
+  - **Propellant mass** follows the rocket equation from the thruster's specific impulse. Propulsion "none" is locked for this mission, with a reason. Fuel mass counts towards the launcher limit.
+- **Communications at 384,000 km:** a radio's data rate at lunar distance is much lower than in Earth orbit (a fixed reduction per radio class, an estimate). UHF is too weak to meet L3. Ground stations are **deep-space stations** (three, about 120° apart in longitude), with longer contacts but a higher rent.
+- **Power:** the same sunlight as near Earth, but low lunar orbits spend up to about 40% of each orbit in shadow, so batteries matter more.
+- **Data and texts:** new ice-detecting instruments (e.g., neutron spectrometer, shortwave infrared spectrometer, small radar), lunar-capable propulsion options, deep-space stations, lunar events and glossary terms. Plausible values, no research.
+
+### 10.3 Events (in addition to the general ones that apply)
+
+| Phase | Event | Tests | Decision |
+|---|---|---|---|
+| Transfer | **Launcher underperformance** | Delta-v margin | Use fuel to correct (less station-keeping, shorter life) **or** accept a higher orbit |
+| Arrival | **Orbit insertion burn anomaly** | Propulsion TRL | Retry at the next opportunity (fuel) **or** settle into a looser orbit |
+| Operations | **Deep-space station outage** | Communications margin (L3) | Rent time on another station (budget) **or** accept the backlog |
+| Operations | **Long eclipse season** | Battery and power margin | Turn instruments off in shadow (less science) **or** risk the battery |
+
+### 10.4 Visuals
+
+- An **Earth–Moon scene**: after launch and separation, the spacecraft follows a transfer arc to the Moon, makes the insertion burn, and settles into a polar orbit. The orbit view then shows the Moon with the spacecraft, its ground track over the poles and the link to Earth.
+- The launch sequence is shared: for this mission it ends with the trans-lunar injection burn instead of an Earth-orbit release.
+
+### 10.5 Mission choice
+
+The game starts with a **mission selection** screen (Wildfire Watch · Lunar Ice Hunter) before the Briefing. Saved attempts and the leaderboard are per mission.

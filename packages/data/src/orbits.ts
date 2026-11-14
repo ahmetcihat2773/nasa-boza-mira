@@ -24,17 +24,36 @@ export const AltitudeOptionSchema = z.strictObject({
 });
 export type AltitudeOption = z.infer<typeof AltitudeOptionSchema>;
 
-/** A ground station: daily contact minutes per orbit type, and its rent for the whole mission (Ground allocation). */
-export const GroundStationSchema = z.strictObject({
-  id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
-  name: z.string().min(1),
-  latDeg: z.number().min(-90).max(90),
-  lonDeg: z.number().min(-180).max(180),
-  contactMinutesPerDay: z.record(OrbitTypeIdSchema, z.number().nonnegative()),
-  costUsd: z.int().positive(),
-  text: z.string().min(1),
-  sources: z.array(SourceSchema).min(1),
-});
+/** Near-Earth stations serve Earth-orbit missions; deep-space stations serve the Moon (design.md section 10.2). */
+export const GroundStationKindSchema = z.enum(["near-earth", "deep-space"]);
+export type GroundStationKind = z.infer<typeof GroundStationKindSchema>;
+
+/**
+ * A ground station: daily contact minutes per orbit type (near-Earth) or at the Moon (deep-space),
+ * and its rent for the whole mission (Ground allocation).
+ */
+export const GroundStationSchema = z
+  .strictObject({
+    id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
+    name: z.string().min(1),
+    kind: GroundStationKindSchema,
+    latDeg: z.number().min(-90).max(90),
+    lonDeg: z.number().min(-180).max(180),
+    contactMinutesPerDay: z.record(OrbitTypeIdSchema, z.number().nonnegative()),
+    /** Deep-space stations only: minutes per day the Moon is above the horizon, usable by a lunar orbiter. */
+    lunarContactMinutesPerDay: z.number().positive().optional(),
+    costUsd: z.int().positive(),
+    text: z.string().min(1),
+    sources: z.array(SourceSchema).min(1),
+  })
+  .superRefine((g, ctx) => {
+    if ((g.kind === "deep-space") !== (g.lunarContactMinutesPerDay !== undefined))
+      ctx.addIssue({
+        code: "custom",
+        path: ["lunarContactMinutesPerDay"],
+        message: "required for deep-space stations, and only for them",
+      });
+  });
 export type GroundStation = z.infer<typeof GroundStationSchema>;
 
 export const OrbitsFileSchema = z.strictObject({
@@ -61,4 +80,9 @@ export const orbitTypes: readonly OrbitType[] = parsed.orbitTypes;
 /** Altitude options, lowest first. */
 export const altitudeOptions: readonly AltitudeOption[] = parsed.altitudes;
 export const maxGroundStations: number = parsed.maxGroundStations;
+/** Every station, near-Earth and deep-space. */
 export const groundStations: readonly GroundStation[] = parsed.groundStations;
+/** Stations for Earth-orbit missions (Wildfire Watch). */
+export const nearEarthStations: readonly GroundStation[] = groundStations.filter((g) => g.kind === "near-earth");
+/** Stations for lunar missions (Lunar Ice Hunter). */
+export const deepSpaceStations: readonly GroundStation[] = groundStations.filter((g) => g.kind === "deep-space");

@@ -2,14 +2,15 @@ import {
   altitudeOptions,
   groundStations,
   instruments,
-  launchers,
+  launchersFor,
   maxGroundStations,
   orbitTypes,
   parts,
   type Subsystem,
 } from "@space-mission/data";
 import { formatUsd, swathWidthKm, trlPenaltyMonths, type Budget, type Mission } from "@space-mission/sim";
-import { instrumentLockReason, launcherLockReason, partFits, partLockReason } from "../lock.ts";
+import { instrumentLockReason, launcherLockReason, missionPartLockReason, partFits, partLockReason } from "../lock.ts";
+import { destinationOf } from "../missions.ts";
 import { useGame } from "../store.ts";
 import { Term } from "./Glossary.tsx";
 
@@ -41,7 +42,7 @@ function TrlText({ trl }: { trl: number }) {
   );
 }
 
-export function PartPicker({ subsystem }: { subsystem: Subsystem }) {
+export function PartPicker({ subsystem, mission }: { subsystem: Subsystem; mission: Mission }) {
   const design = useGame((s) => s.design);
   const pickPart = useGame((s) => s.pickPart);
   const size = design.parts.structure?.fits[0];
@@ -67,7 +68,7 @@ export function PartPicker({ subsystem }: { subsystem: Subsystem }) {
       ) : (
         <ul>
           {options.map((p) => {
-            const lock = partLockReason(p);
+            const lock = partLockReason(p) ?? missionPartLockReason(p, mission);
             const active = chosen?.id === p.id;
             const power = p.powerProducedW ? `+${p.powerProducedW} W produced` : `${p.powerW} W drawn`;
             return (
@@ -100,6 +101,7 @@ const DETECTS: Record<string, string> = {
   daylightFire: "fires by day",
   nightFire: "fires at night",
   smoke: "smoke",
+  waterIce: "water ice",
 };
 
 export function InstrumentPicker({ b }: { b: Budget }) {
@@ -157,6 +159,9 @@ export function InstrumentPicker({ b }: { b: Budget }) {
 export function LauncherPicker({ b, mission }: { b: Budget; mission: Mission }) {
   const chosen = useGame((s) => s.design.launcher);
   const pickLauncher = useGame((s) => s.pickLauncher);
+  const destination = destinationOf(mission.card);
+  const lunar = destination === "lunar-orbit";
+  const launchers = launchersFor(destination);
   return (
     <section className="picker">
       <h3>
@@ -182,6 +187,7 @@ export function LauncherPicker({ b, mission }: { b: Budget; mission: Mission }) 
                 <span className="delta">
                   {formatUsd(l.launchCostUsd)}
                   {perKg} · <Term id="sso">SSO</Term> capacity {l.ssoCapacityKg} kg
+                  {lunar && active && b.launcherCapacityKg !== null && ` · to the Moon about ${b.launcherCapacityKg} kg`}
                   {l.fixedOrbit && ` · fixed orbit: ${l.fixedOrbit.altitudeKm} km ${l.fixedOrbit.type}`}
                 </span>
                 {lock && <span className="lock">Locked: {lock}</span>}
@@ -196,10 +202,59 @@ export function LauncherPicker({ b, mission }: { b: Budget; mission: Mission }) 
 
 const ORBIT_TERM: Record<string, string> = { "sun-synchronous": "sso", polar: "polar-orbit" };
 
-export function OrbitPicker({ b }: { b: Budget }) {
+export function OrbitPicker({ b, mission }: { b: Budget; mission: Mission }) {
   const launcher = useGame((s) => s.design.launcher);
   const setOrbit = useGame((s) => s.setOrbit);
   const fixed = b.orbit.fixedByLauncher;
+  const lunar = destinationOf(mission.card) === "lunar-orbit";
+  const moonAlts = mission.card.transfer?.altitudesKm;
+
+  if (lunar) {
+    return (
+      <section className="picker">
+        <h3>
+          Lunar orbit
+          <span className="tag">
+            <Term id="polar-orbit" focusable>
+              polar
+            </Term>
+            , <Term id="inclination">inclination</Term> {b.orbit.inclinationDeg.toFixed(1)}°
+          </span>
+        </h3>
+        <p className="muted small">
+          The mission needs a polar orbit around the Moon, so only the altitude is yours to choose: lower means sharper
+          maps, more time in shadow and more fuel to hold the orbit.
+        </p>
+        {fixed && (
+          <p className="muted">
+            The{" "}
+            <Term id="rideshare" focusable>
+              {launcher?.name ?? "rideshare"}
+            </Term>{" "}
+            decides the orbit. Choose a dedicated launcher to pick your own.
+          </p>
+        )}
+        <fieldset disabled={fixed} className="orbit-choice">
+          <legend>
+            <Term id="altitude" focusable>
+              Altitude above the Moon
+            </Term>
+          </legend>
+          <select
+            aria-label="Altitude"
+            value={b.orbit.altitudeKm}
+            onChange={(e) => setOrbit({ type: b.orbit.type, altitudeKm: Number(e.target.value) })}
+          >
+            {(moonAlts ?? altitudeOptions.map((a) => a.altitudeKm)).map((alt) => (
+              <option key={alt} value={alt}>
+                {alt} km
+              </option>
+            ))}
+          </select>
+        </fieldset>
+      </section>
+    );
+  }
 
   return (
     <section className="picker">
@@ -291,7 +346,10 @@ export function GroundPicker({ b }: { b: Budget }) {
                 aria-pressed={active}
                 onClick={() => setStations(active ? chosen.filter((c) => c.id !== g.id) : [...chosen, g])}
               >
-                <span className="name">{g.name}</span>
+                <span className="name">
+                  {g.name}
+                  {g.kind === "deep-space" && <span className="tag">deep space</span>}
+                </span>
                 <span className="perf">{g.text}</span>
                 <span className="delta">
                   +{minutes} min/day of <Term id="contact-time">contact</Term> in this orbit · +{formatUsd(g.costUsd)}

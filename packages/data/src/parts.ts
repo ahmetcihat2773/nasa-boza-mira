@@ -20,7 +20,16 @@ export const PerformanceSchema = z.strictObject({
 });
 
 /** Fields a `sources` entry may name, and those that must be covered by at least one entry. */
-const SOURCED_FIELDS = ["massKg", "powerW", "powerProducedW", "costUsd", "performance", "trl"] as const;
+const SOURCED_FIELDS = [
+  "massKg",
+  "powerW",
+  "powerProducedW",
+  "costUsd",
+  "performance",
+  "trl",
+  "specificImpulseS",
+  "lunarRateFactor",
+] as const;
 const REQUIRED_SOURCED = ["massKg", "powerW", "costUsd", "performance", "trl"] as const;
 
 /**
@@ -42,10 +51,23 @@ export const PartSchema = z
     performance: PerformanceSchema,
     trl: z.int().min(1).max(9),
     fits: z.array(SpacecraftSizeSchema).min(1),
+    /** Propulsion only (except "no propulsion"): for the rocket equation on lunar missions. */
+    specificImpulseS: z.number().positive().optional(),
+    /** Radios only: data-rate multiplier at lunar distance (design.md section 10.2). */
+    lunarRateFactor: z.number().positive().max(1).optional(),
     basedOn: z.string().min(1).optional(),
     sources: z.array(SourceSchema).min(1),
   })
   .superRefine((p, ctx) => {
+    const needsIsp = p.subsystem === "propulsion" && p.performance.value > 0;
+    if (needsIsp !== (p.specificImpulseS !== undefined))
+      ctx.addIssue({
+        code: "custom",
+        path: ["specificImpulseS"],
+        message: "required for every propulsion part with thrust, and only for them",
+      });
+    if ((p.subsystem === "comms") !== (p.lunarRateFactor !== undefined))
+      ctx.addIssue({ code: "custom", path: ["lunarRateFactor"], message: "required for radios, and only for them" });
     const expectedRole = p.subsystem === "comms" ? "ground" : "spacecraft";
     if (p.role !== expectedRole) {
       ctx.addIssue({ code: "custom", path: ["role"], message: `a ${p.subsystem} part belongs to ${expectedRole}` });

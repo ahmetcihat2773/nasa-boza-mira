@@ -40,7 +40,7 @@ export const AdvisorTriggerSchema = z.union([
     "request",
     "all-requirements-met",
   ]),
-  z.templateLiteral(["requirement-failed:R", z.int().positive()]),
+  z.templateLiteral(["requirement-failed:", z.enum(["R", "L"]), z.int().positive()]),
 ]);
 export type AdvisorTrigger = z.infer<typeof AdvisorTriggerSchema>;
 
@@ -49,6 +49,8 @@ export const AdvisorLineSchema = z.strictObject({
   /** "any": spoken by whichever role the situation applies to. */
   role: z.union([RoleSchema, z.literal("any")]),
   when: AdvisorTriggerSchema,
+  /** Shown only in this mission; lines without it apply to every mission. */
+  missionId: z.string().min(1).optional(),
   text: z.string().min(1),
 });
 export type AdvisorLine = z.infer<typeof AdvisorLineSchema>;

@@ -14,6 +14,7 @@ import type { Attempt } from "../flow.ts";
 export function fromApi(a: ApiAttempt): Attempt {
   return {
     number: a.id,
+    missionId: a.missionId,
     nickname: a.nicknames.join(", "),
     seed: Number(a.seed),
     design: a.design,

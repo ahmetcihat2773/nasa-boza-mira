@@ -3,7 +3,16 @@
  * sim and the web app import from here and never read the JSON files directly.
  */
 export { DataQualitySchema, SourceSchema, type DataQuality, type Source } from "./sources.ts";
-export { FixedOrbitSchema, LauncherListSchema, LauncherSchema, launchers, type Launcher } from "./launchers.ts";
+export {
+  FixedOrbitSchema,
+  LauncherDestinationSchema,
+  LauncherListSchema,
+  LauncherSchema,
+  allLaunchers,
+  launchers,
+  launchersFor,
+  type Launcher,
+} from "./launchers.ts";
 export {
   CostMethodSchema,
   PartRoleSchema,
@@ -37,33 +46,44 @@ export {
 } from "./instruments.ts";
 export {
   BonusObjectiveSchema,
+  DestinationSchema,
+  LockSchema,
   MetricSchema,
   MissionCardSchema,
   MissionCardsFileSchema,
   RequirementCheckSchema,
   RequirementSchema,
   RoleSchema,
+  TransferSchema,
+  lunarIceHunter,
   missionCards,
   wildfireWatch,
   type BonusObjective,
+  type Destination,
+  type Lock,
   type Metric,
   type MissionCard,
+  type Transfer,
   type Requirement,
   type RequirementCheck,
   type Role,
 } from "./missionCards.ts";
 export {
   AltitudeOptionSchema,
+  GroundStationKindSchema,
   GroundStationSchema,
   OrbitTypeIdSchema,
   OrbitTypeSchema,
   OrbitsFileSchema,
   altitudeOptions,
+  deepSpaceStations,
   groundStations,
   maxGroundStations,
+  nearEarthStations,
   orbitTypes,
   type AltitudeOption,
   type GroundStation,
+  type GroundStationKind,
   type OrbitType,
   type OrbitTypeId,
 } from "./orbits.ts";

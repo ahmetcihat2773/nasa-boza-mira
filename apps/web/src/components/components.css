@@ -466,3 +466,22 @@
   border: 1px solid var(--line);
   border-radius: 4px;
 }
+
+/* Mission choice (T28.1) */
+.mission-cards {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.mission-card {
+  height: 100%;
+  align-content: start;
+  gap: 6px;
+  padding: 14px 16px;
+}
+.mission-card .name {
+  font-size: 18px;
+}
+.mission-card .perf {
+  font-size: 14px;
+}

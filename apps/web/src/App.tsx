@@ -1,11 +1,12 @@
 import { orbitTypes } from "@space-mission/data";
-import { WILDFIRE_WATCH, computeBudget, formatUsd, runMission, type MissionResult } from "@space-mission/sim";
+import { computeBudget, formatUsd, runMission, type MissionResult } from "@space-mission/sim";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import "./components/components.css";
 import {
   ApprovalScreen,
   BriefingScreen,
   EventsScreen,
+  MissionSelectScreen,
   PhaseStepper,
   ResultsScreen,
   SetupScreen,
@@ -16,14 +17,13 @@ import { GlossaryButton, Term } from "./components/Glossary.tsx";
 import { Meter } from "./components/Meter.tsx";
 import { RequirementsPanel } from "./components/Requirements.tsx";
 import { ROLES, RoleBudget, RoleTabs } from "./components/RoleTabs.tsx";
+import { destinationOf, missionById, transferMeters } from "./missions.ts";
 import { useGame } from "./store.ts";
 import { adjustedMission, coordinationOf, useTeam } from "./team.ts";
 
 // The 3D scenes load on demand so the design screen appears quickly.
 const OrbitView = lazy(() => import("./scene/OrbitView.tsx"));
 const LaunchScene = lazy(() => import("./scene/LaunchScene.tsx"));
-
-const baseMission = WILDFIRE_WATCH;
 
 export function App() {
   const design = useGame((s) => s.design);
@@ -32,9 +32,14 @@ export function App() {
   const reset = useGame((s) => s.reset);
   // Team play (T20): accepted budget requests and trades move allocations between roles.
   const requests = useTeam((s) => s.requests);
-  const mission = useMemo(() => adjustedMission(baseMission, requests), [requests]);
+  // The chosen mission (T28): Wildfire Watch until the player picks another card.
+  const missionId = useFlow((s) => s.missionId);
+  const mission = useMemo(() => adjustedMission(missionById(missionId), requests), [missionId, requests]);
+  const destination = destinationOf(mission.card);
+  const lunar = destination === "lunar-orbit";
   const b = computeBudget(design, mission);
   const failed = b.checks.filter((c) => !c.ok && c.blocking);
+  const transfer = transferMeters(b);
 
   // Game flow (T19): phases, events, the run and its attempts.
   const phase = useFlow((s) => s.phase);
@@ -42,7 +47,9 @@ export function App() {
   const goTo = useFlow((s) => s.goTo);
   const seed = useFlow((s) => s.seed);
   const decisions = useFlow((s) => s.decisions);
-  const attempts = useFlow((s) => s.attempts);
+  const allAttempts = useFlow((s) => s.attempts);
+  // Results, retries and comparisons stay within the chosen mission (design.md section 10.5).
+  const attempts = useMemo(() => allAttempts.filter((a) => a.missionId === missionId), [allAttempts, missionId]);
   /** The run as it stands at the launch (decisions so far), for the launch outcome. */
   const [launchRun, setLaunchRun] = useState<MissionResult | null>(null);
   const finish = () => {
@@ -79,6 +86,7 @@ export function App() {
           <LaunchScene
             pass={launchRun?.launch?.ok ?? false}
             missionName={mission.name}
+            destination={destination}
             design={design}
             failure={b.pass ? "anomaly" : "scrub"}
             reasons={b.pass ? (launchRun?.failureReasons ?? []) : failed.map((c) => c.message)}
@@ -110,6 +118,7 @@ export function App() {
       <PhaseStepper phase={phase} />
 
       {phase === "setup" && <SetupScreen />}
+      {phase === "mission" && <MissionSelectScreen />}
       {phase === "briefing" && <BriefingScreen mission={mission} />}
       {phase === "approval" && <ApprovalScreen b={b} onApprove={() => goTo(b.pass ? "development" : "launch")} />}
       {phase === "development" && (
@@ -149,6 +158,7 @@ export function App() {
               swathKm={b.swathKm}
               stations={b.groundStations}
               design={design}
+              destination={destination}
               live
             />
           </Suspense>
@@ -176,6 +186,7 @@ export function App() {
                 swathKm={b.swathKm}
                 stations={b.groundStations}
                 design={design}
+                destination={destination}
                 live={false}
               />
             </Suspense>
@@ -187,12 +198,30 @@ export function App() {
               lvl={b.maxMassKg === null ? "warn" : undefined}
             />
             <Meter
-              label={`Mass vs launcher capacity (${orbitName})`}
+              label={lunar ? "Mass vs launcher capacity to the Moon" : `Mass vs launcher capacity (${orbitName})`}
               value={`${b.massKg.toFixed(1)} / ${b.launcherCapacityKg ?? "-"} kg`}
               used={b.massKg}
               limit={b.launcherCapacityKg ?? 0}
               lvl={b.launcherCapacityKg === null ? "warn" : undefined}
             />
+            {transfer && (
+              <>
+                <Meter
+                  label="Delta-v needed vs available"
+                  value={`${transfer.neededKmS.toFixed(2)} / ${transfer.availableKmS.toFixed(2)} km/s`}
+                  used={transfer.neededKmS}
+                  limit={transfer.availableKmS}
+                  lvl={transfer.availableKmS === 0 ? "bad" : undefined}
+                />
+                <p className="muted small">
+                  <Term id="delta-v" focusable>
+                    Delta-v
+                  </Term>{" "}
+                  for lunar orbit insertion and station-keeping; the thruster needs {transfer.propellantKg.toFixed(1)} kg of
+                  propellant, counted in the mass above.
+                </p>
+              </>
+            )}
             <Meter
               label="Power drawn vs produced"
               value={`${b.powerDrawnW.toFixed(1)} / ${b.powerProducedW} W`}

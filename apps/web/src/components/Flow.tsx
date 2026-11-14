@@ -16,6 +16,7 @@ import { VotePanel, useWho } from "./Team.tsx";
 import { ROLE_LABEL, ROLE_ORDER, assignRoles, useTeam, type Player } from "../team.ts";
 import { FlightDirectorDebrief, Leaderboard, fromApi, useRecentAttempts } from "./ResultsExtras.tsx";
 import { ROLES } from "./RoleTabs.tsx";
+import { DESTINATION_LABEL, DIFFICULTY_LABEL, MISSIONS, destinationOf } from "../missions.ts";
 
 // ---------- Phase stepper ----------
 
@@ -137,6 +138,46 @@ export function SetupScreen() {
   );
 }
 
+// ---------- 0b. Mission choice ----------
+
+/** Cards for each mission (design.md section 10.5); picking one opens its briefing. */
+export function MissionSelectScreen() {
+  const chooseMission = useFlow((s) => s.chooseMission);
+  const current = useFlow((s) => s.missionId);
+  return (
+    <section className="screen card">
+      <div className="kicker">Choose your mission</div>
+      <h2>Which mission will your team design?</h2>
+      <p className="muted">Each mission has its own goal, budget, rules, saved attempts and leaderboard.</p>
+      <ul className="mission-cards">
+        {MISSIONS.map(({ id, card }) => {
+          const dest = destinationOf(card);
+          return (
+            <li key={id}>
+              <button
+                className={`option mission-card ${id === current ? "active" : ""}`}
+                aria-pressed={id === current}
+                onClick={() => chooseMission(id)}
+              >
+                <span className="kicker">
+                  {DESTINATION_LABEL[dest]} · {DIFFICULTY_LABEL[card.difficulty]}
+                </span>
+                <span className="name">{card.name}</span>
+                <span className="perf">{card.objective}</span>
+                <span className="muted small">{card.whyItMatters}</span>
+                <span className="delta">
+                  Budget {formatUsd(card.constraints.budgetUsd)} · deadline {card.deadlineMonths} months ·{" "}
+                  {card.requirements.length} requirements
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
 // ---------- 1. Briefing ----------
 
 export function BriefingScreen({ mission }: { mission: Mission }) {
@@ -172,7 +213,7 @@ export function BriefingScreen({ mission }: { mission: Mission }) {
               </Term>
               : {c.deadlineMonths} months (missing it means waiting {c.lateWaitMonths} months for the next launch)
             </li>
-            <li>Destination: {c.destination}</li>
+            <li>Destination: {c.destinationText}</li>
             <li>
               Target: {c.targetRegion.name} ({c.targetRegion.widthKm} km wide, latitude {c.targetRegion.latDeg}°)
             </li>
@@ -214,9 +255,14 @@ export function BriefingScreen({ mission }: { mission: Mission }) {
           </ul>
         </div>
       </div>
-      <button className="launch" onClick={() => goTo("design")}>
-        Start the design
-      </button>
+      <div className="actions">
+        <button className="launch" onClick={() => goTo("design")}>
+          Start the design
+        </button>
+        <button className="ghost" onClick={() => goTo("mission")}>
+          Choose another mission
+        </button>
+      </div>
     </section>
   );
 }
@@ -353,7 +399,11 @@ export function EventsScreen(props: {
         {PHASE_TITLE[phase]} · seed {seed}
       </div>
       <h2>{PHASE_TITLE[phase]}</h2>
-      <p className="muted">{PHASE_INTRO[phase]}</p>
+      <p className="muted">
+        {phase === "operations" && destinationOf(mission.card) === "lunar-orbit"
+          ? "The spacecraft is in polar orbit around the Moon, mapping ice in the shadowed craters. Mission time runs fast."
+          : PHASE_INTRO[phase]}
+      </p>
       {props.children}
       {!b.pass && <p className="bad">The design did not pass its review, so it cannot fly.</p>}
       {b.pass && events.length === 0 && <p className="ok">Nothing unexpected happened in this phase.</p>}
@@ -435,7 +485,7 @@ export function ResultsScreen(props: { mission: Mission; attempt: Attempt; previ
   return (
     <section className="screen card">
       <div className="kicker">
-        Results · attempt {attempt.number} · seed {attempt.seed}
+        Results · {mission.name} · attempt {attempt.number} · seed {attempt.seed}
       </div>
       <div className={`result ${r.success ? "pass" : "fail"}`}>
         <div className="verdict">
