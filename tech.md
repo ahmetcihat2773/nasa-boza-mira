@@ -4,8 +4,6 @@
 > Project type: **open source (MIT), educational**.
 > Principle: **don't reinvent the wheel**. Reuse existing NASA/agency data, open-source libraries and proven tools; build only what nothing else covers.
 
-Items marked *(unverified)* could not be confirmed during research and should be checked before relying on them.
-
 ---
 
 ## 1. TL;DR
@@ -42,7 +40,7 @@ Items marked *(unverified)* could not be confirmed during research and should be
 | Frontend | React + Vite, Zustand, Tailwind + shadcn/ui, Framer Motion | Fast way to a polished interface |
 | Charts | visx (D3-based) | Custom mission-control gauges |
 | 3D | React Three Fiber + drei + postprocessing | Orbits, launch sequence, spacecraft model |
-| Multiplayer | Colyseus | Authoritative rooms, delta state sync, reconnection, `maxClients = 4`; server runs the sim so competitive mode and leaderboards can't be cheated |
+| Multiplayer | Colyseus | Authoritative rooms, delta state sync, reconnection, `maxClients = 4`; server runs the sim so leaderboard scores can't be cheated |
 | Database | Supabase (Postgres) + Drizzle · **local via Supabase CLI** | Saved designs, runs, nickname leaderboards; same code locally and online |
 | Running | **Local first** (one command starts everything, see section 5) · optional 24-hour online deploy: web on Vercel, server on Railway / Fly.io, Supabase cloud | Submission is a video, so the demo is recorded locally |
 | Quality | Vitest (sim), Playwright (main game path), GitHub Actions CI | Main flow tested on every push |
@@ -56,9 +54,9 @@ Items marked *(unverified)* could not be confirmed during research and should be
 
 | Game feature | Existing resource | Integration | Licence | What we build |
 |---|---|---|---|---|
-| Parts catalogue (power, batteries, radios, OBC, ADCS, propulsion, structure) | [NASA SST-SOA 2024](https://www.nasa.gov/smallsat-institute/sst-soa) + NASA CubeSat 101 (challenge resource) | Extract representative values into `parts.json` | US Government work | ~30–50 parts in 3 tiers (basic / standard / advanced) |
+| Parts catalogue (power, batteries, radios, OBC, ADCS, propulsion, structure) | [NASA SST-SOA 2024](https://www.nasa.gov/smallsat-institute/sst-soa) + [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf) (challenge resource) | Extract representative values into `parts.json` | US Government work | ~30–50 parts in 3 tiers (basic / standard / advanced) |
 | Scientific instruments (mass, power, data rate, science value) | Instruments of real flown missions: NASA NSSDCA experiment entries and NASA mission pages (e.g., cameras, spectrometers, magnetometers, radar) | Curate ~15–25 representative instruments into `instruments.json`, each tagged with the objectives it serves | US Government work (facts) | Science value per objective, locking rules |
-| Launch vehicles | [Launch Library 2](https://ll.thespacedevs.com/2.2.0/config/launcher/75/?format=api) | Python script → `launchers.json` (handle null capacities) | Check LL2 terms *(unverified)* | ~10 curated vehicles + rideshare option |
+| Launch vehicles | [Launch Library 2](https://ll.thespacedevs.com/2.2.0/config/launcher/75/?format=api) | Script → `launchers.json` (handle null capacities). Free tier: 15 requests/hour per IP, so fetch once and commit the JSON | Free access; formal attribution terms not published – credit The Space Devs | ~10 curated vehicles + rideshare option |
 | Deep-space launch capability | [NASA LSP Performance](https://elvperf.ksc.nasa.gov/) | Copy several mass-vs-C3 points per vehicle | US Government | Interpolation in `sim` |
 | Earth orbits (LEO, SSO, GEO, Moon) | GMAT (challenge resource), astropy | **Offline**: generate delta-v, periods and eclipse fractions → `orbits.json`; GMAT also validates Orrery's interplanetary values | Apache-2.0 / BSD | Orbit option table |
 | Real satellites in LEO view | satellite.js + CelesTrak TLEs | npm + fetch (cache locally) | MIT / free | Optional ISS fly-by |
@@ -71,7 +69,7 @@ Items marked *(unverified)* could not be confirmed during research and should be
 | Mission visualisation | [NASA Eyes embed](https://science.nasa.gov/eyes/museums) | iframe with `?embed=true&locked=true` | NASA | Pick deep link per scenario |
 | Multiplayer rooms | [Colyseus](https://docs.colyseus.io/) | `npm create colyseus-app@latest` | MIT | Room schema, roles, intents |
 | Game phases and roles | JPL CML paper, NASA MDL, "Design and Develop Science Missions" (challenge resources) | Structure for game flow and explanations | — | Phase screens and explanation texts |
-| Tutorials, tooltips, glossary | NASA/JPL "Basics of Space Flight" *(check current URL)*, NASA CubeSat 101, Orrery's glossary pattern | Link as "learn more"; write our own short explanations | US Government work | Plain-language texts for every resource and decision |
+| Tutorials, tooltips, glossary | [NASA/JPL "Basics of Space Flight"](https://science.nasa.gov/learn/basics-of-space-flight), [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf), Orrery's glossary pattern | Link as "learn more"; write our own short explanations | US Government work | Plain-language texts for every resource and decision |
 
 ### Too heavy to use live (use offline or cite)
 
@@ -209,7 +207,7 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 - Online: the server host must have the Claude CLI installed and authenticated; otherwise leave it local-only.
 - **Single-player** runs the sim in the browser (works offline).
 - **Team mode**: Colyseus room; each role edits only its part of the design; the server validates intents and broadcasts state.
-- **Competitive mode**: two rooms, same scenario, same seed.
+- **Competitive mode**: out of scope for now (see D6).
 
 ---
 
@@ -234,8 +232,8 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 | **M1 – Single-player loop** | Budgets, validation, Kepler/Hohmann | Builder + dashboard | LL2 script, SST-SOA parts, LSP C3 points | R3F scene with NASA GLBs |
 | **M2 – Simulation & feedback** | Events, scoring, cause chains, tests | Report screen, tutorial | Mission matcher | Launch animation, Eyes embed |
 | **M3 – Team play** | Role-based validation | Lobby, role UI | Colyseus rooms + roles | Presence indicators |
-| **M4 – Content & balance** | Scenarios, difficulty levels, sandbox | Share / compare designs | Postgres leaderboard | Sound, polish |
-| **M5 – Extras** | Competitive mode | Accessibility, mobile | Optional 24-hour online deploy | AI Flight Director (`claude -p`) + template fallback |
+| **M4 – Content & balance** | Scenarios, difficulty levels, sandbox | Share / compare designs | Supabase leaderboard (nicknames) | Sound, polish |
+| **M5 – Extras** | — | Accessibility, mobile | Optional 24-hour online deploy | AI Flight Director (`claude -p`) + template fallback |
 | **M6 – Presentation** | GMAT validation slide | Project page | CREDITS + data sources | Demo video + slides |
 
 ---
@@ -271,7 +269,7 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 - [x] `LICENSE` file for code (MIT)
 - [x] `CREDITS.md` created – keep it updated as assets, datasets and libraries are added
 - [ ] "Data sources" section in README and on the project page
-- [ ] Launch Library 2 terms checked and The Space Devs credited *(unverified)*
+- [x] Launch Library 2 checked: free, 15 requests/hour; no formal attribution terms found – credit The Space Devs anyway
 - [ ] MIT credits for Orrery, Colyseus, satellite.js
 
 ---
@@ -285,6 +283,7 @@ If we want a public link during judging: web → Vercel, Colyseus → Railway / 
 | D3 | Game language | **English.** |
 | D4 | AI Flight Director | **Claude Code headless mode (`claude -p`)**, with a template-based fallback so the game works without it. |
 | D5 | Database | **Supabase**, run locally with the Supabase CLI (Docker); Supabase cloud only for the optional online deploy. |
+| D6 | Competitive mode (team vs team) | **Out of scope for now.** README lists it only as an optional idea. Can be added later as asynchronous competition (same scenario + seed, compared on the leaderboard). |
 
 ## Sources
 

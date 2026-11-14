@@ -16,8 +16,8 @@ Add every asset, dataset and library here **when it is added to the repo**.
 | Source | Used for | Licence / terms | Credit |
 |---|---|---|---|
 | [NASA State-of-the-Art of Small Spacecraft Technology (2024)](https://www.nasa.gov/smallsat-institute/sst-soa) | Spacecraft part specs | US Government work | NASA Small Spacecraft Systems Virtual Institute |
-| [NASA CubeSat 101](https://www.nasa.gov/) | CubeSat concepts and values | US Government work | NASA CubeSat Launch Initiative |
-| [Launch Library 2 – The Space Devs](https://thespacedevs.com/) | Launch vehicle capacities and costs | *Check terms before release* | The Space Devs |
+| [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf) | CubeSat concepts and values | US Government work | NASA CubeSat Launch Initiative |
+| [Launch Library 2 – The Space Devs](https://thespacedevs.com/) | Launch vehicle capacities and costs | Free API (15 requests/hour); no formal attribution terms published | The Space Devs |
 | [NASA LSP Performance](https://elvperf.ksc.nasa.gov/) | Payload mass vs C3 | US Government work | NASA Launch Services Program |
 | [NASA GMAT](https://software.nasa.gov/) | Offline trajectory data / validation | Apache-2.0 | NASA Goddard Space Flight Center |
 | [DSN Telecommunications Link Design Handbook 810-005](https://deepspace.jpl.nasa.gov/dsndocs/810-005/) | Comms reference values | US Government work | NASA JPL |
