@@ -223,13 +223,15 @@ pnpm dev              # web (Vite) + local API, in parallel via Turborepo
 
 ## 7. Roadmap (milestone-based)
 
+M1–M3 are built around a **single mission, Wildfire Watch** (Earth orbit only – see [design.md](design.md) section 4). More missions follow in M4, once the prototype works.
+
 | Milestone | Sim | Web | Data & Server | Visuals |
 |---|---|---|---|---|
 | **M0 – Foundation** | `sim` API, Zod schemas | App shell | Monorepo, CI, local API skeleton + SQLite | Style guide |
 | **M1 – Single-player loop** | Budgets, validation, Kepler/Hohmann | Builder + dashboard | LL2 script, SST-SOA parts, LSP C3 points | R3F scene with NASA GLBs |
 | **M2 – Simulation & feedback** | Events, scoring, cause chains, tests | Report screen, tutorial | Mission matcher | Launch animation, Eyes embed |
 | **M3 – Team play (hot-seat)** | Role-based validation | Player setup, role turns, voting UI | Save runs per team | Turn / role indicators |
-| **M4 – Content & balance** | Scenarios, difficulty levels, sandbox | Share / compare designs | SQLite leaderboard (nicknames) | Sound, polish |
+| **M4 – Content & balance** | More missions (Lunar, Mars – uses Orrery interplanetary modules), difficulty levels, sandbox | Share / compare designs | SQLite leaderboard (nicknames) | Sound, polish |
 | **M5 – Extras** | — | Accessibility | — | AI Flight Director (`claude -p`) + template fallback; real satellites (ISS) in LEO view |
 | **M6 – Presentation** | GMAT validation slide | Project page | CREDITS + data sources | Demo video + slides |
 
