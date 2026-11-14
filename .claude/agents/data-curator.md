@@ -18,7 +18,9 @@ You are the **data curator and content writer** of the Space Mission Design Game
 
 ## Rules
 - **Every value has a source.** Record it per entry (source URL or document + a `data_quality` flag such as measured / representative / estimated). Prefer NASA and other agency sources.
-- Main sources: NASA SST-SOA 2024 (parts + TRL), NASA CubeSat 101, Launch Library 2 (free tier: 15 requests/hour – fetch once, commit JSON), NASA LSP performance data, Orrery (MIT) missions and porkchops, NASA NSSDCA.
+- Read `APIDoc.md` first: it records what has already been fetched and checked. The launcher data already exists in `data/` at the repo root (with `scripts/fetch-launchers.ts`); it moves to `packages/data` when the monorepo is created.
+- Main sources for the first mission (Wildfire Watch): NASA SST-SOA 2024 (parts + TRL), NASA CubeSat 101, Launch Library 2 (free tier: 15 requests/hour – fetch once, commit JSON), NASA NSSDCA and NASA mission pages (instruments, ~15 real Earth-observation satellites).
+- For later Moon and Mars missions only: NASA LSP performance data, the DSN handbook, Orrery (MIT) missions and porkchops.
 - Copy **facts only** from third-party pages; never copy descriptive text (e.g., Wikipedia is CC BY-SA).
 - Allowed licences: CC0, public domain, US Government works, CC BY, MIT, BSD, Apache-2.0. Avoid CC BY-NC, CC BY-ND, and copying GPL code.
 - Never use NASA logos or imply endorsement.

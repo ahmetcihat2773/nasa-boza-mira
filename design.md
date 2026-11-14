@@ -37,8 +37,9 @@ Every part in `parts.json` carries a **TRL (Technology Readiness Level, 1–9)**
 - **Total development time** = mission class base time + sum of part penalties.
   - Base time is set **on the mission card**. Wildfire Watch: CubeSat 15 months · small satellite 24 months (deadline 30 months, so a small satellite is possible but leaves little room for low-TRL parts). Later, larger missions use longer base times (e.g., ≥ 60 months).
 - **Trade-off:** lower-TRL parts perform better (lighter, more efficient, more data) but add time and risk.
-- **Cost of time:** every development month costs the team's monthly cost from the budget.
+- **Cost of time:** every development month costs the team's monthly cost from the budget. The monthly cost is set on the mission card and charged to the roles in proportion to their budget allocations.
 - **Deadlines and launch windows:** every mission has a "ready by" date. In Wildfire Watch it is the next fire season; in later missions such as Mars it is a launch window (every ~26 months, from Orrery's porkchop data). Being late means waiting for the next opportunity, which costs more months of budget.
+- **Missing the date is a penalty, not an automatic failure:** the team keeps paying its monthly cost while it waits, and the schedule score (section 5) is zero. The mission fails only if the budget runs out.
 - **Risk:** in the simulation, each part's failure probability depends on its TRL.
 
 ### In the UI
@@ -46,7 +47,7 @@ Every part in `parts.json` carries a **TRL (Technology Readiness Level, 1–9)**
 - The dashboard shows a **"Ready for launch" date** next to the other resources.
 - Selecting a part shows its effect live, e.g. `+12 kg · +8 W · +$4M · +9 months`.
 - The post-mission report explains the consequences, e.g.:
-  > "The new-generation camera increased science value by 40%, but added 9 months of development. The launch window was missed and the 26-month wait cost $120M."
+  > "The new-generation camera increased science value by 40%, but added 9 months of development. The fire-season deadline was missed, and the 12-month wait cost $2.4M of the budget."
   >
 
 ---
@@ -125,7 +126,10 @@ In solo play, requests are raised by **role advisors**, e.g. the Science advisor
 Coordination counts towards the score (detailed in section 5):
 
 - Accepted requests that **paid off** (e.g., the extra power enabled an instrument that produced science).
-- The mission ending with **balanced resource use** (no role's budget exhausted, no large unused mass or power capacity).
+- **Trades** that helped both sides.
+- No role ending the design over its budget allocation without an accepted request.
+
+How well the resources themselves are used is scored separately, under resource efficiency.
 
 ---
 
@@ -136,7 +140,7 @@ Coordination counts towards the score (detailed in section 5):
 ### 4.1 Model
 
 - **The game defines the objective; the player designs the mission.** Each mission is a fixed **mission card** with an objective, requirements and constraints.
-- **Requirements** decide success: if a required item is not met, the mission fails and the report explains why. If they are met, the score comes from science value, efficiency, schedule and coordination (section 5).
+- **Requirements** decide success: if a required item is not met, the mission fails and the report explains why. If they are met, the score comes from science value, resource efficiency, schedule, risk management and coordination (section 5).
 - There is still **no single perfect solution**: many combinations of parts, orbits and launchers can meet the same requirements.
 
 ### 4.2 Scope
@@ -163,7 +167,6 @@ Coordination counts towards the score (detailed in section 5):
 | R2 | Carry an instrument able to **detect active fires in daylight**                         | Science                                     |
 | R3 | Downlink **≥ 1 GB of data per day**                                                    | Ground, Spacecraft (power)                  |
 | R4 | Operate for **≥ 1 year**                                                               | Spacecraft, Launch (altitude → orbit decay) |
-| R5 | Be **ready to launch before the next fire season** (development deadline, section 1) | All (TRL choices)                           |
 
 **Constraints:**
 
@@ -173,8 +176,10 @@ Coordination counts towards the score (detailed in section 5):
 | Spacecraft size      | From a CubeSat (6U / 12U) up to a ~150 kg small satellite                                   |
 | Number of satellites | **One** (constellations are a later feature)                                                |
 | Base development time | CubeSat 15 months · small satellite 24 months (section 1)                                  |
-| Development deadline | 30 months (next fire season) – missing it delays the mission by a year and costs budget     |
+| Development deadline | 30 months (next fire season) – missing it means a 12-month wait at the team's monthly cost: a penalty, not a failure (section 1)     |
 | Parts available      | TRL ≥ 5 (TRL ≤ 4 locked on easy)                                                          |
+| Team cost            | $0.2M per month of development or waiting, charged to the roles in proportion to their allocations |
+| Launch options       | Launchers that cost more than the whole budget are shown locked ("too expensive for this mission"). **Rideshare** is cheapest but goes to a fixed ~525 km sun-synchronous orbit. A launcher's capacity to sun-synchronous orbit is lower than its listed LEO capacity (fixed reduction factor, to be sourced). |
 | Budget allocations   | Launch 35% · Spacecraft 30% · Science 25% · Ground 10% (section 3)                          |
 
 **Bonus objectives (extra science score):**
@@ -189,10 +194,10 @@ Coordination counts towards the score (detailed in section 5):
 - **Revisit vs sharpness (R1):** with one satellite, a daily revisit needs a wide swath – a wide-angle instrument or a higher orbit – and both give less sharp images. The sim computes revisit from swath width and altitude.
 - **Altitude:** a lower orbit gives sharper images but decays sooner (R4).
 - **Orbit type:** a sun-synchronous orbit passes at the same local time every day; other orbits may revisit more often.
-- **Size and launch:** a CubeSat on a rideshare (cheap, limited) vs a small satellite on a dedicated launch (capable, expensive).
-- **Technology vs time:** advanced parts improve performance but risk missing the fire season (R5).
+- **Launch choice:** a rideshare is cheap but its orbit is fixed; a dedicated small launcher lets the team choose the orbit but takes a large share of the budget; a cheap launcher with a poor record risks losing the mission at launch (section 6).
+- **Technology vs time:** advanced parts improve performance but risk missing the fire-season deadline.
 
-**Real-mission comparison:** Earth-observation missions such as Landsat, Sentinel, GOES and Planet Labs (available in Orrery's data), plus NASA/NOAA fire-monitoring instruments – exact matches are picked when `missions.json` is curated.
+**Real-mission comparison:** about 15 real Earth-observation satellites (e.g., Landsat, Terra/Aqua, Suomi NPP, GOES), curated by hand from NASA mission pages into `missions.json`.
 
 ---
 
@@ -201,8 +206,12 @@ Coordination counts towards the score (detailed in section 5):
 **Status: decided.** The challenge asks to reward *mission success, scientific value, efficient use of resources, effective decision making and successful collaboration* ([CHALLENGE.md](CHALLENGE.md)).
 
 ### 5.1 Success gate
-All mission requirements (R1–R5 for Wildfire Watch) must be met.
-- If any requirement fails, the mission is **failed**: no score, and the report explains the cause, e.g.:
+A mission succeeds when all of these hold:
+- every mission requirement is met (R1–R4 for Wildfire Watch),
+- the launch succeeds (section 6),
+- the budget never runs out.
+
+If any of them fails, the mission is **failed**: no score, and the report explains the cause, e.g.:
   > "R3 not met: only 0.6 GB/day downlinked because a single ground station was selected."
 
 ### 5.2 Score (successful missions, 0–1000)
@@ -210,10 +219,10 @@ All mission requirements (R1–R5 for Wildfire Watch) must be met.
 | Component | Weight | Measures |
 |---|---|---|
 | **Science value** | 40% | Instrument quality, bonus objectives met, data collected |
-| **Resource efficiency** | 20% | Remaining budget and allocations – neither waste nor allocations run down to zero |
-| **Schedule** | 15% | How early the mission was ready before its deadline |
+| **Resource efficiency** | 20% | Budget left at the end, and how well mass and power capacity are used – neither large unused capacity nor margins at zero |
+| **Schedule** | 15% | How early the mission was ready before its deadline (zero if the deadline was missed) |
 | **Risk management** | 15% | Failures and events during the mission, and how the team responded |
-| **Coordination** | 10% | Section 3.5: requests that paid off, balanced resource use |
+| **Coordination** | 10% | Section 3.5: requests and trades that paid off |
 
 - Weights are defined **on the mission card**, so later missions can use different weights.
 
@@ -241,6 +250,7 @@ All mission requirements (R1–R5 for Wildfire Watch) must be met.
 | Development | **Supplier delay** | Schedule margin | Buy a more expensive alternative part (budget) **or** accept the delay (time) |
 | Development | **Test failure** | Low-TRL parts | Re-test the part (+time) **or** swap to a proven part (−performance) |
 | Launch | **Launch delay** (weather, rocket) | Margin to the deadline | — |
+| Launch | **Launch failure** | The chosen launcher's real success rate (rolled once per run, in addition to the 3–5 events) | None – the mission ends, and the report links it to the launcher choice |
 | Operations | **Solar storm** | Power margin, radiation tolerance | Enter safe mode (lose 2 days of science) **or** keep operating (failure risk) |
 | Operations | **Space debris approach** | Fuel / propulsion | Avoidance manoeuvre (uses fuel) **or** take the risk |
 | Operations | **Part failure** | TRL-based probability, redundancy | Switch to backup (if any) **or** continue degraded |
@@ -264,7 +274,7 @@ On easy, events are rarer and milder. When difficulty levels are added later, th
 | Phase | What happens | Who acts |
 |---|---|---|
 | **0. Setup** | Choose mode (solo / team), enter nicknames, assign roles | Everyone |
-| **1. Briefing** | The mission card: objective, requirements (R1–R5), constraints, budget allocations | Everyone reads |
+| **1. Briefing** | The mission card: objective, requirements (R1–R4), deadline, constraints, budget allocations | Everyone reads |
 | **2. Concept** | Each role makes its first choices in its own area. The dashboard shows conflicts but does not block them. | Roles in turn |
 | **3. Trade-offs** | Requests, trades and votes (section 3). Roles change their choices. As many rounds as the team wants. | Roles in turn |
 | **4. Design approval** | Final check: status of every requirement, and that mass and orbit are compatible with the launcher. | Vote |
@@ -284,7 +294,7 @@ On easy, events are rarer and milder. When difficulty levels are added later, th
 
 From the results screen:
 
-- **Fix the design and retry** – the **same seed**, so the same events occur and the design is the only difference.
+- **Fix the design and retry** – the **same seed**, so the same events occur and the design is the only difference. A launch failure also repeats with the same launcher, so the team has to change it.
 - **New attempt** – a new seed with different events.
 - **Compare** – the last two attempts side by side: design choices, resources, score components.
 

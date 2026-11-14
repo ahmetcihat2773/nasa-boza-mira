@@ -63,7 +63,7 @@ A free public database of rockets and launches, run by The Space Devs, a volunte
 |---|---|---|
 | `full_name` | `name` | Shown in the launcher picker |
 | `leo_capacity` | `leoCapacityKg` | Mass check: spacecraft plus margin must weigh less than this |
-| `gto_capacity` | `gtoCapacityKg` | Orbit reach: empty means the rocket is locked for geostationary missions |
+| `gto_capacity` | `gtoCapacityKg` | Not used in the first version (low Earth orbits only). Empty means the API has no value, not that the rocket cannot reach high orbits |
 | `launch_cost` | `launchCostUsd` | Subtracted from the mission budget |
 | `successful_launches`, `failed_launches` | `successRate` | Chance of launch failure in the simulation |
 | `reusable`, `image_url`, `info_url`, `manufacturer.name` | same, in camelCase | Info card |
@@ -117,7 +117,9 @@ Values are from the real API on 14 November 2026.
 | Falcon Heavy | 63,800 kg | 26,700 kg | $90M | 100% | Heavy lift |
 | Space Launch System Block 1 | 95,000 kg | no | $2,000M | 100% | Overkill on purpose: bigger is not better |
 
-**Rideshare is not from the API.** Its price (about $325k for the first 50 kg, then about $6,500 per kg) is an estimate that must be checked against a published rideshare price list. Its 200 kg limit and 98% success rate are game-design values. It also has two fields the other rockets lack, a per-kg price and a fixed orbit, which the simulation must handle.
+**Rideshare is not from the API.** Its price (about $325k for the first 50 kg, then about $6,500 per kg) is an estimate that must be checked against a published rideshare price list. Its 200 kg limit and 98% success rate are game-design values. It also has two fields the other rockets lack, a per-kg price and a fixed orbit, which the simulation must handle. The fixed orbit is a sun-synchronous orbit at about 525 km (a game-design value, see [design.md](design.md) section 4.3).
+
+**How the game uses the list** (design.md): `successRate` is the chance that the launch succeeds, and a failed launch ends the mission. Rockets that cost more than the mission's whole budget are shown locked. Capacity to sun-synchronous orbit is lower than the listed low-Earth-orbit capacity; the reduction factor still has to be sourced.
 
 ## CelesTrak (optional extra)
 
@@ -160,6 +162,7 @@ Not needed for Earth orbits. Kept so Moon and Mars missions can be added later w
 - [ ] Check the rideshare price against a published price list.
 - [ ] Extract parts from the Small Spacecraft report into `parts.json`.
 - [ ] Curate instruments and about 15 real Earth science satellites from NASA mission pages.
-- [ ] tech.md says no formal Launch Library 2 terms were found. They exist (linked above) and should be cited there and in CREDITS.md.
+- [x] tech.md and CREDITS.md now cite the Launch Library 2 terms linked above.
+- [ ] Find a sourced capacity reduction factor for sun-synchronous orbit.
 - [ ] Move the `data/` files into `packages/data` once the monorepo exists.
 - [ ] The Space Apps judging and submission guides could not be opened from the machine used for this research (certificate error on that site).

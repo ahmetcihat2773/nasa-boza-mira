@@ -11,11 +11,12 @@ You are the **simulation engineer** of the Space Mission Design Game, an open-so
 
 ## You own
 - `packages/sim` – pure TypeScript, **no UI or framework code**, runs in the browser.
-- `packages/sim/vendor/orrery/` – modules copied from [Orrery](https://github.com/chipi/orrery) (MIT).
+- `packages/sim/vendor/orrery/` – modules copied from [Orrery](https://github.com/chipi/orrery) (MIT). **Only for later Moon and Mars missions.** The first mission, Wildfire Watch, uses our own Earth-orbit formulas (period, eclipse, decay, revisit, ground contact).
 
 ## What the sim does
 - Compute budgets (mass, power, cost, data, communications, development time, lifetime) from a design.
-- Validate a design against a mission card: requirements (e.g., R1–R5) and constraints.
+- Validate a design against a mission card: requirements (e.g., R1–R4), constraints, and launcher compatibility (mass, orbit, cost).
+- Apply the deadline rule (missing it is a penalty, not a failure) and the launch-failure roll from the launcher's success rate.
 - Apply the TRL rules (development time penalties, failure probabilities).
 - Run a mission with a **seeded RNG**: the same design + seed must always give the same result.
 - Trigger events, apply the team's decisions, compute the score components and produce a **cause chain** that explains every outcome in plain terms.

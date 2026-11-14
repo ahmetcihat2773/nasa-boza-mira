@@ -54,21 +54,6 @@ playwright-report/
 playwright/.cache/
 junit.xml
 
-# ---------- Python (simulation / backend / data scripts) ----------
-__pycache__/
-*.py[cod]
-*.so
-.venv/
-venv/
-env/
-.python-version
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.ipynb_checkpoints/
-*.egg-info/
-.tox/
-
 # ---------- Local databases & game data ----------
 *.sqlite
 *.sqlite3
@@ -80,34 +65,6 @@ logs/
 *.log
 tmp/
 temp/
-
-# ---------- Godot (if used) ----------
-.godot/
-.import/
-export_presets.cfg
-*.translation
-
-# ---------- Unity (if used) ----------
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-[Ll]ogs/
-[Uu]ser[Ss]ettings/
-[Mm]emoryCaptures/
-*.csproj
-*.unityproj
-*.sln
-*.suo
-*.user
-*.userprefs
-*.pidb
-*.booproj
-*.apk
-*.aab
-*.unitypackage
-crashlytics-build.properties
 
 # ---------- Editors & IDEs ----------
 .vscode/*

@@ -2,7 +2,7 @@
 
 An open-source game, running locally in your browser, where you design, manage and simulate a complete space mission – alone or as a team of up to four sharing one screen.
 
-Choose a mission objective, build a spacecraft from real components, pick a launch vehicle and orbit, and balance **mass, power, budget, data, communications and time**. Then launch, survive random events, and get a post-mission report that explains *why* your mission succeeded or failed.
+Take on a mission with a set objective, build a spacecraft from real components, pick a launch vehicle and orbit, and balance **mass, power, budget, data, communications and time**. Then launch, survive random events, and get a post-mission report that explains *why* your mission succeeded or failed.
 
 Built for the [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/) – see [CHALLENGE.md](CHALLENGE.md).
 
@@ -12,14 +12,16 @@ Built for the [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.or
 
 ## Features (planned)
 
-- **Mission phases** modelled on NASA JPL's Concept Maturity Levels: Idea → Feasibility → Trade Study → Point Design → Launch & Simulate.
+- **First mission: Wildfire Watch** – design a satellite that detects wildfires early from low Earth orbit. More missions (Moon, Mars) are planned.
+- **Mission phases** modelled on NASA JPL's Concept Maturity Levels: Briefing → Concept → Trade-offs → Design approval → Development → Launch → Operations → Results.
 - **Team play for up to 4 on one PC** (hot-seat) with roles based on NASA's mission segments: Launch, Spacecraft, Ground, Science. Shared decisions are voted on in turn. Solo players handle all four roles.
 - **Real trade-offs:** every part changes mass, power, cost, data and development time. Newer technology performs better but takes longer and carries more risk.
-- **Real data:** spacecraft parts from NASA's small spacecraft technology report, launch vehicles from Launch Library 2, interplanetary transfers and real missions from Orrery.
+- **Real data:** spacecraft parts from NASA's small spacecraft technology report, launch vehicles from Launch Library 2, real Earth-observation satellites from NASA mission pages.
 - **Live resource dashboard** showing the effect of every decision before you make it.
 - **Mission simulation** with random events and a post-mission report, including "your design resembles real mission X".
-- **Scenarios** from an easy CubeSat in low Earth orbit to a Mars orbiter with launch windows.
-- **Nickname leaderboards** – no login, no personal data.
+- **Retry and compare:** fix your design and fly the same mission again with the same events.
+- **Built-in learning:** tooltips, a glossary and a short first-play tour explain every concept in plain language.
+- **Local nickname leaderboard** – no login, no personal data.
 
 ## Getting started
 
@@ -40,7 +42,7 @@ Then open the URL shown in the terminal. For team play, players take turns on th
 apps/web        React web app (UI, dashboard, 3D view)
 apps/api        Small local API (SQLite storage, AI debrief)
 packages/sim    Deterministic simulation and orbital mechanics
-packages/data   Validated game data (parts, launchers, orbits, scenarios, missions)
+packages/data   Validated game data (parts, launchers, orbits, mission cards, events)
 scripts/        Offline scripts that convert source data to JSON
 ```
 
@@ -48,8 +50,9 @@ scripts/        Offline scripts that convert source data to JSON
 
 | Document | Contents |
 |---|---|
-| [design.md](design.md) | Game design: rules, roles, scenarios, scoring |
+| [design.md](design.md) | Game design: rules, roles, the mission, scoring, events, game flow |
 | [tech.md](tech.md) | Tech stack, architecture, reused tools and data |
+| [APIDoc.md](APIDoc.md) | External APIs and data sources: what was checked and how each data file is produced |
 | [CHALLENGE.md](CHALLENGE.md) | Original NASA Space Apps challenge text |
 | [CREDITS.md](CREDITS.md) | Data sources, assets and libraries with their licences |
 
@@ -60,10 +63,11 @@ Main sources (full list with licences in [CREDITS.md](CREDITS.md)):
 - [NASA State-of-the-Art of Small Spacecraft Technology 2024](https://www.nasa.gov/smallsat-institute/sst-soa) – spacecraft components and TRL
 - [NASA CubeSat 101](https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf) – CubeSat concepts
 - [Launch Library 2 – The Space Devs](https://thespacedevs.com/) – launch vehicles
-- [NASA Launch Services Program performance data](https://elvperf.ksc.nasa.gov/) – deep-space launch capability
-- [Orrery](https://github.com/chipi/orrery) – orbital mechanics, launch windows and real-mission data
-- [NASA GMAT](https://software.nasa.gov/) – trajectory validation
+- [NASA mission archive (NSSDCA)](https://nssdc.gsfc.nasa.gov/nmc/) and mission pages – instruments and real missions
+- [NASA GMAT](https://software.nasa.gov/) – validation of our orbit formulas
 - [NASA 3D Resources](https://github.com/nasa/NASA-3D-Resources) – 3D models and textures
+
+Planned for later Moon and Mars missions: [Orrery](https://github.com/chipi/orrery) (interplanetary trajectories, launch windows) and [NASA Launch Services Program performance data](https://elvperf.ksc.nasa.gov/).
 
 ## License
 
