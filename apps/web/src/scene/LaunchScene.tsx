@@ -362,7 +362,7 @@ function PadPhase({ clock, mode, reduced }: PhaseProps) {
 
 /* ---------- Space phase: fairing and spacecraft separation over the curved Earth ---------- */
 
-function SpacePhase({ clock, reduced, look }: Omit<PhaseProps, "mode"> & { look: SpacecraftLook }) {
+function SpacePhase({ clock, reduced, craft }: Omit<PhaseProps, "mode"> & { craft: SpacecraftLook }) {
   const { camera } = useThree();
   const stack = useRef<THREE.Group>(null);
   const stage = useRef<THREE.Group>(null);
@@ -432,7 +432,7 @@ function SpacePhase({ clock, reduced, look }: Omit<PhaseProps, "mode"> & { look:
             </group>
           ))}
           <group ref={sat} position={[0, 1.4, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <Satellite look={look} deploy={deploy} scale={look.size === "smallsat" ? 0.12 : 0.26} />
+            <Satellite look={craft} deploy={deploy} scale={craft.size === "smallsat" ? 0.12 : 0.26} />
           </group>
         </group>
       </group>
@@ -561,7 +561,7 @@ export default function LaunchScene({
       >
         <Suspense fallback={null}>
           {inSpace ? (
-            <SpacePhase clock={clock} reduced={reduced} look={look} />
+            <SpacePhase clock={clock} reduced={reduced} craft={look} />
           ) : (
             <PadPhase clock={clock} mode={mode} reduced={reduced} />
           )}

@@ -143,7 +143,14 @@ export function App() {
           onContinue={finish}
         >
           <Suspense fallback={<div className="orbit-view scene-loading">Loading orbit view…</div>}>
-            <OrbitView orbit={b.orbit} orbitName={orbitName} swathKm={b.swathKm} stations={b.groundStations} live />
+            <OrbitView
+              orbit={b.orbit}
+              orbitName={orbitName}
+              swathKm={b.swathKm}
+              stations={b.groundStations}
+              design={design}
+              live
+            />
           </Suspense>
         </EventsScreen>
       )}
@@ -168,6 +175,7 @@ export function App() {
                 orbitName={orbitName}
                 swathKm={b.swathKm}
                 stations={b.groundStations}
+                design={design}
                 live={false}
               />
             </Suspense>
