@@ -1,0 +1,131 @@
+# ==========================================================
+# Space Mission Design Game - .gitignore
+# ==========================================================
+
+# ---------- Secrets & environment ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+config.local.*
+
+# ---------- Node / JavaScript / TypeScript ----------
+node_modules/
+.pnp
+.pnp.js
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+.npm/
+
+# ---------- Build output (Vite, Next.js, React, Phaser, etc.) ----------
+dist/
+dist-ssr/
+build/
+out/
+.next/
+.nuxt/
+.svelte-kit/
+.vite/
+.parcel-cache/
+.turbo/
+.vercel/
+.netlify/
+.cache/
+storybook-static/
+
+# ---------- Testing & coverage ----------
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+junit.xml
+
+# ---------- Python (simulation / backend / data scripts) ----------
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+env/
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.egg-info/
+.tox/
+
+# ---------- Local databases & game data ----------
+*.sqlite
+*.sqlite3
+*.db
+saves/
+saved_missions/
+leaderboard.local.json
+logs/
+*.log
+tmp/
+temp/
+
+# ---------- Godot (if used) ----------
+.godot/
+.import/
+export_presets.cfg
+*.translation
+
+# ---------- Unity (if used) ----------
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.apk
+*.aab
+*.unitypackage
+crashlytics-build.properties
+
+# ---------- Editors & IDEs ----------
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+
+# ---------- OS files ----------
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---------- Claude / AI tooling local state ----------
+.claude/settings.local.json
