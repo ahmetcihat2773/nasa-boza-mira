@@ -1,0 +1,34 @@
+{
+  "include": [
+    { "id": 26, "why": "Smallest dedicated launcher: cheap, small capacity" },
+    { "id": 179, "why": "Cheap per kg but a poor success record: the risky choice" },
+    { "id": 127, "why": "European small launcher" },
+    { "id": 7, "why": "Low-cost medium launcher" },
+    { "id": 15, "why": "Reliable medium launcher, expensive for its size" },
+    { "id": 172, "why": "Good value for heavier spacecraft", "override": { "name": "LVM3" } },
+    { "id": 121, "why": "European medium-heavy launcher" },
+    { "id": 164, "why": "Most flown, very reliable, large capacity" },
+    { "id": 161, "why": "Heavy lift" },
+    { "id": 143, "why": "Far more rocket than any scenario needs: teaches that bigger is not better" }
+  ],
+  "manual": [
+    {
+      "id": "rideshare",
+      "name": "Rideshare (shared launch)",
+      "manufacturer": null,
+      "leoCapacityKg": 200,
+      "gtoCapacityKg": null,
+      "launchCostUsd": 325000,
+      "costPerKgUsd": 6500,
+      "includedKg": 50,
+      "fixedOrbit": true,
+      "successfulLaunches": null,
+      "failedLaunches": null,
+      "successRate": 0.98,
+      "reusable": true,
+      "imageUrl": null,
+      "infoUrl": null,
+      "note": "Not from Launch Library 2. Price is approximate (about $325k for the first 50 kg, then about $6,500 per kg) and must be checked against a published rideshare price list. The 200 kg limit and 98% success rate are game-design values. The player cannot choose the orbit."
+    }
+  ]
+}
