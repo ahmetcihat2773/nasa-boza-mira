@@ -532,7 +532,10 @@ function LunarPhase({ clock, craft }: Omit<PhaseProps, "mode" | "reduced"> & { c
       } else {
         // Left behind on the arc: the stage slows, drifts off and tumbles away.
         const ds = s - L_SC_SEP;
-        stage.current.position.copy(sep.pos).addScaledVector(sep.dir, -ds * 1.6).addScaledVector(UP, ds * 0.9);
+        stage.current.position
+          .copy(sep.pos)
+          .addScaledVector(sep.dir, -ds * 1.6)
+          .addScaledVector(UP, ds * 0.9);
         stage.current.quaternion.setFromUnitVectors(UP, sep.dir);
         stage.current.rotateX(ds * 0.8);
       }
@@ -577,7 +580,12 @@ function LunarPhase({ clock, craft }: Omit<PhaseProps, "mode" | "reduced"> & { c
     // Camera: Earth-side departure, a wide shot for the cruise, then in at the Moon.
     const wide = smooth(TLI - 1, TLI + 3, s);
     const arrival = smooth(LOI - 1.5, LOI_END + 1.5, s);
-    camera.position.copy(tmp.p.set(-4, 5, -12).lerp(tmp.b.set(0, 16, 46), wide).lerp(ARRIVAL_CAM, arrival));
+    camera.position.copy(
+      tmp.p
+        .set(-4, 5, -12)
+        .lerp(tmp.b.set(0, 16, 46), wide)
+        .lerp(ARRIVAL_CAM, arrival),
+    );
     look.current.copy(arcPts[0]!).lerp(T_MOON, wide).lerp(satPos, Math.min(0.4, arrival));
     camera.lookAt(look.current);
   });
@@ -622,15 +630,7 @@ function LunarPhase({ clock, craft }: Omit<PhaseProps, "mode" | "reduced"> & { c
       <group ref={stage}>
         <SecondStage />
         <group position={[0, -1.25, 0]}>
-          <Flame
-            length={6}
-            radius={0.5}
-            power={tliFlame}
-            hot="#f4f6ff"
-            mid="#8fb0ff"
-            cool="#3a4dff"
-            diamonds={0.3}
-          />
+          <Flame length={6} radius={0.5} power={tliFlame} hot="#f4f6ff" mid="#8fb0ff" cool="#3a4dff" diamonds={0.3} />
         </group>
       </group>
       {[1, -1].map((side, i) => (
