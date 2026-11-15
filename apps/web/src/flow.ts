@@ -1,12 +1,13 @@
 import type { Design, MissionResult } from "@space-mission/sim";
 import { create } from "zustand";
 import { postAttempt } from "./api.ts";
-import { DEFAULT_MISSION_ID } from "./missions.ts";
+import { DEFAULT_MISSION_ID, missionById, starterDesign } from "./missions.ts";
 import { useGame } from "./store.ts";
 import { useTeam } from "./team.ts";
 
 /** The game phases of design.md section 7. Concept and Trade-offs share the design screen. */
-export type Phase = "setup" | "mission" | "briefing" | "design" | "approval" | "development" | "launch" | "operations" | "results";
+export type Phase =
+  "setup" | "mission" | "briefing" | "design" | "approval" | "development" | "launch" | "operations" | "results";
 
 export const PHASE_STEPS: { label: string; phase: Phase }[] = [
   { label: "Setup", phase: "setup" },
@@ -73,9 +74,9 @@ export const useFlow = create<FlowState>((set, get) => ({
   setRemote: (n, status) => set((s) => ({ remote: { ...s.remote, [n]: status } })),
   start: (nickname) => set({ nickname: nickname.trim() || "Player", phase: "mission" }),
   chooseMission: (missionId) => {
-    // A new mission starts from an empty design: parts, orbit and requests belong to the old one.
+    // A new mission starts from its starter design: parts, orbit and requests belong to the old one.
     if (missionId !== get().missionId) {
-      useGame.getState().reset();
+      useGame.getState().reset(starterDesign(missionById(missionId)));
       useTeam.setState({ requests: [] });
     }
     set({ missionId, phase: "briefing", decisions: {}, seed: newSeed() });
@@ -83,7 +84,12 @@ export const useFlow = create<FlowState>((set, get) => ({
   goTo: (phase) => set({ phase }),
   decide: (eventId, optionId) => set((s) => ({ decisions: { ...s.decisions, [eventId]: optionId } })),
   saveAttempt: (a) => {
-    const attempt: Attempt = { ...a, number: get().attempts.length + 1, nickname: get().nickname, missionId: get().missionId };
+    const attempt: Attempt = {
+      ...a,
+      number: get().attempts.length + 1,
+      nickname: get().nickname,
+      missionId: get().missionId,
+    };
     set((s) => ({ attempts: [...s.attempts, attempt] }));
     return attempt;
   },

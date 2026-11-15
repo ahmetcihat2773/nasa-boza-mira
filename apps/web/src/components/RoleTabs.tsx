@@ -93,7 +93,7 @@ export function RoleTabs({ b, mission }: { b: Budget; mission: Mission }) {
         {subsystemsOf("ground").map((s) => (
           <PartPicker key={s} subsystem={s} mission={mission} />
         ))}
-        <GroundPicker b={b} />
+        <GroundPicker b={b} mission={mission} />
       </>
     ),
     science: (

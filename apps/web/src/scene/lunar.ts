@@ -1,28 +1,28 @@
 /**
- * Lunar helpers for the scenes. Constants mirror packages/sim/src/lunar.ts (not yet exported from the sim index);
- * switch the imports to "@space-mission/sim" once `lunar.ts` is re-exported there.
+ * Lunar helpers for the scenes: the Moon-centred orbit state and the scene transform live here
+ * (the sim's lunar module holds the physics constants this file re-uses).
  */
-import type { CircularOrbit, OrbitState, Vec3 } from "@space-mission/sim";
+import {
+  LUNAR_ALTITUDE_RANGE_KM,
+  MOON_RADIUS_KM,
+  MOON_SIDEREAL_DAY_D,
+  lunarOrbitalPeriodS,
+  type CircularOrbit,
+  type OrbitState,
+  type Vec3,
+} from "@space-mission/sim";
 import * as THREE from "three";
 
+export { LUNAR_ALTITUDE_RANGE_KM, MOON_RADIUS_KM, lunarOrbitalPeriodS };
 export type Destination = "earth-orbit" | "lunar-orbit";
 
-export const MOON_RADIUS_KM = 1737.4;
-export const MOON_MU_KM3_S2 = 4902.8;
 /** Moon's sidereal rotation rate, rad/s (27.32 days). */
-export const MOON_ROTATION_RAD_S = (2 * Math.PI) / (27.3217 * 86_400);
-export const LUNAR_ALTITUDE_RANGE_KM = { min: 50, max: 200 } as const;
+export const MOON_ROTATION_RAD_S = (2 * Math.PI) / (MOON_SIDEREAL_DAY_D * 86_400);
 export const DEFAULT_LUNAR_ALTITUDE_KM = 100;
 /** Polar orbit for the ice hunt (design.md 10.1: inclination >= 85°). */
 export const LUNAR_INCLINATION_DEG = 90;
 
 const RAD = Math.PI / 180;
-
-/** Period of a circular lunar orbit, seconds. */
-export function lunarOrbitalPeriodS(altitudeKm: number): number {
-  const a = MOON_RADIUS_KM + altitudeKm;
-  return 2 * Math.PI * Math.sqrt(a ** 3 / MOON_MU_KM3_S2);
-}
 
 /** Position and velocity on a circular lunar orbit (Moon-centred, z = lunar north), km and km/s. */
 export function lunarOrbitState(orbit: CircularOrbit, tS: number): OrbitState {

@@ -7,7 +7,9 @@
       "text": "A near-polar orbit that crosses each place at the same local time every day, so lighting is consistent. Covers the whole Earth, including polar ground stations.",
       "sources": [
         {
-          "fields": ["inclinationDeg"],
+          "fields": [
+            "inclinationDeg"
+          ],
           "data_quality": "estimated",
           "source": "Computed from altitude by the simulation (about 97–98° in LEO)"
         }
@@ -19,7 +21,13 @@
       "inclinationDeg": 90,
       "text": "Passes over both poles and covers the whole Earth, but the local time of each pass slowly drifts.",
       "sources": [
-        { "fields": ["inclinationDeg"], "data_quality": "game-design", "source": "Definition of a polar orbit" }
+        {
+          "fields": [
+            "inclinationDeg"
+          ],
+          "data_quality": "game-design",
+          "source": "Definition of a polar orbit"
+        }
       ]
     },
     {
@@ -29,7 +37,9 @@
       "text": "Tilted to stay over mid-latitudes, so it passes the target region more often, but it never reaches the poles or polar ground stations.",
       "sources": [
         {
-          "fields": ["inclinationDeg"],
+          "fields": [
+            "inclinationDeg"
+          ],
           "data_quality": "game-design",
           "source": "Chosen for the game",
           "note": "Slightly above the target region's latitude so the region is covered."
@@ -38,24 +48,52 @@
     }
   ],
   "altitudes": [
-    { "altitudeKm": 400, "lifetimeYearsNoPropulsion": 0.8 },
-    { "altitudeKm": 450, "lifetimeYearsNoPropulsion": 2 },
-    { "altitudeKm": 500, "lifetimeYearsNoPropulsion": 4 },
-    { "altitudeKm": 525, "lifetimeYearsNoPropulsion": 6 },
-    { "altitudeKm": 550, "lifetimeYearsNoPropulsion": 8 },
-    { "altitudeKm": 600, "lifetimeYearsNoPropulsion": 15 },
-    { "altitudeKm": 650, "lifetimeYearsNoPropulsion": 25 },
-    { "altitudeKm": 700, "lifetimeYearsNoPropulsion": 40 }
+    {
+      "altitudeKm": 400,
+      "lifetimeYearsNoPropulsion": 0.8
+    },
+    {
+      "altitudeKm": 450,
+      "lifetimeYearsNoPropulsion": 2
+    },
+    {
+      "altitudeKm": 500,
+      "lifetimeYearsNoPropulsion": 4
+    },
+    {
+      "altitudeKm": 525,
+      "lifetimeYearsNoPropulsion": 6
+    },
+    {
+      "altitudeKm": 550,
+      "lifetimeYearsNoPropulsion": 8
+    },
+    {
+      "altitudeKm": 600,
+      "lifetimeYearsNoPropulsion": 15
+    },
+    {
+      "altitudeKm": 650,
+      "lifetimeYearsNoPropulsion": 25
+    },
+    {
+      "altitudeKm": 700,
+      "lifetimeYearsNoPropulsion": 40
+    }
   ],
   "altitudeSources": [
     {
-      "fields": ["altitudeKm"],
+      "fields": [
+        "altitudeKm"
+      ],
       "data_quality": "game-design",
       "source": "Chosen for the game (design.md section 4.3)",
       "note": "525 km matches the rideshare's fixed orbit."
     },
     {
-      "fields": ["lifetimeYearsNoPropulsion"],
+      "fields": [
+        "lifetimeYearsNoPropulsion"
+      ],
       "data_quality": "estimated",
       "source": "Representative value for an example project",
       "note": "Rough lifetime of a small satellite at average solar activity; real decay varies a lot with the Sun and the satellite's shape."
@@ -68,49 +106,160 @@
       "name": "Svalbard, Norway",
       "latDeg": 78.2,
       "lonDeg": 15.4,
-      "contactMinutesPerDay": { "sun-synchronous": 60, "polar": 60, "inclined": 0 },
+      "contactMinutesPerDay": {
+        "sun-synchronous": 60,
+        "polar": 60,
+        "inclined": 0
+      },
       "costUsd": 600000,
       "text": "Near the North Pole, so a polar or sun-synchronous satellite passes on almost every orbit.",
       "sources": [
         {
-          "fields": ["contactMinutesPerDay", "costUsd"],
+          "fields": [
+            "contactMinutesPerDay",
+            "costUsd"
+          ],
           "data_quality": "estimated",
           "source": "Representative value for an example project",
           "note": "About 10 passes of 6 minutes per day; costUsd is rent for the whole mission."
         }
-      ]
+      ],
+      "kind": "near-earth"
     },
     {
       "id": "fairbanks",
       "name": "Fairbanks, Alaska",
       "latDeg": 64.8,
       "lonDeg": -147.7,
-      "contactMinutesPerDay": { "sun-synchronous": 45, "polar": 45, "inclined": 5 },
+      "contactMinutesPerDay": {
+        "sun-synchronous": 45,
+        "polar": 45,
+        "inclined": 5
+      },
       "costUsd": 450000,
       "text": "A high-latitude station that sees most polar passes, close to the target region.",
       "sources": [
         {
-          "fields": ["contactMinutesPerDay", "costUsd"],
+          "fields": [
+            "contactMinutesPerDay",
+            "costUsd"
+          ],
           "data_quality": "estimated",
           "source": "Representative value for an example project",
           "note": "About 7 passes of 6–7 minutes per day; costUsd is rent for the whole mission."
         }
-      ]
+      ],
+      "kind": "near-earth"
     },
     {
       "id": "wallops",
       "name": "Wallops Island, Virginia",
       "latDeg": 37.9,
       "lonDeg": -75.5,
-      "contactMinutesPerDay": { "sun-synchronous": 25, "polar": 25, "inclined": 35 },
+      "contactMinutesPerDay": {
+        "sun-synchronous": 25,
+        "polar": 25,
+        "inclined": 35
+      },
       "costUsd": 300000,
       "text": "A mid-latitude station: cheaper, but a polar satellite passes only a few times a day.",
       "sources": [
         {
-          "fields": ["contactMinutesPerDay", "costUsd"],
+          "fields": [
+            "contactMinutesPerDay",
+            "costUsd"
+          ],
           "data_quality": "estimated",
           "source": "Representative value for an example project",
           "note": "About 4 passes per day in a polar orbit, more in a mid-inclination orbit; costUsd is rent for the whole mission."
+        }
+      ],
+      "kind": "near-earth"
+    },
+    {
+      "id": "dsn-goldstone",
+      "name": "Goldstone (DSN)",
+      "kind": "deep-space",
+      "latDeg": 35.43,
+      "lonDeg": -116.89,
+      "contactMinutesPerDay": {
+        "sun-synchronous": 0,
+        "polar": 0,
+        "inclined": 0
+      },
+      "lunarContactMinutesPerDay": 600,
+      "costUsd": 3000000,
+      "text": "Deep-space dish in the Mojave Desert; about 10 h of Moon contact per day.",
+      "sources": [
+        {
+          "fields": [
+            "kind",
+            "latDeg",
+            "lonDeg",
+            "lunarContactMinutesPerDay",
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Deep Space Network site locations; contact minutes and rent are our game values (design.md section 10.2)",
+          "note": "The Moon is above the horizon about 10 hours a day per site; three sites about 120° apart give near-continuous coverage."
+        }
+      ]
+    },
+    {
+      "id": "dsn-madrid",
+      "name": "Madrid (DSN)",
+      "kind": "deep-space",
+      "latDeg": 40.43,
+      "lonDeg": -4.25,
+      "contactMinutesPerDay": {
+        "sun-synchronous": 0,
+        "polar": 0,
+        "inclined": 0
+      },
+      "lunarContactMinutesPerDay": 590,
+      "costUsd": 2500000,
+      "text": "Deep-space dish near Madrid; about 10 h of Moon contact per day.",
+      "sources": [
+        {
+          "fields": [
+            "kind",
+            "latDeg",
+            "lonDeg",
+            "lunarContactMinutesPerDay",
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Deep Space Network site locations; contact minutes and rent are our game values (design.md section 10.2)",
+          "note": "The Moon is above the horizon about 10 hours a day per site; three sites about 120° apart give near-continuous coverage."
+        }
+      ]
+    },
+    {
+      "id": "dsn-canberra",
+      "name": "Canberra (DSN)",
+      "kind": "deep-space",
+      "latDeg": -35.4,
+      "lonDeg": 148.98,
+      "contactMinutesPerDay": {
+        "sun-synchronous": 0,
+        "polar": 0,
+        "inclined": 0
+      },
+      "lunarContactMinutesPerDay": 610,
+      "costUsd": 3500000,
+      "text": "Deep-space dish near Canberra; about 10 h of Moon contact per day.",
+      "sources": [
+        {
+          "fields": [
+            "kind",
+            "latDeg",
+            "lonDeg",
+            "lunarContactMinutesPerDay",
+            "costUsd"
+          ],
+          "data_quality": "game-design",
+          "source": "Deep Space Network site locations; contact minutes and rent are our game values (design.md section 10.2)",
+          "note": "The Moon is above the horizon about 10 hours a day per site; three sites about 120° apart give near-continuous coverage."
         }
       ]
     }

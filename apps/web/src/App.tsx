@@ -17,7 +17,7 @@ import { GlossaryButton, Term } from "./components/Glossary.tsx";
 import { Meter } from "./components/Meter.tsx";
 import { RequirementsPanel } from "./components/Requirements.tsx";
 import { ROLES, RoleBudget, RoleTabs } from "./components/RoleTabs.tsx";
-import { destinationOf, missionById, transferMeters } from "./missions.ts";
+import { destinationOf, missionById, starterDesign, transferMeters } from "./missions.ts";
 import { useGame } from "./store.ts";
 import { adjustedMission, coordinationOf, useTeam } from "./team.ts";
 
@@ -86,7 +86,7 @@ export function App() {
           <LaunchScene
             pass={launchRun?.launch?.ok ?? false}
             missionName={mission.name}
-            destination={destination}
+            mission={mission}
             design={design}
             failure={b.pass ? "anomaly" : "scrub"}
             reasons={b.pass ? (launchRun?.failureReasons ?? []) : failed.map((c) => c.message)}
@@ -217,8 +217,8 @@ export function App() {
                   <Term id="delta-v" focusable>
                     Delta-v
                   </Term>{" "}
-                  for lunar orbit insertion and station-keeping; the thruster needs {transfer.propellantKg.toFixed(1)} kg of
-                  propellant, counted in the mass above.
+                  for lunar orbit insertion and station-keeping; the thruster needs {transfer.propellantKg.toFixed(1)}{" "}
+                  kg of propellant, counted in the mass above.
                 </p>
               </>
             )}
@@ -265,8 +265,8 @@ export function App() {
               <button className="launch" data-tour="approve-button" onClick={() => goTo("approval")}>
                 Submit for design approval
               </button>
-              <button className="ghost" onClick={reset}>
-                Reset
+              <button className="ghost" onClick={() => reset(starterDesign(mission))}>
+                Reset to starter
               </button>
             </div>
           </aside>

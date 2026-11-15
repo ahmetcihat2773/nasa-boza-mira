@@ -65,7 +65,10 @@ export const LauncherSchema = z
     }
     const lunar = l.destination === "lunar-orbit";
     if (lunar !== (l.tliCapacityKg !== undefined) || lunar !== (l.fixedLaunchMonth !== undefined)) {
-      ctx.addIssue({ code: "custom", message: "tliCapacityKg and fixedLaunchMonth are required for a lunar-orbit launcher, and only for it" });
+      ctx.addIssue({
+        code: "custom",
+        message: "tliCapacityKg and fixedLaunchMonth are required for a lunar-orbit launcher, and only for it",
+      });
     }
     if (lunar && l.fixedOrbit !== undefined) {
       ctx.addIssue({ code: "custom", path: ["fixedOrbit"], message: "a lunar rideshare has no Earth orbit" });
@@ -91,7 +94,9 @@ export const allLaunchers: readonly Launcher[] = LauncherListSchema.parse(rawLau
 
 /** Launchers for a mission: Earth-orbit launchers serve both destinations; the lunar rideshare only the Moon. */
 export function launchersFor(destination: "earth-orbit" | "lunar-orbit"): readonly Launcher[] {
-  return allLaunchers.filter((l) => (l.destination ?? "earth-orbit") === "earth-orbit" || l.destination === destination);
+  return allLaunchers.filter(
+    (l) => (l.destination ?? "earth-orbit") === "earth-orbit" || l.destination === destination,
+  );
 }
 
 /** The launchers for Earth-orbit missions (Wildfire Watch); unchanged by the lunar rideshare. */

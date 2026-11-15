@@ -343,8 +343,9 @@ function activeTriggers(role: BudgetRole, b: Budget, design: Design, mission: Mi
   if (rated.some((p) => p && (trlPenaltyMonths(p.trl) ?? 0) > 0)) t.add("low-trl");
   if (design.launcher && design.launcher.successRate < 0.95) t.add("low-reliability");
   if (b.devMonths > 0 && mission.deadlineMonths - b.devMonths <= 4) t.add("deadline-risk");
-  for (const id of ["R1", "R2", "R3", "R4"]) if (failed(id) && b.massKg > 0) t.add(`requirement-failed:${id}`);
-  if (["R1", "R2", "R3", "R4"].every((id) => !failed(id))) t.add("all-requirements-met");
+  const reqIds = mission.card.requirements.map((r) => r.id);
+  for (const id of reqIds) if (failed(id) && b.massKg > 0) t.add(`requirement-failed:${id}`);
+  if (reqIds.every((id) => !failed(id))) t.add("all-requirements-met");
   t.add("request");
   return t;
 }
@@ -360,7 +361,12 @@ export function AdvisorPanel(props: {
   const mode = useTeam((s) => s.mode);
   if (mode !== "solo") return null;
   const t = activeTriggers(props.role, props.b, props.design, props.mission);
-  const lines = advisorLines.filter((l) => (l.role === props.role || l.role === "any") && t.has(l.when));
+  const lines = advisorLines.filter(
+    (l) =>
+      (l.role === props.role || l.role === "any") &&
+      t.has(l.when) &&
+      (!l.missionId || l.missionId === props.mission.id),
+  );
   if (lines.length === 0) return null;
   return (
     <section className="advisor" aria-label={`${ROLE_LABEL[props.role]} advisor`}>

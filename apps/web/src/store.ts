@@ -1,6 +1,7 @@
 import type { GroundStation, Instrument, Launcher, Part, Subsystem } from "@space-mission/data";
 import type { Design, OrbitChoice } from "@space-mission/sim";
 import { create } from "zustand";
+import { DEFAULT_MISSION_ID, missionById, starterDesign } from "./missions.ts";
 
 interface GameState {
   design: Design;
@@ -12,11 +13,13 @@ interface GameState {
   setOrbit: (orbit: OrbitChoice) => void;
   setGroundStations: (stations: GroundStation[]) => void;
   launch: () => void;
-  reset: () => void;
+  /** Back to the given design (the mission starter), or an empty bus without one. */
+  reset: (design?: Design) => void;
 }
 
 export const useGame = create<GameState>((set) => ({
-  design: { parts: {} },
+  // First run: the default mission's ready-to-fly design, so nobody has to hunt parts.
+  design: starterDesign(missionById(DEFAULT_MISSION_ID)),
   launched: false,
   pickPart: (subsystem, part) =>
     set((s) => {
@@ -49,5 +52,5 @@ export const useGame = create<GameState>((set) => ({
   setOrbit: (orbit) => set((s) => ({ design: { ...s.design, orbit }, launched: false })),
   setGroundStations: (groundStations) => set((s) => ({ design: { ...s.design, groundStations }, launched: false })),
   launch: () => set({ launched: true }),
-  reset: () => set({ design: { parts: {} }, launched: false }),
+  reset: (design) => set({ design: design ?? { parts: {} }, launched: false }),
 }));

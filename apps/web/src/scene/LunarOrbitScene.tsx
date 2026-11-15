@@ -51,12 +51,26 @@ function PolarCap({ latDeg, radius = 1.003 }: { latDeg: number; radius?: number 
     const out: THREE.Vector3[] = [];
     for (let i = 0; i <= 96; i++) {
       const a = (i / 96) * Math.PI * 2;
-      out.push(new THREE.Vector3(Math.cos(lat) * Math.cos(a), Math.sin(lat), -Math.cos(lat) * Math.sin(a)).multiplyScalar(radius));
+      out.push(
+        new THREE.Vector3(Math.cos(lat) * Math.cos(a), Math.sin(lat), -Math.cos(lat) * Math.sin(a)).multiplyScalar(
+          radius,
+        ),
+      );
     }
     return out;
   }, [latDeg, radius]);
   return (
-    <Line points={pts} color={ICE_COLOR} lineWidth={1} dashed dashSize={0.03} gapSize={0.02} transparent opacity={0.6} toneMapped={false} />
+    <Line
+      points={pts}
+      color={ICE_COLOR}
+      lineWidth={1}
+      dashed
+      dashSize={0.03}
+      gapSize={0.02}
+      transparent
+      opacity={0.6}
+      toneMapped={false}
+    />
   );
 }
 
@@ -65,7 +79,6 @@ export interface LunarSceneProps {
   stations: readonly StationSite[];
   look: SpacecraftLook;
   reduced: boolean;
-  contact: string;
   onContact: (names: string) => void;
 }
 
@@ -73,7 +86,7 @@ export interface LunarSceneProps {
  * The Moon with the spacecraft in polar orbit, its ground track over the poles (Moon-fixed),
  * Earth in the distance and the link line to it when the Moon does not block the view.
  */
-export function LunarOrbitScene({ orbit, stations, look, reduced, contact, onContact }: LunarSceneProps) {
+export function LunarOrbitScene({ orbit, stations, look, reduced, onContact }: LunarSceneProps) {
   const period = lunarOrbitalPeriodS(orbit.altitudeKm);
   const timeScale = (period * ORBITS_PER_MINUTE) / 60;
   const simT = useRef(period * 0.3);
@@ -164,7 +177,8 @@ export function LunarOrbitScene({ orbit, stations, look, reduced, contact, onCon
       sat.current.quaternion.setFromRotationMatrix(tmp.m);
     }
     // In the Moon's shadow: the spacecraft's own light goes out.
-    const shadow = p.dot(LUNAR_SUN_DIR) < 0 && tmp.a.copy(p).addScaledVector(LUNAR_SUN_DIR, -p.dot(LUNAR_SUN_DIR)).length() < 1;
+    const shadow =
+      p.dot(LUNAR_SUN_DIR) < 0 && tmp.a.copy(p).addScaledVector(LUNAR_SUN_DIR, -p.dot(LUNAR_SUN_DIR)).length() < 1;
     if (satLight.current) satLight.current.intensity = shadow ? 0 : 0.03;
 
     // Orbit line: bright trail behind the spacecraft, faint ahead.

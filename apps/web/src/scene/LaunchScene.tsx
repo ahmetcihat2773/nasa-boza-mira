@@ -1,17 +1,19 @@
-import { Stars, useTexture } from "@react-three/drei";
+import { Line, Stars, useTexture } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Bloom, EffectComposer, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
 import { orbitTypes } from "@space-mission/data";
-import { orbitState, resolveOrbit, type Design } from "@space-mission/sim";
+import { EARTH_MOON_DISTANCE_KM, orbitState, resolveOrbit, type Design, type Mission } from "@space-mission/sim";
 import { BlendFunction, ToneMappingMode } from "postprocessing";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, type ComponentRef } from "react";
 import * as THREE from "three";
 import { SpaceReflections, useReducedMotion } from "./common.tsx";
 import { EARTH_DAY_URL, EARTH_NIGHT_URL, Earth, SunGlow } from "./Earth.tsx";
 import { Flame, Particles, type Spawn } from "./effects.tsx";
 import { LaunchPad } from "./LaunchPad.tsx";
+import { Moon } from "./Moon.tsx";
 import { FAIRING_BASE, FairingHalf, FirstStage, ROCKET, SecondStage } from "./Rocket.tsx";
 import { Satellite } from "./Satellite.tsx";
+import { MOON_RADIUS_KM, lunarOrbitalPeriodS } from "./lunar.ts";
 import { spacecraftLook, type SpacecraftLook } from "./spacecraftLook.ts";
 import "./launch.css";
 
@@ -38,6 +40,25 @@ const DONE_ANOMALY = EXPLODE + 6;
 const MOUNT_TOP = 2.7;
 const PAD_SUN = new THREE.Vector3(-0.55, 0.07, -0.83).normalize();
 const SPACE_SUN = new THREE.Vector3(-0.7, 0.16, -0.7).normalize();
+
+/* Lunar transfer timeline (seconds after SPACE_START): departure near Earth, the trans-lunar
+ * injection burn, spacecraft separation on the arc, the insertion burn and the polar ring. */
+const TLI = 6.8;
+const TLI_END = 8.0;
+const L_SC_SEP = 9.2;
+const L_DEPLOY = 9.9;
+const LOI = 12.4;
+const LOI_END = 13.4;
+const DONE_LUNAR = SPACE_START + 17;
+// Transfer scene layout (scene units, not to scale): Earth behind left, Moon ahead right.
+const T_EARTH = new THREE.Vector3(-24, -7, -34);
+const T_EARTH_R = 9;
+const T_MOON = new THREE.Vector3(14, 4.5, -9);
+const T_MOON_R = 1.5;
+const T_ORBIT_R = 2.1;
+const T_ARC_COLOR = new THREE.Color(0.6, 1.2, 1.8);
+const T_RING_COLOR = new THREE.Color(0.6, 1.6, 2.2);
+const UP = new THREE.Vector3(0, 1, 0);
 
 const smooth = (a: number, b: number, x: number) => {
   const t = THREE.MathUtils.clamp((x - a) / (b - a), 0, 1);
@@ -440,6 +461,194 @@ function SpacePhase({ clock, reduced, craft }: Omit<PhaseProps, "mode"> & { craf
   );
 }
 
+/* ---------- Lunar transfer phase: TLI burn, a compressed arc to the Moon, the insertion burn ---------- */
+
+const ARRIVAL_CAM = new THREE.Vector3(4, 8, 16);
+
+function LunarPhase({ clock, craft }: Omit<PhaseProps, "mode" | "reduced"> & { craft: SpacecraftLook }) {
+  const { camera } = useThree();
+  const sat = useRef<THREE.Group>(null);
+  const stage = useRef<THREE.Group>(null);
+  const halves = useRef<(THREE.Group | null)[]>([]);
+  const tliFlame = useRef(0);
+  const loiFlame = useRef(0);
+  const orbitRing = useRef<ComponentRef<typeof Line> | null>(null);
+  const look = useRef(new THREE.Vector3());
+  const tmp = useMemo(
+    () => ({ p: new THREE.Vector3(), d: new THREE.Vector3(), a: new THREE.Vector3(), b: new THREE.Vector3() }),
+    [],
+  );
+
+  // The compressed transfer arc: from just above Earth to the lunar orbit insertion point.
+  const arc = useMemo(() => {
+    const p0 = T_EARTH.clone().add(new THREE.Vector3(T_EARTH_R * 1.1, T_EARTH_R * 0.35, 3));
+    const p2 = T_MOON.clone().add(new THREE.Vector3(-T_ORBIT_R, 0.4, T_ORBIT_R * 0.5));
+    const ctrl = new THREE.Vector3(-6, 14, -14);
+    return new THREE.QuadraticBezierCurve3(p0, ctrl, p2);
+  }, []);
+  const arcPts = useMemo(() => arc.getPoints(120), [arc]);
+  // Polar ring around the Moon that appears after the insertion burn.
+  const ringPts = useMemo(() => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 96; i++) {
+      const a = (i / 96) * Math.PI * 2;
+      pts.push(
+        T_MOON.clone().add(
+          new THREE.Vector3(Math.cos(a) * T_ORBIT_R, Math.sin(a) * T_ORBIT_R * 0.9, Math.sin(a) * T_ORBIT_R * 0.45),
+        ),
+      );
+    }
+    return pts;
+  }, []);
+
+  const satScale = craft.size === "smallsat" ? 0.5 : 0.75;
+  const satPos = useMemo(() => new THREE.Vector3(), []);
+  const deploy = useRef(0);
+  // Where the spacecraft leaves the stage, roughly halfway along the transfer arc.
+  const sep = useMemo(() => {
+    const u = 0.14 + smooth(TLI, LOI, L_SC_SEP) * 0.86;
+    return { pos: arc.getPoint(u), dir: arc.getTangent(u) };
+  }, [arc]);
+
+  // Transfer parameter: a slow crawl near Earth until the TLI burn, then the cruise to the Moon.
+  const uOf = (s: number) => (s < TLI ? smooth(-1.2, TLI, s) * 0.14 : 0.14 + smooth(TLI, LOI, s) * 0.86);
+
+  useFrame(() => {
+    const s = clock() - SPACE_START;
+    // The stage burns to climb away from Earth, then relights for the trans-lunar injection.
+    tliFlame.current = (s > 0.3 && s < 4.5) || (s >= TLI && s < TLI_END) ? 1 : 0;
+    loiFlame.current = s >= LOI && s < LOI_END ? 1 : 0;
+    deploy.current = THREE.MathUtils.clamp((s - L_DEPLOY) / 1.5, 0, 1);
+    const u = Math.min(1, uOf(s));
+    const separated = s >= L_SC_SEP;
+
+    // The stack rides the arc until spacecraft separation; then the satellite goes on alone.
+    arc.getPoint(u, satPos);
+    arc.getTangent(u, tmp.d);
+    if (stage.current) {
+      if (!separated) {
+        stage.current.position.copy(satPos);
+        stage.current.quaternion.setFromUnitVectors(UP, tmp.d);
+      } else {
+        // Left behind on the arc: the stage slows, drifts off and tumbles away.
+        const ds = s - L_SC_SEP;
+        stage.current.position.copy(sep.pos).addScaledVector(sep.dir, -ds * 1.6).addScaledVector(UP, ds * 0.9);
+        stage.current.quaternion.setFromUnitVectors(UP, sep.dir);
+        stage.current.rotateX(ds * 0.8);
+      }
+    }
+    if (sat.current) {
+      if (!separated) {
+        // Still on top of the stage, nose along the flight path.
+        sat.current.position.copy(satPos).addScaledVector(tmp.d, ROCKET.stage2 + 1.2);
+        sat.current.quaternion.setFromUnitVectors(UP, tmp.d);
+      } else if (s < LOI_END) {
+        sat.current.position.copy(satPos);
+        sat.current.lookAt(tmp.p.copy(satPos).add(tmp.d));
+      } else {
+        const a = (s - LOI_END) * 0.9;
+        sat.current.position
+          .copy(T_MOON)
+          .add(tmp.p.set(Math.cos(a) * T_ORBIT_R, Math.sin(a) * T_ORBIT_R * 0.9, Math.sin(a) * T_ORBIT_R * 0.45));
+        const a2 = a + 0.35;
+        sat.current.lookAt(
+          tmp.a
+            .copy(T_MOON)
+            .add(tmp.p.set(Math.cos(a2) * T_ORBIT_R, Math.sin(a2) * T_ORBIT_R * 0.9, Math.sin(a2) * T_ORBIT_R * 0.45)),
+        );
+      }
+    }
+    halves.current.forEach((g, i) => {
+      if (!g) return;
+      const side = i === 0 ? 1 : -1;
+      const fa = smooth(FAIRING_SEP, FAIRING_SEP + 1.8, s);
+      // The fairing peels off near Earth and drops behind the stack.
+      g.visible = s < FAIRING_SEP + 4;
+      g.position.copy(satPos).addScaledVector(tmp.d, ROCKET.stage2);
+      g.quaternion.setFromUnitVectors(UP, tmp.d);
+      tmp.a.set(1, 0, 0).applyQuaternion(g.quaternion);
+      g.position.addScaledVector(tmp.a, side * fa * 3).addScaledVector(UP, fa * 1.5);
+      g.rotateX(side * fa * 1.2);
+    });
+    if (orbitRing.current) {
+      (orbitRing.current.material as THREE.Material).opacity = smooth(LOI_END, LOI_END + 1, s) * 0.9;
+    }
+
+    // Camera: Earth-side departure, a wide shot for the cruise, then in at the Moon.
+    const wide = smooth(TLI - 1, TLI + 3, s);
+    const arrival = smooth(LOI - 1.5, LOI_END + 1.5, s);
+    camera.position.copy(tmp.p.set(-4, 5, -12).lerp(tmp.b.set(0, 16, 46), wide).lerp(ARRIVAL_CAM, arrival));
+    look.current.copy(arcPts[0]!).lerp(T_MOON, wide).lerp(satPos, Math.min(0.4, arrival));
+    camera.lookAt(look.current);
+  });
+
+  return (
+    <>
+      <color attach="background" args={["#000000"]} />
+      <Stars radius={300} depth={60} count={5000} factor={5} saturation={0.1} fade speed={0} />
+      <SunGlow dir={SPACE_SUN} distance={400} size={80} intensity={1.3} />
+      <ambientLight intensity={0.05} />
+      <directionalLight position={SPACE_SUN.clone().multiplyScalar(50)} intensity={3.2} color="#fff1df" />
+      <SpaceReflections />
+
+      <group position={T_EARTH}>
+        <Earth radius={T_EARTH_R} sunDir={SPACE_SUN} atmosphere={0.03} atmosphereIntensity={1.3} segments={96} />
+      </group>
+      <group position={T_MOON}>
+        <Moon radius={T_MOON_R} sunDir={SPACE_SUN} earthDir={T_EARTH.clone().sub(T_MOON).normalize()} />
+      </group>
+      <Line
+        points={arcPts}
+        color={T_ARC_COLOR}
+        lineWidth={1.2}
+        dashed
+        dashSize={0.6}
+        gapSize={0.35}
+        transparent
+        opacity={0.55}
+        toneMapped={false}
+      />
+      <Line
+        ref={orbitRing}
+        points={ringPts}
+        color={T_RING_COLOR}
+        lineWidth={1.4}
+        transparent
+        opacity={0}
+        toneMapped={false}
+      />
+
+      {/* The departing stack: the stage carries the spacecraft away from Earth and is left behind on the arc. */}
+      <group ref={stage}>
+        <SecondStage />
+        <group position={[0, -1.25, 0]}>
+          <Flame
+            length={6}
+            radius={0.5}
+            power={tliFlame}
+            hot="#f4f6ff"
+            mid="#8fb0ff"
+            cool="#3a4dff"
+            diamonds={0.3}
+          />
+        </group>
+      </group>
+      {[1, -1].map((side, i) => (
+        <group key={side} ref={(g) => void (halves.current[i] = g)}>
+          <FairingHalf side={side as 1 | -1} />
+        </group>
+      ))}
+      <group ref={sat}>
+        <Satellite look={craft} deploy={deploy} scale={satScale} />
+        {/* LOI is a braking burn: the plume points forward, into the direction of travel. */}
+        <group position={[0, 0, 0.9]} rotation={[-Math.PI / 2, 0, 0]}>
+          <Flame length={2.4} radius={0.3} power={loiFlame} hot="#fff2d9" mid="#ffb45e" cool="#ff5e3a" diamonds={0.3} />
+        </group>
+      </group>
+    </>
+  );
+}
+
 /* ---------- Overlay (DOM) ---------- */
 
 const fmtClock = (secs: number) => {
@@ -449,7 +658,7 @@ const fmtClock = (secs: number) => {
   return `00:${mm}:${ss}`;
 };
 
-const EVENTS = [
+const EARTH_EVENTS = [
   { at: LIFTOFF, label: "Liftoff" },
   { at: LIFTOFF + 4, label: "Max-Q" },
   { at: SPACE_START - 0.3, label: "Stage sep" },
@@ -457,12 +666,24 @@ const EVENTS = [
   { at: SPACE_START + SC_SEP, label: "Spacecraft sep" },
   { at: SPACE_START + ORBIT, label: "Orbit" },
 ];
+const LUNAR_EVENTS = [
+  { at: LIFTOFF, label: "Liftoff" },
+  { at: LIFTOFF + 4, label: "Max-Q" },
+  { at: SPACE_START - 0.3, label: "Stage sep" },
+  { at: SPACE_START + FAIRING_SEP, label: "Fairing" },
+  { at: SPACE_START + TLI, label: "TLI burn" },
+  { at: SPACE_START + L_SC_SEP, label: "Spacecraft sep" },
+  { at: SPACE_START + LOI, label: "LOI burn" },
+  { at: SPACE_START + LOI_END, label: "Polar orbit" },
+];
 
 export interface LaunchSceneProps {
   pass: boolean;
   missionName: string;
   /** The design: launcher and orbit come from it. */
   design: Design;
+  /** The mission: "lunar-orbit" ends the sequence at the Moon instead of Earth orbit. */
+  mission?: Mission;
   /** How a non-PASS launch fails: held on the pad (default) or lost in flight. */
   failure?: "scrub" | "anomaly";
   /** Failed checks, shown when the launch is scrubbed. */
@@ -475,15 +696,24 @@ export default function LaunchScene({
   pass,
   missionName,
   design,
+  mission,
   failure = "scrub",
   reasons,
   onDone,
 }: LaunchSceneProps) {
   const mode: Mode = pass ? "orbit" : failure;
   const scrub = mode === "scrub";
+  const lunar = mission?.destination === "lunar-orbit";
   const reduced = useReducedMotion();
   const start = useRef(performance.now());
-  const frozen = mode === "orbit" ? SPACE_START + ORBIT + 0.5 : scrub ? HOLD + 1 : EXPLODE + 1.5;
+  const frozen =
+    mode === "orbit"
+      ? lunar
+        ? SPACE_START + LOI_END + 1
+        : SPACE_START + ORBIT + 0.5
+      : scrub
+        ? HOLD + 1
+        : EXPLODE + 1.5;
   const clock = useMemo(() => () => (reduced ? frozen : (performance.now() - start.current) / 1000), [reduced, frozen]);
   const [t, setT] = useState(0);
   const done = useRef(false);
@@ -497,7 +727,15 @@ export default function LaunchScene({
         last = now;
         setT(clock());
       }
-      const end = reduced ? 4.5 : mode === "orbit" ? DONE_PASS : scrub ? DONE_FAIL : DONE_ANOMALY;
+      const end = reduced
+        ? 4.5
+        : mode === "orbit"
+          ? lunar
+            ? DONE_LUNAR
+            : DONE_PASS
+          : scrub
+            ? DONE_FAIL
+            : DONE_ANOMALY;
       if (elapsed >= end && !done.current) {
         done.current = true;
         onDone();
@@ -512,17 +750,19 @@ export default function LaunchScene({
       cancelAnimationFrame(raf);
       window.removeEventListener("keydown", onKey);
     };
-  }, [clock, onDone, mode, scrub, reduced]);
+  }, [clock, onDone, mode, scrub, reduced, lunar]);
 
   const inSpace = pass && t >= SPACE_START;
   const fade = pass ? 1 - Math.min(1, Math.abs(t - SPACE_START) / 0.55) : 0;
   const s = t - SPACE_START;
   const launcher = design.launcher;
   const look = useMemo(() => spacecraftLook(design), [design]);
-  const orbit = resolveOrbit(design);
+  const orbit = resolveOrbit(design, mission);
   const orbitName = orbitTypes.find((o) => o.id === orbit.type)?.name ?? orbit.type;
   const v = orbitState(orbit, 0).velocity;
-  const orbitalKmh = Math.hypot(v.x, v.y, v.z) * 3600;
+  const orbitalKmh = lunar
+    ? ((2 * Math.PI * (MOON_RADIUS_KM + orbit.altitudeKm)) / lunarOrbitalPeriodS(orbit.altitudeKm)) * 3600
+    : Math.hypot(v.x, v.y, v.z) * 3600;
 
   let clockText: string;
   if (scrub && t >= HOLD) clockText = `HOLD  T−${fmtClock(COUNT_FROM - HOLD)}`;
@@ -530,10 +770,14 @@ export default function LaunchScene({
   else clockText = `T+${fmtClock(t - LIFTOFF)}`;
 
   // Stylised ascent telemetry: climbs to orbit altitude and speed by the end of the sequence.
+  const endS = lunar ? LOI_END : ORBIT;
   const tt = mode === "anomaly" ? Math.min(t, EXPLODE) : t;
-  const prog = !scrub ? THREE.MathUtils.clamp((tt - LIFTOFF) / (SPACE_START + ORBIT - LIFTOFF), 0, 1) : 0;
+  const prog = !scrub ? THREE.MathUtils.clamp((tt - LIFTOFF) / (SPACE_START + endS - LIFTOFF), 0, 1) : 0;
   const altKm = t < LIFTOFF ? 0 : orbit.altitudeKm * Math.pow(prog, 1.6);
   const speed = t < LIFTOFF ? 0 : orbitalKmh * Math.pow(prog, 1.25);
+  // Lunar telemetry: after TLI the gauge reads range-to-Moon instead of altitude.
+  const transferU = lunar ? THREE.MathUtils.clamp((s - TLI_END) / (LOI - TLI_END), 0, 1) : 0;
+  const rangeToMoon = lunar && s >= TLI_END ? Math.round(EARTH_MOON_DISTANCE_KM * (1 - transferU)) : 0;
 
   let callout = "";
   if (mode === "anomaly" && t >= EXPLODE) callout = "Vehicle anomaly · loss of signal";
@@ -544,12 +788,19 @@ export default function LaunchScene({
   else if (t < LIFTOFF) callout = "Ignition";
   else if (t < LIFTOFF + 3) callout = "Liftoff!";
   else if (!inSpace) callout = "Vehicle is supersonic · max-Q";
-  else if (s < SECO) callout = "Second stage burn";
-  else if (s < FAIRING_SEP) callout = "Engine cutoff";
-  else if (s < SC_SEP) callout = "Fairing separation confirmed";
-  else if (s < DEPLOY) callout = "Spacecraft separation";
-  else if (s < ORBIT) callout = "Solar arrays deploying";
-  else callout = `${missionName} is in orbit`;
+  else if (lunar && s < FAIRING_SEP) callout = "Climbing away from Earth";
+  else if (lunar && s < TLI) callout = "Fairing jettisoned · TLI in";
+  else if (lunar && s < TLI_END) callout = "Trans-lunar injection burn";
+  else if (lunar && s < L_SC_SEP) callout = `Cruise to the Moon · ${EARTH_MOON_DISTANCE_KM.toLocaleString("en-US")} km`;
+  else if (lunar && s < L_DEPLOY + 0.6) callout = "Spacecraft separation · solar arrays deploying";
+  else if (lunar && s < LOI) callout = `Cruise to the Moon · ${EARTH_MOON_DISTANCE_KM.toLocaleString("en-US")} km`;
+  else if (lunar && s < LOI_END) callout = "Lunar orbit insertion burn";
+  else if (!lunar && s < SECO) callout = "Second stage burn";
+  else if (!lunar && s < FAIRING_SEP) callout = "Engine cutoff";
+  else if (!lunar && s < SC_SEP) callout = "Fairing separation confirmed";
+  else if (!lunar && s < DEPLOY) callout = "Spacecraft separation";
+  else if (!lunar && s < ORBIT) callout = "Solar arrays deploying";
+  else callout = lunar ? `${missionName} is in polar orbit around the Moon` : `${missionName} is in orbit`;
 
   return (
     <div className="ls" onClick={onDone} role="dialog" aria-label="Launch sequence">
@@ -561,7 +812,11 @@ export default function LaunchScene({
       >
         <Suspense fallback={null}>
           {inSpace ? (
-            <SpacePhase clock={clock} reduced={reduced} craft={look} />
+            lunar ? (
+              <LunarPhase clock={clock} craft={look} />
+            ) : (
+              <SpacePhase clock={clock} reduced={reduced} craft={look} />
+            )
           ) : (
             <PadPhase clock={clock} mode={mode} reduced={reduced} />
           )}
@@ -586,7 +841,7 @@ export default function LaunchScene({
           </div>
           <div className={`ls-clock ${scrub && t >= HOLD ? "hold" : ""}`}>{clockText}</div>
           <div className="ls-head-right">
-            {orbit.altitudeKm} km · {orbitName}
+            {orbit.altitudeKm} km · {lunar ? "Lunar orbit" : orbitName}
           </div>
         </div>
 
@@ -601,8 +856,16 @@ export default function LaunchScene({
               <b>{Math.round(speed).toLocaleString("en-US")}</b> km/h
             </div>
             <div>
-              <span>Altitude</span>
-              <b>{altKm.toFixed(altKm < 100 ? 1 : 0)}</b> km
+              <span>{s >= TLI_END && lunar ? "Range to Moon" : "Altitude"}</span>
+              {s >= TLI_END && lunar ? (
+                <>
+                  <b>{rangeToMoon.toLocaleString("en-US")}</b> km
+                </>
+              ) : (
+                <>
+                  <b>{altKm.toFixed(altKm < 100 ? 1 : 0)}</b> km
+                </>
+              )}
             </div>
           </div>
         )}
@@ -613,7 +876,7 @@ export default function LaunchScene({
 
         {pass && (
           <div className="ls-events">
-            {EVENTS.map((e) => (
+            {(lunar ? LUNAR_EVENTS : EARTH_EVENTS).map((e) => (
               <div key={e.label} className={`ls-event ${t >= e.at ? "done" : ""}`}>
                 <i />
                 <span>{e.label}</span>

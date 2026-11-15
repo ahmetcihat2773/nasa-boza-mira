@@ -76,8 +76,19 @@ describe("orbits and ground stations", () => {
 
 describe("events", () => {
   it("has the 9 Wildfire Watch events, launch failure rolled once per run", () => {
-    expect(gameEvents).toHaveLength(9);
+    expect(gameEvents.filter((e) => e.missions.includes("wildfire-watch"))).toHaveLength(9);
     expect(gameEvents.filter((e) => e.rolled === "once-per-run").map((e) => e.id)).toEqual(["launch-failure"]);
+  });
+
+  it("adds the four Lunar Ice Hunter events to the shared general ones", () => {
+    const lunar = gameEvents.filter((e) => e.missions.includes("lunar-ice-hunter"));
+    expect(lunar).toHaveLength(10);
+    expect(
+      lunar
+        .filter((e) => e.missionId === "lunar-ice-hunter")
+        .map((e) => e.id)
+        .sort(),
+    ).toEqual(["deep-space-outage", "insertion-anomaly", "long-eclipse-season", "tli-underperformance"]);
   });
 
   it("rejects a decision with a single option", () => {
@@ -99,8 +110,12 @@ describe("real missions and learning texts", () => {
     expect(tourSteps.length).toBeGreaterThanOrEqual(5);
   });
 
-  it("has an intro line for every role advisor", () => {
-    const intros = advisorLines.filter((a) => a.when === "intro").map((a) => a.role);
-    expect(intros.sort()).toEqual(["ground", "launch", "science", "spacecraft"]);
+  it("has an intro line for every role advisor, per mission", () => {
+    for (const mission of ["wildfire-watch", "lunar-ice-hunter"]) {
+      const intros = advisorLines
+        .filter((a) => a.when === "intro" && (a.missionId === undefined || a.missionId === mission))
+        .map((a) => a.role);
+      expect(intros.sort(), mission).toEqual(["ground", "launch", "science", "spacecraft"]);
+    }
   });
 });

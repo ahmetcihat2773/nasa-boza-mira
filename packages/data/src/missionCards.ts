@@ -113,55 +113,59 @@ export type Lock = z.infer<typeof LockSchema>;
  */
 export const MissionCardSchema = z
   .strictObject({
-  id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
-  name: z.string().min(1),
-  difficulty: z.enum(["easy", "medium", "hard", "expert"]),
-  objective: z.string().min(1),
-  whyItMatters: z.string().min(1),
-  destination: DestinationSchema,
-  /** Plain-English destination shown on the briefing. */
-  destinationText: z.string().min(1),
-  /** Lunar-orbit cards only. */
-  transfer: TransferSchema.optional(),
-  locked: z.array(LockSchema).optional(),
-  targetRegion: z.strictObject({
+    id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
     name: z.string().min(1),
-    latDeg: z.number().min(-90).max(90),
-    lonDeg: z.number().min(-180).max(180),
-    /** Width of the region in km (east–west), used for revisit. */
-    widthKm: z.number().positive(),
-  }),
-  requirements: z.array(RequirementSchema).min(1).superRefine(uniqueBy("id")),
-  constraints: z.strictObject({
-    budgetUsd: z.int().positive(),
-    sizes: z.array(SpacecraftSizeSchema).min(1),
-    maxSmallsatMassKg: z.number().positive(),
-    satellites: z.int().positive(),
-    minTrl: z.int().min(1).max(9),
-    /** Launchers costing more than the whole budget are shown locked. */
-    lockLaunchersOverBudget: z.boolean(),
-  }),
-  /** Share of the budget per role, in percent (sums to 100). */
-  allocationsPct: z
-    .strictObject({ launch: pct, spacecraft: pct, science: pct, ground: pct })
-    .superRefine(pctSum("allocationsPct")),
-  /** Charged per month of development or waiting, split by allocation. */
-  teamCostPerMonthUsd: z.int().positive(),
-  baseDevMonths: z.record(SpacecraftSizeSchema, z.int().positive()),
-  deadlineMonths: z.int().positive(),
-  /** Months of waiting (at team cost) when the deadline is missed; the schedule score is then zero. */
-  lateWaitMonths: z.int().nonnegative(),
-  /** Score component weights in percent (sums to 100). */
-  scoreWeights: z
-    .strictObject({ science: pct, efficiency: pct, schedule: pct, risk: pct, coordination: pct })
-    .superRefine(pctSum("scoreWeights")),
-  bonusObjectives: z.array(BonusObjectiveSchema).superRefine(uniqueBy("id")),
-  tradeOffs: z.array(z.string().min(1)),
-  sources: z.array(SourceSchema).min(1),
+    difficulty: z.enum(["easy", "medium", "hard", "expert"]),
+    objective: z.string().min(1),
+    whyItMatters: z.string().min(1),
+    destination: DestinationSchema,
+    /** Plain-English destination shown on the briefing. */
+    destinationText: z.string().min(1),
+    /** Lunar-orbit cards only. */
+    transfer: TransferSchema.optional(),
+    locked: z.array(LockSchema).optional(),
+    targetRegion: z.strictObject({
+      name: z.string().min(1),
+      latDeg: z.number().min(-90).max(90),
+      lonDeg: z.number().min(-180).max(180),
+      /** Width of the region in km (east–west), used for revisit. */
+      widthKm: z.number().positive(),
+    }),
+    requirements: z.array(RequirementSchema).min(1).superRefine(uniqueBy("id")),
+    constraints: z.strictObject({
+      budgetUsd: z.int().positive(),
+      sizes: z.array(SpacecraftSizeSchema).min(1),
+      maxSmallsatMassKg: z.number().positive(),
+      satellites: z.int().positive(),
+      minTrl: z.int().min(1).max(9),
+      /** Launchers costing more than the whole budget are shown locked. */
+      lockLaunchersOverBudget: z.boolean(),
+    }),
+    /** Share of the budget per role, in percent (sums to 100). */
+    allocationsPct: z
+      .strictObject({ launch: pct, spacecraft: pct, science: pct, ground: pct })
+      .superRefine(pctSum("allocationsPct")),
+    /** Charged per month of development or waiting, split by allocation. */
+    teamCostPerMonthUsd: z.int().positive(),
+    baseDevMonths: z.record(SpacecraftSizeSchema, z.int().positive()),
+    deadlineMonths: z.int().positive(),
+    /** Months of waiting (at team cost) when the deadline is missed; the schedule score is then zero. */
+    lateWaitMonths: z.int().nonnegative(),
+    /** Score component weights in percent (sums to 100). */
+    scoreWeights: z
+      .strictObject({ science: pct, efficiency: pct, schedule: pct, risk: pct, coordination: pct })
+      .superRefine(pctSum("scoreWeights")),
+    bonusObjectives: z.array(BonusObjectiveSchema).superRefine(uniqueBy("id")),
+    tradeOffs: z.array(z.string().min(1)),
+    sources: z.array(SourceSchema).min(1),
   })
   .superRefine((c, ctx) => {
     if ((c.destination === "lunar-orbit") !== (c.transfer !== undefined))
-      ctx.addIssue({ code: "custom", path: ["transfer"], message: "required for lunar-orbit cards, and only for them" });
+      ctx.addIssue({
+        code: "custom",
+        path: ["transfer"],
+        message: "required for lunar-orbit cards, and only for them",
+      });
   });
 export type MissionCard = z.infer<typeof MissionCardSchema>;
 

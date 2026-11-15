@@ -186,7 +186,7 @@ export function moonVisibleMinutesPerDay(stationLonDeg: readonly number[]): numb
   let visible = 0;
   for (let deg = 0; deg < 360; deg++) {
     const seen = stationLonDeg.some((lon) => {
-      const d = Math.abs((((deg + 0.5 - lon) % 360) + 540) % 360 - 180);
+      const d = Math.abs(((((deg + 0.5 - lon) % 360) + 540) % 360) - 180);
       return d <= half;
     });
     if (seen) visible++;

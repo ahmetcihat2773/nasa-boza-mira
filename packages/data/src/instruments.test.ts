@@ -33,11 +33,19 @@ describe("instruments.json", () => {
     expect(Math.max(...fov)).toBeGreaterThan(60);
   });
 
-  it("has 2–3 instruments at TRL 5–8, the rest at TRL 9", () => {
-    const lower = instruments.filter((i) => i.trl >= 5 && i.trl <= 8).length;
+  it("has 2–3 instruments at TRL 5–8 among the fire instruments, the rest at TRL 9", () => {
+    const fire = instruments.filter((i) => i.detects.some((d) => d !== "waterIce"));
+    const lower = fire.filter((i) => i.trl >= 5 && i.trl <= 8).length;
     expect(lower).toBeGreaterThanOrEqual(2);
     expect(lower).toBeLessThanOrEqual(3);
-    expect(instruments.filter((i) => i.trl === 9).length).toBe(instruments.length - lower);
+    expect(fire.filter((i) => i.trl === 9).length).toBe(fire.length - lower);
+  });
+
+  it("offers two different ice-detecting instrument kinds for a 12U (L2 plus the second-method bonus)", () => {
+    const kinds = new Set(
+      instruments.filter((i) => i.fits.includes("12U") && i.detects.includes("waterIce")).map((i) => i.kind),
+    );
+    expect(kinds.size).toBeGreaterThanOrEqual(2);
   });
 
   it("marks every cost and science value as game-design", () => {

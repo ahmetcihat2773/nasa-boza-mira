@@ -17,15 +17,23 @@
         {
           "id": "buy-alternative",
           "label": "Buy a more expensive alternative part",
-          "effects": { "costUsd": 400000 },
+          "effects": {
+            "costUsd": 400000
+          },
           "outcome": "You paid extra for a part from another supplier and kept the schedule."
         },
         {
           "id": "accept-delay",
           "label": "Accept the delay",
-          "effects": { "months": 4 },
+          "effects": {
+            "months": 4
+          },
           "outcome": "You waited 4 months for the part, and the team cost kept running."
         }
+      ],
+      "missions": [
+        "wildfire-watch",
+        "lunar-ice-hunter"
       ]
     },
     {
@@ -44,15 +52,24 @@
         {
           "id": "retest",
           "label": "Fix and re-test the part",
-          "effects": { "months": 3, "costUsd": 200000 },
+          "effects": {
+            "months": 3,
+            "costUsd": 200000
+          },
           "outcome": "You fixed the part and it passed its second test, 3 months later."
         },
         {
           "id": "swap-proven",
           "label": "Swap to a proven part",
-          "effects": { "performancePct": -20 },
+          "effects": {
+            "performancePct": -20
+          },
           "outcome": "You swapped to a part that has flown before: safer, but less capable."
         }
+      ],
+      "missions": [
+        "wildfire-watch",
+        "lunar-ice-hunter"
       ]
     },
     {
@@ -71,9 +88,15 @@
         {
           "id": "wait",
           "label": "Wait for the next attempt",
-          "effects": { "months": 1 },
+          "effects": {
+            "months": 1
+          },
           "outcome": "The launch slipped by a month."
         }
+      ],
+      "missions": [
+        "wildfire-watch",
+        "lunar-ice-hunter"
       ]
     },
     {
@@ -92,9 +115,15 @@
         {
           "id": "mission-lost",
           "label": "The mission ends",
-          "effects": { "endsMission": true },
+          "effects": {
+            "endsMission": true
+          },
           "outcome": "The satellite was lost at launch. The launcher's success rate decided this roll."
         }
+      ],
+      "missions": [
+        "wildfire-watch",
+        "lunar-ice-hunter"
       ]
     },
     {
@@ -113,15 +142,23 @@
         {
           "id": "safe-mode",
           "label": "Enter safe mode",
-          "effects": { "scienceDaysLost": 2 },
+          "effects": {
+            "scienceDaysLost": 2
+          },
           "outcome": "You entered safe mode and protected the satellite, losing 2 days of observations."
         },
         {
           "id": "keep-operating",
           "label": "Keep operating",
-          "effects": { "failureRiskPct": 10 },
+          "effects": {
+            "failureRiskPct": 10
+          },
           "outcome": "You kept observing through the storm and accepted the risk of damage."
         }
+      ],
+      "missions": [
+        "wildfire-watch",
+        "lunar-ice-hunter"
       ]
     },
     {
@@ -141,15 +178,22 @@
           "id": "avoid",
           "label": "Make an avoidance manoeuvre",
           "requires": "propulsion",
-          "effects": { "propulsionUsePct": 10 },
+          "effects": {
+            "propulsionUsePct": 10
+          },
           "outcome": "You fired the thruster and moved out of the way, using some fuel."
         },
         {
           "id": "take-risk",
           "label": "Take the risk",
-          "effects": { "failureRiskPct": 5 },
+          "effects": {
+            "failureRiskPct": 5
+          },
           "outcome": "You stayed on course and hoped the debris would miss."
         }
+      ],
+      "missions": [
+        "wildfire-watch"
       ]
     },
     {
@@ -169,15 +213,23 @@
           "id": "switch-backup",
           "label": "Switch to the backup",
           "requires": "redundancy",
-          "effects": { "scienceDaysLost": 1 },
+          "effects": {
+            "scienceDaysLost": 1
+          },
           "outcome": "You switched to the backup and lost only a day of observations."
         },
         {
           "id": "continue-degraded",
           "label": "Continue degraded",
-          "effects": { "sciencePct": -15 },
+          "effects": {
+            "sciencePct": -15
+          },
           "outcome": "The satellite kept working with reduced performance for the rest of the mission."
         }
+      ],
+      "missions": [
+        "wildfire-watch",
+        "lunar-ice-hunter"
       ]
     },
     {
@@ -196,15 +248,22 @@
         {
           "id": "rent-station",
           "label": "Rent an extra station for a week",
-          "effects": { "costUsd": 50000 },
+          "effects": {
+            "costUsd": 50000
+          },
           "outcome": "You rented time on another station and kept the data flowing."
         },
         {
           "id": "accept-backlog",
           "label": "Accept the data backlog",
-          "effects": { "dataBacklogDays": 7 },
+          "effects": {
+            "dataBacklogDays": 7
+          },
           "outcome": "Data piled up on board and fire alerts arrived late for a week."
         }
+      ],
+      "missions": [
+        "wildfire-watch"
       ]
     },
     {
@@ -224,7 +283,10 @@
           "id": "increase-observations",
           "label": "Increase observations",
           "requires": "margin",
-          "effects": { "sciencePct": 20, "dataBacklogDays": 2 },
+          "effects": {
+            "sciencePct": 20,
+            "dataBacklogDays": 2
+          },
           "outcome": "You observed more often and helped firefighters during the worst weeks."
         },
         {
@@ -233,12 +295,157 @@
           "effects": {},
           "outcome": "You kept the normal observation plan and missed some of the fires."
         }
+      ],
+      "missions": [
+        "wildfire-watch"
+      ]
+    },
+    {
+      "id": "tli-underperformance",
+      "missionId": "lunar-ice-hunter",
+      "missions": [
+        "lunar-ice-hunter"
+      ],
+      "phase": "launch",
+      "name": "Launcher underperformance",
+      "margin": "delta-v",
+      "decidedBy": "launch",
+      "rolled": "pool",
+      "weight": 3,
+      "text": "The launcher put the spacecraft on a slower trans-lunar trajectory than planned.",
+      "why": "Rockets do not always give exactly the promised push. On the way to the Moon the spacecraft must spend its own fuel to fix a shortfall, fuel it was saving to hold its orbit.",
+      "absorbedText": "Your delta-v margin covered the shortfall, so the spacecraft corrected the trajectory for free.",
+      "options": [
+        {
+          "id": "burn-fuel",
+          "label": "Correct with the spacecraft's own fuel",
+          "effects": {
+            "propulsionUsePct": 20
+          },
+          "outcome": "The correction burn put the spacecraft back on course, but it arrives at the Moon with less propellant for station-keeping."
+        },
+        {
+          "id": "accept-higher-orbit",
+          "label": "Accept a higher, lazier orbit",
+          "effects": {
+            "sciencePct": -15
+          },
+          "outcome": "The spacecraft settles into a higher orbit: fuel is saved, but the ice maps are coarser."
+        }
+      ]
+    },
+    {
+      "id": "insertion-anomaly",
+      "missionId": "lunar-ice-hunter",
+      "missions": [
+        "lunar-ice-hunter"
+      ],
+      "phase": "launch",
+      "name": "Orbit insertion burn anomaly",
+      "margin": "propulsion-trl",
+      "decidedBy": "spacecraft",
+      "rolled": "pool",
+      "weight": 3,
+      "text": "The thruster cut out early during the lunar orbit insertion burn.",
+      "why": "The insertion burn cannot be skipped: without it the spacecraft flies past the Moon. Thrusters that have flown many times misbehave less often.",
+      "absorbedText": "The thruster has a long flight record: the burn ran cleanly and the spacecraft entered polar orbit as planned.",
+      "options": [
+        {
+          "id": "retry-burn",
+          "label": "Retry the burn at the next opportunity",
+          "effects": {
+            "months": 2,
+            "propulsionUsePct": 15,
+            "failureRiskPct": 5
+          },
+          "outcome": "The second burn worked after a tense wait, at the cost of extra propellant."
+        },
+        {
+          "id": "looser-orbit",
+          "label": "Settle into a looser, higher orbit",
+          "effects": {
+            "sciencePct": -20
+          },
+          "outcome": "The partial burn left the spacecraft in a higher, safer orbit: less fuel spent, weaker ice maps."
+        }
+      ]
+    },
+    {
+      "id": "deep-space-outage",
+      "missionId": "lunar-ice-hunter",
+      "missions": [
+        "lunar-ice-hunter"
+      ],
+      "phase": "operations",
+      "name": "Deep-space station outage",
+      "margin": "comms",
+      "decidedBy": "ground",
+      "rolled": "pool",
+      "weight": 3,
+      "text": "Your busiest deep-space station is down for repairs for several weeks.",
+      "why": "Only a handful of dishes on Earth can hear a small radio at the Moon's distance. Losing one squeezes the data pipeline.",
+      "absorbedText": "Your remaining stations carried the traffic: the downlink stayed above the requirement.",
+      "options": [
+        {
+          "id": "rent-station",
+          "label": "Rent time on another station",
+          "effects": {
+            "costUsd": 800000
+          },
+          "outcome": "An extra station took over the contacts; the data kept flowing, the budget felt it."
+        },
+        {
+          "id": "accept-backlog",
+          "label": "Accept the data backlog",
+          "effects": {
+            "dataBacklogDays": 40
+          },
+          "outcome": "Data piled up on board for weeks before it could be sent down."
+        }
+      ]
+    },
+    {
+      "id": "long-eclipse-season",
+      "missionId": "lunar-ice-hunter",
+      "missions": [
+        "lunar-ice-hunter"
+      ],
+      "phase": "operations",
+      "name": "Long eclipse season",
+      "margin": "power",
+      "decidedBy": "spacecraft",
+      "rolled": "pool",
+      "weight": 2,
+      "text": "A season of longer eclipses: the spacecraft spends even more of each orbit in the Moon's shadow.",
+      "why": "The geometry of Sun, Moon and orbit changes over the year. In a low orbit the batteries already work hard through the shadow.",
+      "absorbedText": "Your power margin covered the longer nights; the instruments kept running through every eclipse.",
+      "options": [
+        {
+          "id": "instruments-off",
+          "label": "Turn the instruments off in shadow",
+          "effects": {
+            "scienceDaysLost": 30
+          },
+          "outcome": "The spacecraft stayed safe, but a month of polar passes produced no data."
+        },
+        {
+          "id": "risk-battery",
+          "label": "Keep imaging and risk the battery",
+          "effects": {
+            "failureRiskPct": 15
+          },
+          "outcome": "You drained the battery deep into every eclipse to keep the maps coming."
+        }
       ]
     }
   ],
   "sources": [
     {
-      "fields": ["events", "weight", "effects"],
+      "fields": [
+        "events",
+        "weight",
+        "effects"
+      ],
       "data_quality": "game-design",
       "source": "design.md section 6.2",
       "note": "Effect sizes and draw weights are starting values for balancing."

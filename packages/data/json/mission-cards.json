@@ -356,6 +356,7 @@
       },
       "teamCostPerMonthUsd": 300000,
       "baseDevMonths": {
+        "6U": 15,
         "12U": 20,
         "smallsat": 30
       },

@@ -21,6 +21,8 @@ import { Suspense, useMemo, useRef, useState, type ComponentRef } from "react";
 import * as THREE from "three";
 import { SpaceReflections, toScene, useReducedMotion } from "./common.tsx";
 import { Earth, SunGlow } from "./Earth.tsx";
+import { LunarOrbitScene } from "./LunarOrbitScene.tsx";
+import { LUNAR_ALTITUDE_RANGE_KM, lunarOrbitalPeriodS, type Destination } from "./lunar.ts";
 import { Satellite, lookScale } from "./Satellite.tsx";
 import { spacecraftLook, type SpacecraftLook } from "./spacecraftLook.ts";
 import "./scene.css";
@@ -386,6 +388,8 @@ interface ExplicitOrbitProps {
 export type OrbitViewProps = ({ design: Design } | ExplicitOrbitProps) & {
   /** True once the spacecraft has launched: the view shows the live orbit instead of the planned one. */
   live: boolean;
+  /** The mission's destination; "lunar-orbit" draws the Moon scene instead of Earth. */
+  destination?: Destination;
 };
 
 function resolveProps(p: OrbitViewProps): ExplicitOrbitProps {
@@ -402,18 +406,22 @@ function resolveProps(p: OrbitViewProps): ExplicitOrbitProps {
 
 /** Interactive 3D orbit view for the design and operations screens. */
 export default function OrbitView(props: OrbitViewProps) {
-  const { live } = props;
+  const { live, destination } = props;
+  const lunar = destination === "lunar-orbit";
   const { orbit: o, orbitName, swathKm: designSwathKm, stations, design } = resolveProps(props);
   const look = useMemo(() => spacecraftLook(design), [design]);
   const reduced = useReducedMotion();
-  const { altitudeKm, inclinationDeg } = o;
+  const { inclinationDeg } = o;
+  const altitudeKm = lunar
+    ? Math.min(LUNAR_ALTITUDE_RANGE_KM.max, Math.max(LUNAR_ALTITUDE_RANGE_KM.min, o.altitudeKm))
+    : o.altitudeKm;
   const orbit = useMemo<CircularOrbit>(
     () => ({ altitudeKm, inclinationDeg, raanDeg: 0 }),
     [altitudeKm, inclinationDeg],
   );
   const placeholder = designSwathKm <= 0;
   const swathKm = placeholder ? swathWidthKm(PLACEHOLDER_FOV_DEG, altitudeKm) : designSwathKm;
-  const periodMin = orbitalPeriodS(altitudeKm) / 60;
+  const periodMin = (lunar ? lunarOrbitalPeriodS(altitudeKm) : orbitalPeriodS(altitudeKm)) / 60;
   const [contact, setContact] = useState("");
 
   return (
@@ -426,20 +434,31 @@ export default function OrbitView(props: OrbitViewProps) {
       >
         <color attach="background" args={["#020409"]} />
         <Suspense fallback={null}>
-          <OrbitScene
-            orbit={orbit}
-            swathKm={swathKm}
-            stations={stations}
-            look={look}
-            reduced={reduced}
-            contact={contact}
-            onContact={setContact}
-          />
+          {lunar ? (
+            <LunarOrbitScene
+              orbit={orbit}
+              // Only deep-space sites reach the Moon; near-Earth stations see nothing that far out.
+              stations={stations.filter((s) => (s as { kind?: string }).kind !== "near-earth")}
+              look={look}
+              reduced={reduced}
+              onContact={setContact}
+            />
+          ) : (
+            <OrbitScene
+              orbit={orbit}
+              swathKm={swathKm}
+              stations={stations}
+              look={look}
+              reduced={reduced}
+              contact={contact}
+              onContact={setContact}
+            />
+          )}
         </Suspense>
       </Canvas>
       <div className="ov-hud ov-top">
         <div>
-          <div className="ov-kicker">Orbit</div>
+          <div className="ov-kicker">{lunar ? "Lunar orbit" : "Orbit"}</div>
           <div className="ov-title">
             {orbitName} · {altitudeKm} km
           </div>
@@ -451,7 +470,7 @@ export default function OrbitView(props: OrbitViewProps) {
       </div>
       <div className="ov-hud ov-bottom">
         <div className="ov-stations">
-          {stations.map((g) => {
+          {(lunar ? stations.filter((s) => (s as { kind?: string }).kind !== "near-earth") : stations).map((g) => {
             const on = contact.split("|").includes(g.name);
             return (
               <span key={g.name} className={`ov-station ${on ? "on" : ""}`}>
@@ -461,9 +480,12 @@ export default function OrbitView(props: OrbitViewProps) {
           })}
         </div>
         <div className="ov-sub">
-          <span className="ov-swatch" /> Swath {Math.round(swathKm)} km
-          {placeholder ? ` (placeholder, ${PLACEHOLDER_FOV_DEG}° view)` : ""}
-          {!reduced && ` · ×${Math.round((orbitalPeriodS(altitudeKm) * ORBITS_PER_MINUTE) / 60)} speed`}
+          <span className="ov-swatch" />{" "}
+          {lunar
+            ? "Ground track over the poles"
+            : `Swath ${Math.round(swathKm)} km${placeholder ? ` (placeholder, ${PLACEHOLDER_FOV_DEG}° view)` : ""}`}
+          {!reduced &&
+            ` · ×${Math.round(((lunar ? lunarOrbitalPeriodS(altitudeKm) : orbitalPeriodS(altitudeKm)) * ORBITS_PER_MINUTE) / 60)} speed`}
         </div>
       </div>
     </div>

@@ -2,8 +2,18 @@
  * The playable missions (design.md section 10.5): one entry per mission card, with the sim's Mission.
  * The rules stay in @space-mission/sim; this file only looks missions up by id.
  */
-import { missionCards, type Destination, type MissionCard } from "@space-mission/data";
-import { WILDFIRE_WATCH, missionFromCard, type Budget, type Mission } from "@space-mission/sim";
+import {
+  allLaunchers,
+  instruments,
+  missionCards,
+  parts,
+  type Destination,
+  type Instrument,
+  type Launcher,
+  type MissionCard,
+  type Part,
+} from "@space-mission/data";
+import { WILDFIRE_WATCH, missionFromCard, type Budget, type Design, type Mission } from "@space-mission/sim";
 
 export type { Destination };
 
@@ -51,15 +61,60 @@ export interface TransferMeters {
 }
 
 /**
- * Reads the sim's transfer results off the budget. The sim computes them (T26.2); this only picks the
- * fields up, so the dashboard shows nothing until the sim provides them.
+ * Reads the sim's delta-v budget (computeBudget().deltaV, lunar missions only);
+ * null in Earth orbit, so the dashboard shows the transfer meters only at the Moon.
  */
 export function transferMeters(b: Budget): TransferMeters | null {
-  const t = (b as { transfer?: Partial<Record<string, number>> | null }).transfer;
-  if (!t) return null;
-  const needed = t.deltaVNeededKmS ?? t.neededKmS ?? t.totalDeltaVKmS;
-  const available = t.deltaVAvailableKmS ?? t.availableKmS;
-  const propellant = t.propellantKg ?? t.propellantMassKg;
-  if (needed === undefined || available === undefined || propellant === undefined) return null;
-  return { neededKmS: needed, availableKmS: available, propellantKg: propellant };
+  const d = b.deltaV;
+  if (!d) return null;
+  return { neededKmS: d.neededKmS, availableKmS: d.availableKmS, propellantKg: d.propellantKg };
+}
+
+const partById = (id: string): Part => {
+  const p = parts.find((x) => x.id === id);
+  if (!p) throw new Error(`starter design: no part ${id}`);
+  return p;
+};
+const instrumentsById = (ids: readonly string[]): Instrument[] => instruments.filter((i) => ids.includes(i.id));
+const launcherById = (id: string): Launcher => {
+  const l = allLaunchers.find((x) => x.id === id);
+  if (!l) throw new Error(`starter design: no launcher ${id}`);
+  return l;
+};
+
+/**
+ * A ready-to-fly design for the mission, so the Concept phase starts from a working
+ * configuration instead of an empty bus. Both starters pass computeBudget; the player
+ * is free to swap any part from there.
+ */
+export function starterDesign(mission: Mission): Design {
+  if (mission.destination === "lunar-orbit") {
+    return {
+      parts: {
+        structure: partById("structure-smallsat-composite"),
+        solar: partById("solar-smallsat-deployable"),
+        battery: partById("battery-600wh"),
+        obc: partById("obc-rad-tolerant"),
+        adcs: partById("adcs-wheels-smallsat"),
+        propulsion: partById("propulsion-biprop-lunar"),
+        comms: partById("comms-xband-smallsat"),
+      },
+      instruments: instrumentsById(["neutron-spectrometer", "mini-radar-ice"]),
+      launcher: launcherById("lunar-rideshare"),
+      orbit: { type: "polar", altitudeKm: 100 },
+    };
+  }
+  return {
+    parts: {
+      structure: partById("structure-12u-frame"),
+      solar: partById("solar-12u-deployable"),
+      battery: partById("battery-90wh"),
+      obc: partById("obc-microcontroller"),
+      adcs: partById("adcs-integrated-cubesat"),
+      propulsion: partById("propulsion-none"),
+      comms: partById("comms-xband-cubesat"),
+    },
+    instruments: instrumentsById(["swir-fire-cubesat", "vis-wide-cubesat"]),
+    launcher: launcherById("rideshare"),
+  };
 }

@@ -4,7 +4,7 @@ import { InstrumentKindSchema } from "./instruments.ts";
 import { SourceSchema } from "./sources.ts";
 import { uniqueBy } from "./unique.ts";
 
-/** One real Earth-observation satellite, for the "your design resembles…" match (T14.6). */
+/** One real satellite (Earth-observation or lunar orbiter), for the "your design resembles…" match (T14.6). */
 export const RealMissionSchema = z.strictObject({
   id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/),
   name: z.string().min(1),
@@ -26,7 +26,7 @@ export type RealMission = z.infer<typeof RealMissionSchema>;
 
 export const RealMissionsFileSchema = z.strictObject({
   note: z.string().min(1),
-  missions: z.array(RealMissionSchema).min(10).max(15).superRefine(uniqueBy("id")),
+  missions: z.array(RealMissionSchema).min(10).max(20).superRefine(uniqueBy("id")),
   sources: z.array(SourceSchema).min(1),
 });
 

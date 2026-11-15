@@ -1468,8 +1468,17 @@
           "url": "https://www.satcatalog.com/component/starling-1u/",
           "checked": "2026-11-14",
           "note": "Anchor $50,000: satcatalog average cost for a 1U cold-gas system (FY2021)."
+        },
+        {
+          "fields": [
+            "specificImpulseS"
+          ],
+          "data_quality": "game-design",
+          "source": "Specific impulse by propulsion class",
+          "note": "Cold-gas thrusters give about 50 s of specific impulse; our game value."
         }
-      ]
+      ],
+      "specificImpulseS": 50
     },
     {
       "id": "propulsion-green-mono",
@@ -1521,8 +1530,17 @@
           "data_quality": "game-design",
           "source": "Anchor price × integration-and-test factor 10 (costMethod)",
           "note": "Anchor $100,000: no public list price; our value, twice the cold-gas anchor."
+        },
+        {
+          "fields": [
+            "specificImpulseS"
+          ],
+          "data_quality": "game-design",
+          "source": "Specific impulse by propulsion class",
+          "note": "Green monopropellant (e.g., LMP-103S, AF-M315E) gives about 230 s; our game value."
         }
-      ]
+      ],
+      "specificImpulseS": 230
     },
     {
       "id": "propulsion-hydrazine-smallsat",
@@ -1573,8 +1591,17 @@
           "data_quality": "game-design",
           "source": "Anchor price × integration-and-test factor 10 (costMethod)",
           "note": "Anchor $300,000: no public list price; our value."
+        },
+        {
+          "fields": [
+            "specificImpulseS"
+          ],
+          "data_quality": "game-design",
+          "source": "Specific impulse by propulsion class",
+          "note": "Hydrazine monopropellant gives about 220 s; our game value."
         }
-      ]
+      ],
+      "specificImpulseS": 220
     },
     {
       "id": "propulsion-feep-cubesat",
@@ -1626,8 +1653,17 @@
           "data_quality": "game-design",
           "source": "Anchor price × integration-and-test factor 10 (costMethod)",
           "note": "Anchor $150,000: no public list price; our value."
+        },
+        {
+          "fields": [
+            "specificImpulseS"
+          ],
+          "data_quality": "game-design",
+          "source": "Specific impulse by propulsion class",
+          "note": "Field-emission electric propulsion gives several thousand seconds; our game value."
         }
-      ]
+      ],
+      "specificImpulseS": 4000
     },
     {
       "id": "propulsion-hall-smallsat",
@@ -1678,8 +1714,17 @@
           "data_quality": "game-design",
           "source": "Anchor price × integration-and-test factor 10 (costMethod)",
           "note": "Anchor $500,000: no public list price; our value."
+        },
+        {
+          "fields": [
+            "specificImpulseS"
+          ],
+          "data_quality": "game-design",
+          "source": "Specific impulse by propulsion class",
+          "note": "The 200 W class Hall thruster in Table 4-10 lists 1,390 s; rounded to 1,400 s."
         }
-      ]
+      ],
+      "specificImpulseS": 1400
     },
     {
       "id": "propulsion-iodine-rf",
@@ -1731,8 +1776,17 @@
           "data_quality": "game-design",
           "source": "Anchor price × integration-and-test factor 10 (costMethod)",
           "note": "Anchor $200,000: no public list price; our value."
+        },
+        {
+          "fields": [
+            "specificImpulseS"
+          ],
+          "data_quality": "game-design",
+          "source": "Specific impulse by propulsion class",
+          "note": "Iodine RF ion propulsion gives about 1,500–2,000 s; our game value."
         }
-      ]
+      ],
+      "specificImpulseS": 1800
     },
     {
       "id": "comms-uhf",
@@ -1787,8 +1841,17 @@
           "url": "https://www.endurosat.com/products/uhf-transceiver-ii/",
           "checked": "2026-11-14",
           "note": "Anchor $18,300: EnduroSat UHF Transceiver $7,900 + UHF Antenna 2U $10,400 (lower list price)."
+        },
+        {
+          "fields": [
+            "lunarRateFactor"
+          ],
+          "data_quality": "game-design",
+          "source": "Game-design value (design.md section 10.2)",
+          "note": "Data-rate multiplier at 384,000 km, per radio class (higher bands keep more of their rate); our estimate."
         }
-      ]
+      ],
+      "lunarRateFactor": 0.005
     },
     {
       "id": "comms-sband",
@@ -1843,8 +1906,17 @@
           "url": "https://www.endurosat.com/products/s-band-transceiver/",
           "checked": "2026-11-14",
           "note": "Anchor $21,900: EnduroSat S-Band Transceiver $17,500 + S-Band Antenna $4,400."
+        },
+        {
+          "fields": [
+            "lunarRateFactor"
+          ],
+          "data_quality": "game-design",
+          "source": "Game-design value (design.md section 10.2)",
+          "note": "Data-rate multiplier at 384,000 km, per radio class (higher bands keep more of their rate); our estimate."
         }
-      ]
+      ],
+      "lunarRateFactor": 0.02
     },
     {
       "id": "comms-xband-cubesat",
@@ -1898,8 +1970,17 @@
           "url": "https://www.endurosat.com/products/x-band-transmitter/",
           "checked": "2026-11-14",
           "note": "Anchor $39,700: EnduroSat X-Band Transmitter $34,300 + X-Band Patch Antenna $5,400 (lower list price)."
+        },
+        {
+          "fields": [
+            "lunarRateFactor"
+          ],
+          "data_quality": "game-design",
+          "source": "Game-design value (design.md section 10.2)",
+          "note": "Data-rate multiplier at 384,000 km, per radio class (higher bands keep more of their rate); our estimate."
         }
-      ]
+      ],
+      "lunarRateFactor": 0.03
     },
     {
       "id": "comms-xband-smallsat",
@@ -1952,8 +2033,17 @@
           "url": "https://www.endurosat.com/products/x-band-sdr/",
           "checked": "2026-11-14",
           "note": "Anchor $202,500: EnduroSat X-Band Software Defined Radio $180,000 + X-Band Patch Antenna $22,500 (upper list price)."
+        },
+        {
+          "fields": [
+            "lunarRateFactor"
+          ],
+          "data_quality": "game-design",
+          "source": "Game-design value (design.md section 10.2)",
+          "note": "Data-rate multiplier at 384,000 km, per radio class (higher bands keep more of their rate); our estimate."
         }
-      ]
+      ],
+      "lunarRateFactor": 0.05
     },
     {
       "id": "comms-ka-band",
@@ -2007,8 +2097,17 @@
           "url": "https://www.endurosat.com/products/k-band-4x4-patch-array/",
           "checked": "2026-11-14",
           "note": "Anchor $113,000: EnduroSat K-Band 4×4 Patch Array $13,000 + about $100,000 for the radio (our value)."
+        },
+        {
+          "fields": [
+            "lunarRateFactor"
+          ],
+          "data_quality": "game-design",
+          "source": "Game-design value (design.md section 10.2)",
+          "note": "Data-rate multiplier at 384,000 km, per radio class (higher bands keep more of their rate); our estimate."
         }
-      ]
+      ],
+      "lunarRateFactor": 0.08
     },
     {
       "id": "comms-laser",
@@ -2060,6 +2159,87 @@
           "data_quality": "game-design",
           "source": "Anchor price × integration-and-test factor 10 (costMethod)",
           "note": "Anchor $250,000: no public list price; our value."
+        },
+        {
+          "fields": [
+            "lunarRateFactor"
+          ],
+          "data_quality": "game-design",
+          "source": "Game-design value (design.md section 10.2)",
+          "note": "Data-rate multiplier at 384,000 km, per radio class (higher bands keep more of their rate); our estimate."
+        }
+      ],
+      "lunarRateFactor": 0.1
+    },
+    {
+      "id": "propulsion-mono-large",
+      "name": "Large monopropellant system (lunar insertion)",
+      "subsystem": "propulsion",
+      "role": "spacecraft",
+      "tier": "standard",
+      "massKg": 12,
+      "powerW": 30,
+      "performance": {
+        "value": 120000,
+        "unit": "Ns",
+        "label": "Total impulse"
+      },
+      "trl": 9,
+      "fits": [
+        "smallsat"
+      ],
+      "specificImpulseS": 220,
+      "basedOn": "Hydrazine monopropellant systems flown on lunar orbiters (Lunar Prospector class)",
+      "costUsd": 4500000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance",
+            "costUsd",
+            "trl",
+            "specificImpulseS"
+          ],
+          "data_quality": "game-design",
+          "source": "Plausible lunar-class monopropellant system (design.md section 10.2)",
+          "note": "Sized to brake a ~150 kg small satellite into a low lunar orbit; all values are our game values."
+        }
+      ]
+    },
+    {
+      "id": "propulsion-biprop-lunar",
+      "name": "Bipropellant propulsion module (lunar insertion)",
+      "subsystem": "propulsion",
+      "role": "spacecraft",
+      "tier": "advanced",
+      "massKg": 18,
+      "powerW": 50,
+      "performance": {
+        "value": 160000,
+        "unit": "Ns",
+        "label": "Total impulse"
+      },
+      "trl": 7,
+      "fits": [
+        "smallsat"
+      ],
+      "specificImpulseS": 310,
+      "basedOn": "Bipropellant main engines of lunar orbiters (LRO MOI class)",
+      "costUsd": 7000000,
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "performance",
+            "costUsd",
+            "trl",
+            "specificImpulseS"
+          ],
+          "data_quality": "game-design",
+          "source": "Plausible lunar-class bipropellant module (design.md section 10.2)",
+          "note": "Higher specific impulse than monopropellant: more delta-v per kg of propellant, at a higher cost and a lower TRL. All values are our game values."
         }
       ]
     }

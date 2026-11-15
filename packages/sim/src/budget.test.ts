@@ -51,7 +51,13 @@ const cubesat: Design = {
 describe("mission card (T11.3)", () => {
   it("comes from @space-mission/data", () => {
     expect(WILDFIRE_WATCH.budgetUsd).toBe(wildfireWatch.constraints.budgetUsd);
-    expect(WILDFIRE_WATCH.thresholds).toEqual({ minRevisitsPerDay: 1, minDownlinkGbPerDay: 1, minLifetimeYears: 1 });
+    expect(WILDFIRE_WATCH.thresholds).toEqual({
+      minRevisitsPerDay: 1,
+      minDownlinkGbPerDay: 1,
+      minLifetimeYears: 1,
+      minInclinationDeg: 85,
+      minDeltaVMarginKmS: 0,
+    });
     expect(WILDFIRE_WATCH.target.latitudeDeg).toBe(40);
     expect(WILDFIRE_WATCH.lateWaitMonths).toBe(12);
   });

@@ -295,5 +295,41 @@
         "source": "leoCapacityKg × 0.6, the general factor in launchers.curation.json"
       }
     ]
+  },
+  {
+    "id": "lunar-rideshare",
+    "name": "Lunar rideshare (TLI slot)",
+    "manufacturer": "Rideshare provider",
+    "leoCapacityKg": 250,
+    "ssoCapacityKg": 250,
+    "gtoCapacityKg": null,
+    "launchCostUsd": 4000000,
+    "successfulLaunches": null,
+    "failedLaunches": null,
+    "successRate": 0.97,
+    "reusable": false,
+    "imageUrl": null,
+    "infoUrl": null,
+    "destination": "lunar-orbit",
+    "tliCapacityKg": 250,
+    "fixedLaunchMonth": 30,
+    "note": "A shared slot on a trans-lunar injection trajectory: cheap, but capped at 250 kg and flying once a year, at month 30 of the campaign.",
+    "sources": [
+      {
+        "fields": [
+          "leoCapacityKg",
+          "ssoCapacityKg",
+          "gtoCapacityKg",
+          "launchCostUsd",
+          "successRate",
+          "destination",
+          "tliCapacityKg",
+          "fixedLaunchMonth"
+        ],
+        "data_quality": "game-design",
+        "source": "Lunar rideshare option from design.md section 10.2",
+        "note": "Cheaper but fixed in date and limited to a small mass; all values are our game values. leoCapacityKg and ssoCapacityKg are placeholders: this slot only sells capacity towards the Moon."
+      }
+    ]
   }
 ]

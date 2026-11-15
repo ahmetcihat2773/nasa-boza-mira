@@ -116,7 +116,8 @@ const DEFAULT_LUNAR_LOCKS: MissionLock[] = [
   {
     kind: "size",
     id: "6U",
-    reason: "A 6U CubeSat has no room for an ice-detecting instrument together with the propulsion and fuel needed to stop at the Moon.",
+    reason:
+      "A 6U CubeSat has no room for an ice-detecting instrument together with the propulsion and fuel needed to stop at the Moon.",
   },
   {
     kind: "part",
@@ -188,7 +189,11 @@ export const LUNAR_ICE_HUNTER: Mission | undefined = lunarCard ? missionFromCard
 
 /** Every playable mission, in card order (Wildfire Watch first). */
 export const MISSIONS: readonly Mission[] = missionCards.map((c) =>
-  c.id === WILDFIRE_WATCH.id ? WILDFIRE_WATCH : c.id === lunarCard?.id && LUNAR_ICE_HUNTER ? LUNAR_ICE_HUNTER : missionFromCard(c),
+  c.id === WILDFIRE_WATCH.id
+    ? WILDFIRE_WATCH
+    : c.id === lunarCard?.id && LUNAR_ICE_HUNTER
+      ? LUNAR_ICE_HUNTER
+      : missionFromCard(c),
 );
 
 /** The mission with this id, or Wildfire Watch when it is unknown. */
@@ -365,10 +370,10 @@ export interface DeltaVBudget {
   /** Station-keeping at the chosen altitude, km/s per year. */
   stationKeepingKmSPerYear: number;
   /** Insertion plus station-keeping for the required lifetime, km/s. */
-  requiredKmS: number;
+  neededKmS: number;
   /** What the thruster and its full tank give the dry spacecraft, km/s (0 without propulsion). */
   availableKmS: number;
-  /** availableKmS − requiredKmS (L5 needs it ≥ 0). */
+  /** availableKmS − neededKmS (L5 needs it ≥ 0). */
   marginKmS: number;
   /** The thruster's specific impulse, s (0 without propulsion). */
   specificImpulseS: number;
@@ -376,7 +381,7 @@ export interface DeltaVBudget {
   dryMassKg: number;
   /** Propellant carried: the thruster's full tank (total impulse / (g0 × Isp)), kg. */
   propellantKg: number;
-  /** Propellant needed for requiredKmS, kg (Infinity without propulsion). */
+  /** Propellant needed for neededKmS, kg (Infinity without propulsion). */
   propellantNeededKg: number;
   /** Dry mass plus propellant, kg: what the launcher must carry. */
   wetMassKg: number;
@@ -493,19 +498,19 @@ export function computeBudget(design: Design, mission: Mission): Budget {
     const ispS = typeof isp === "number" && isp > 0 ? isp : 0;
     const loi = loiDeltaVKmS(alt, transfer);
     const perYear = stationKeepingKmSPerYear(alt, transfer);
-    const requiredKmS = loi + perYear * t.minLifetimeYears;
+    const neededKmS = loi + perYear * t.minLifetimeYears;
     const propellantKg = prop ? propellantCapacityKg(prop.performance.value, ispS) : 0;
     const availableKmS = deltaVFromPropellantKmS(dryMassKg, propellantKg, ispS);
     deltaV = {
       loiKmS: loi,
       stationKeepingKmSPerYear: perYear,
-      requiredKmS,
+      neededKmS,
       availableKmS,
-      marginKmS: availableKmS - requiredKmS,
+      marginKmS: availableKmS - neededKmS,
       specificImpulseS: ispS,
       dryMassKg,
       propellantKg,
-      propellantNeededKg: propellantForDeltaVKg(dryMassKg, requiredKmS, ispS),
+      propellantNeededKg: propellantForDeltaVKg(dryMassKg, neededKmS, ispS),
       wetMassKg: dryMassKg + propellantKg,
     };
   }
@@ -525,13 +530,20 @@ export function computeBudget(design: Design, mission: Mission): Budget {
   const penaltyMonths = rated.reduce((s, p) => s + (trlPenaltyMonths(p.trl) ?? 0), 0);
   const devMonths = (size ? (mission.baseDevMonths[size] ?? 0) : 0) + penaltyMonths;
   const lateBy = Math.max(0, devMonths - mission.deadlineMonths);
-  const waitMonths =
+  const deadlineWaitMonths =
     lateBy > 0 && mission.lateWaitMonths > 0 ? Math.ceil(lateBy / mission.lateWaitMonths) * mission.lateWaitMonths : 0;
+  // A fixed-date launcher (the lunar rideshare) flies once a year at its fixed month; being late waits for the next flight.
+  const fixedMonth = design.launcher?.fixedLaunchMonth;
+  const rideshareWaitMonths =
+    fixedMonth !== undefined && devMonths > fixedMonth
+      ? fixedMonth + Math.ceil((devMonths - fixedMonth) / 12) * 12 - devMonths
+      : 0;
+  const waitMonths = Math.max(deadlineWaitMonths, rideshareWaitMonths);
   const deadline: Deadline = {
-    met: lateBy === 0,
+    met: lateBy === 0 && rideshareWaitMonths === 0,
     waitMonths,
     readyMonths: devMonths + waitMonths,
-    scheduleScoreZero: lateBy > 0,
+    scheduleScoreZero: waitMonths > 0,
   };
   const teamCostUsd = deadline.readyMonths * mission.teamCostPerMonthUsd;
   const totalCostUsd = Object.values(costByRole).reduce((s, c) => s + c, 0) + teamCostUsd;
@@ -724,7 +736,9 @@ export function computeBudget(design: Design, mission: Mission): Budget {
       deadline.met,
       deadline.met
         ? `Development takes ${devMonths} months and meets the ${mission.deadlineMonths}-month deadline.`
-        : `Development takes ${devMonths} months and misses the ${mission.deadlineMonths}-month deadline: the team waits ${waitMonths} months for the next opportunity (${formatUsd(waitMonths * mission.teamCostPerMonthUsd)} of team cost) and the schedule score is zero.`,
+        : rideshareWaitMonths > deadlineWaitMonths
+          ? `Development takes ${devMonths} months and misses the ${design.launcher?.name}'s fixed flight at month ${fixedMonth}: the team waits ${waitMonths} months for the next one (${formatUsd(waitMonths * mission.teamCostPerMonthUsd)} of team cost) and the schedule score is zero.`
+          : `Development takes ${devMonths} months and misses the ${mission.deadlineMonths}-month deadline: the team waits ${waitMonths} months for the next opportunity (${formatUsd(waitMonths * mission.teamCostPerMonthUsd)} of team cost) and the schedule score is zero.`,
       false,
     ),
   );
@@ -769,7 +783,7 @@ export function computeBudget(design: Design, mission: Mission): Budget {
         l5,
         !prop || deltaV.specificImpulseS <= 0
           ? `L5 not met: no thruster with a specific impulse, so the spacecraft cannot brake into lunar orbit.${why("L5")}`
-          : `L5 ${l5 ? "met" : "not met"}: ${fmt(deltaV.propellantKg)} kg of propellant at ${fmt(deltaV.specificImpulseS, 0)} s gives ${fmt(deltaV.availableKmS * 1000, 0)} m/s; insertion (${fmt(deltaV.loiKmS * 1000, 0)} m/s) plus ${t.minLifetimeYears} year${t.minLifetimeYears === 1 ? "" : "s"} of station-keeping needs ${fmt(deltaV.requiredKmS * 1000, 0)} m/s (margin ${fmt(deltaV.marginKmS * 1000, 0)} m/s).${l5 ? "" : why("L5")}`,
+          : `L5 ${l5 ? "met" : "not met"}: ${fmt(deltaV.propellantKg)} kg of propellant at ${fmt(deltaV.specificImpulseS, 0)} s gives ${fmt(deltaV.availableKmS * 1000, 0)} m/s; insertion (${fmt(deltaV.loiKmS * 1000, 0)} m/s) plus ${t.minLifetimeYears} year${t.minLifetimeYears === 1 ? "" : "s"} of station-keeping needs ${fmt(deltaV.neededKmS * 1000, 0)} m/s (margin ${fmt(deltaV.marginKmS * 1000, 0)} m/s).${l5 ? "" : why("L5")}`,
       ),
     );
   } else {

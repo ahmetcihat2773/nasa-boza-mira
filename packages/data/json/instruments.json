@@ -24,7 +24,8 @@
         "smallsat"
       ],
       "scienceValue": {
-        "wildfireWatch": 25
+        "wildfireWatch": 25,
+        "lunarIceHunter": 0
       },
       "referenceAltitudeKm": 500,
       "sources": [
@@ -48,7 +49,7 @@
           ],
           "data_quality": "game-design",
           "source": "Representative value for an example project",
-          "note": "Cost class: CubeSat-sized, TRL 9, high-resolution optics. Science value: sharp images of smoke and burn scars, but no fire detection and a 14 km swath."
+          "note": "Cost class: CubeSat-sized, TRL 9, high-resolution optics. Science value: sharp images of smoke and burn scars, but no fire detection and a 14 km swath. lunarIceHunter: our game value (the fire instruments are no help against ice)."
         }
       ]
     },
@@ -72,7 +73,8 @@
         "smallsat"
       ],
       "scienceValue": {
-        "wildfireWatch": 20
+        "wildfireWatch": 20,
+        "lunarIceHunter": 0
       },
       "referenceAltitudeKm": 500,
       "sources": [
@@ -96,7 +98,7 @@
           ],
           "data_quality": "game-design",
           "source": "Representative value for an example project",
-          "note": "Cost class: CubeSat-sized, TRL 9, simple optics. Science value: wide swath (1,000 km at 500 km) for daily revisit and smoke plumes; cannot see active fires."
+          "note": "Cost class: CubeSat-sized, TRL 9, simple optics. Science value: wide swath (1,000 km at 500 km) for daily revisit and smoke plumes; cannot see active fires. lunarIceHunter: our game value (the fire instruments are no help against ice)."
         }
       ]
     },
@@ -121,7 +123,8 @@
         "smallsat"
       ],
       "scienceValue": {
-        "wildfireWatch": 50
+        "wildfireWatch": 50,
+        "lunarIceHunter": 0
       },
       "referenceAltitudeKm": 500,
       "sources": [
@@ -145,7 +148,7 @@
           ],
           "data_quality": "game-design",
           "source": "Representative value for an example project",
-          "note": "Cost class: CubeSat-sized, TRL 9, uncooled infrared detector. Science value: meets R2 (daylight fire detection) at moderate swath."
+          "note": "Cost class: CubeSat-sized, TRL 9, uncooled infrared detector. Science value: meets R2 (daylight fire detection) at moderate swath. lunarIceHunter: our game value (the fire instruments are no help against ice)."
         }
       ]
     },
@@ -169,7 +172,8 @@
         "smallsat"
       ],
       "scienceValue": {
-        "wildfireWatch": 70
+        "wildfireWatch": 70,
+        "lunarIceHunter": 0
       },
       "referenceAltitudeKm": 500,
       "sources": [
@@ -193,7 +197,7 @@
           ],
           "data_quality": "game-design",
           "source": "Representative value for an example project",
-          "note": "Cost class: CubeSat-sized, new technology (cryocooler), about 1.75 × the flown SWIR imager. Science value: day and night fire detection with fire intensity."
+          "note": "Cost class: CubeSat-sized, new technology (cryocooler), about 1.75 × the flown SWIR imager. Science value: day and night fire detection with fire intensity. lunarIceHunter: our game value (the fire instruments are no help against ice)."
         }
       ]
     },
@@ -217,7 +221,8 @@
         "smallsat"
       ],
       "scienceValue": {
-        "wildfireWatch": 35
+        "wildfireWatch": 35,
+        "lunarIceHunter": 0
       },
       "referenceAltitudeKm": 500,
       "sources": [
@@ -241,7 +246,7 @@
           ],
           "data_quality": "game-design",
           "source": "Representative value for an example project",
-          "note": "Cost class: CubeSat-sized, TRL 9, uncooled detector. Science value: earns the night-detection bonus; coarse pixels and low contrast against hot ground in daylight."
+          "note": "Cost class: CubeSat-sized, TRL 9, uncooled detector. Science value: earns the night-detection bonus; coarse pixels and low contrast against hot ground in daylight. lunarIceHunter: our game value (the fire instruments are no help against ice)."
         }
       ]
     },
@@ -265,7 +270,8 @@
         "smallsat"
       ],
       "scienceValue": {
-        "wildfireWatch": 85
+        "wildfireWatch": 85,
+        "lunarIceHunter": 0
       },
       "referenceAltitudeKm": 500,
       "sources": [
@@ -289,7 +295,7 @@
           ],
           "data_quality": "game-design",
           "source": "Representative value for an example project",
-          "note": "Cost class: small-satellite instrument, recently demonstrated. Science value: sharp (60 m) day and night fire detection, but a narrow 176 km swath."
+          "note": "Cost class: small-satellite instrument, recently demonstrated. Science value: sharp (60 m) day and night fire detection, but a narrow 176 km swath. lunarIceHunter: our game value (the fire instruments are no help against ice)."
         }
       ]
     },
@@ -311,7 +317,8 @@
         "smallsat"
       ],
       "scienceValue": {
-        "wildfireWatch": 55
+        "wildfireWatch": 55,
+        "lunarIceHunter": 0
       },
       "referenceAltitudeKm": 500,
       "sources": [
@@ -335,7 +342,7 @@
           ],
           "data_quality": "game-design",
           "source": "Representative value for an example project",
-          "note": "Cost class: small-satellite instrument, demonstrated once in space. Science value: sharp night fire detection and surface temperature."
+          "note": "Cost class: small-satellite instrument, demonstrated once in space. Science value: sharp night fire detection and surface temperature. lunarIceHunter: our game value (the fire instruments are no help against ice)."
         }
       ]
     },
@@ -359,7 +366,8 @@
         "smallsat"
       ],
       "scienceValue": {
-        "wildfireWatch": 95
+        "wildfireWatch": 95,
+        "lunarIceHunter": 10
       },
       "referenceAltitudeKm": 500,
       "sources": [
@@ -383,7 +391,129 @@
           ],
           "data_quality": "game-design",
           "source": "Representative value for an example project",
-          "note": "Cost class: largest instrument, TRL 9 heritage. Science value: daily wide-swath (1,190 km at 500 km) day and night fire detection plus smoke; coarse pixels."
+          "note": "Cost class: largest instrument, TRL 9 heritage. Science value: daily wide-swath (1,190 km at 500 km) day and night fire detection plus smoke; coarse pixels. lunarIceHunter: our game value (the fire instruments are no help against ice)."
+        }
+      ]
+    },
+    {
+      "id": "neutron-spectrometer",
+      "name": "Neutron spectrometer",
+      "kind": "neutron",
+      "massKg": 4,
+      "powerW": 8,
+      "dataRateMbps": 0.2,
+      "costUsd": 6000000,
+      "trl": 9,
+      "fieldOfViewDeg": 120,
+      "groundSampleDistanceM": 30000,
+      "referenceAltitudeKm": 100,
+      "detects": [
+        "waterIce"
+      ],
+      "fits": [
+        "12U",
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 0,
+        "lunarIceHunter": 75
+      },
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "costUsd",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Plausible ice-detecting instrument (design.md section 10.2)",
+          "note": "Modelled on the neutron spectrometers of Lunar Prospector and LRO (LEND): counts neutrons to find hydrogen in the top metre of soil. All values are our game values."
+        }
+      ]
+    },
+    {
+      "id": "swir-ice-spectrometer",
+      "name": "Shortwave-infrared ice spectrometer",
+      "kind": "swir-mwir",
+      "massKg": 7,
+      "powerW": 20,
+      "dataRateMbps": 4,
+      "costUsd": 8000000,
+      "trl": 7,
+      "fieldOfViewDeg": 10,
+      "groundSampleDistanceM": 80,
+      "referenceAltitudeKm": 100,
+      "detects": [
+        "waterIce"
+      ],
+      "fits": [
+        "12U",
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 10,
+        "lunarIceHunter": 70
+      },
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "costUsd",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Plausible ice-detecting instrument (design.md section 10.2)",
+          "note": "Modelled on the Moon Mineralogy Mapper (Chandrayaan-1): sees the infrared signature of water and hydroxyl. All values are our game values."
+        }
+      ]
+    },
+    {
+      "id": "mini-radar-ice",
+      "name": "Miniaturised radar sounder",
+      "kind": "radar",
+      "massKg": 18,
+      "powerW": 55,
+      "dataRateMbps": 15,
+      "costUsd": 12000000,
+      "trl": 6,
+      "fieldOfViewDeg": 8,
+      "groundSampleDistanceM": 40,
+      "referenceAltitudeKm": 100,
+      "detects": [
+        "waterIce"
+      ],
+      "fits": [
+        "smallsat"
+      ],
+      "scienceValue": {
+        "wildfireWatch": 0,
+        "lunarIceHunter": 85
+      },
+      "sources": [
+        {
+          "fields": [
+            "massKg",
+            "powerW",
+            "dataRateMbps",
+            "costUsd",
+            "trl",
+            "fieldOfViewDeg",
+            "groundSampleDistanceM",
+            "scienceValue"
+          ],
+          "data_quality": "game-design",
+          "source": "Plausible ice-detecting instrument (design.md section 10.2)",
+          "note": "Modelled on the Mini-RF and Mini-SAR radars (LRO, Chandrayaan-1): radar echoes reveal ice in permanently shadowed craters. All values are our game values."
         }
       ]
     }

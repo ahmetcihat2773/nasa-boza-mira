@@ -1,75 +1,490 @@
 {
   "glossary": [
-    { "id": "trl", "term": "TRL (Technology Readiness Level)", "short": "A score from 1 to 9 for how proven a technology is: 1 is an idea on paper, 9 has flown in space many times.", "learnMore": { "label": "NASA: Technology Readiness Levels", "url": "https://www.nasa.gov/directorates/somd/space-communications-navigation-program/technology-readiness-levels/" } },
-    { "id": "leo", "term": "Low Earth orbit (LEO)", "short": "Orbits between about 200 and 2,000 km above the Earth, where most Earth-watching satellites fly.", "learnMore": { "label": "NASA Earth Observatory: Catalog of Earth Satellite Orbits", "url": "https://earthobservatory.nasa.gov/features/OrbitsCatalog" } },
-    { "id": "altitude", "term": "Altitude", "short": "How high the satellite flies above the ground; lower gives sharper images but more air drag.", "learnMore": { "label": "NASA Earth Observatory: Catalog of Earth Satellite Orbits", "url": "https://earthobservatory.nasa.gov/features/OrbitsCatalog" } },
-    { "id": "sso", "term": "Sun-synchronous orbit (SSO)", "short": "A near-polar orbit that passes over each place at the same local time every day, so the lighting is always similar.", "learnMore": { "label": "NASA Earth Observatory: Catalog of Earth Satellite Orbits", "url": "https://earthobservatory.nasa.gov/features/OrbitsCatalog" } },
-    { "id": "polar-orbit", "term": "Polar orbit", "short": "An orbit that passes over both poles, so the satellite sees the whole Earth as it turns underneath." },
-    { "id": "inclination", "term": "Inclination", "short": "The tilt of the orbit compared with the equator: 0° circles the equator, 90° passes over the poles." },
-    { "id": "orbit-period", "term": "Orbital period", "short": "The time for one trip around the Earth; about 95 minutes in low Earth orbit." },
-    { "id": "orbit-decay", "term": "Orbit decay", "short": "Thin air at the top of the atmosphere slowly drags a satellite down until it burns up; lower orbits decay faster." },
-    { "id": "lifetime", "term": "Mission lifetime", "short": "How long the satellite keeps working in orbit before it re-enters, runs out of fuel or wears out." },
-    { "id": "revisit", "term": "Revisit", "short": "How often the satellite passes over the same place; a fire watch needs at least one look per day." },
-    { "id": "swath", "term": "Swath", "short": "The width of the strip of ground the instrument sees on each pass; a wider swath means more frequent revisits." },
-    { "id": "fov", "term": "Field of view", "short": "The angle the instrument can see at once; a wide angle gives a wide swath but less detail." },
-    { "id": "gsd", "term": "Ground sample distance", "short": "The size on the ground of one image pixel; smaller means sharper images." },
-    { "id": "eclipse", "term": "Eclipse", "short": "The part of each orbit spent in the Earth's shadow, when solar panels produce no power and the battery takes over." },
-    { "id": "solar-panel", "term": "Solar panel", "short": "Turns sunlight into electricity for the satellite; more panels give more power but add mass and cost." },
-    { "id": "battery", "term": "Battery", "short": "Stores energy from the solar panels so the satellite keeps working during eclipse." },
-    { "id": "obc", "term": "Onboard computer (OBC)", "short": "The satellite's brain: it runs commands, stores data and keeps every part working together." },
-    { "id": "adcs", "term": "Attitude control (ADCS)", "short": "The system that measures and turns the satellite's orientation so cameras point at the ground and panels at the Sun." },
-    { "id": "propulsion", "term": "Propulsion", "short": "Thrusters that change the orbit, for example to dodge debris or to stay up longer against air drag." },
-    { "id": "downlink", "term": "Downlink", "short": "Sending data from the satellite down to a ground station." },
-    { "id": "data-rate", "term": "Data rate", "short": "How fast a radio can send data, in megabits per second; higher rates move more data in each short contact." },
-    { "id": "ground-station", "term": "Ground station", "short": "An antenna on Earth that talks to the satellite while it passes overhead." },
-    { "id": "contact-time", "term": "Contact time", "short": "The minutes per day a satellite is in view of a ground station and can send data." },
-    { "id": "cubesat", "term": "CubeSat", "short": "A small, standard-sized satellite built from 10 cm cubes called units (U); 6U is six cubes.", "learnMore": { "label": "NASA CubeSat 101", "url": "https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf" } },
-    { "id": "smallsat", "term": "Small satellite", "short": "A satellite up to a few hundred kilograms: bigger and more capable than a CubeSat, but slower and dearer to build.", "learnMore": { "label": "NASA State-of-the-Art of Small Spacecraft Technology", "url": "https://www.nasa.gov/smallsat-institute/sst-soa" } },
-    { "id": "launch-vehicle", "term": "Launch vehicle", "short": "The rocket that carries the satellite to orbit; each one can lift a certain mass to a given orbit." },
-    { "id": "rideshare", "term": "Rideshare", "short": "Sharing a rocket with many other satellites: cheap, but you go to the orbit the rocket was already flying to." },
-    { "id": "launch-success-rate", "term": "Launch success rate", "short": "The share of a rocket's past launches that worked; a lower rate means a higher chance of losing the satellite." },
-    { "id": "payload", "term": "Payload", "short": "The instruments that do the mission's science, as opposed to the parts that keep the satellite alive." },
-    { "id": "thermal-ir", "term": "Thermal infrared", "short": "Light we feel as heat; a thermal camera sees fires by their heat, even at night." },
-    { "id": "swir-mwir", "term": "Shortwave and midwave infrared", "short": "Infrared light just beyond what eyes see, in which hot fires shine very brightly, even through thin smoke." },
-    { "id": "margin", "term": "Margin", "short": "Spare capacity kept on purpose (mass, power, time, money) so surprises do not break the mission." },
-    { "id": "redundancy", "term": "Redundancy", "short": "Carrying a backup of an important part, so the mission continues if one fails." },
-    { "id": "safe-mode", "term": "Safe mode", "short": "A protective state where the satellite switches off non-essential parts and waits for instructions from the ground." },
-    { "id": "radiation", "term": "Radiation tolerance", "short": "How well a part withstands the charged particles of space, which can upset or damage electronics." },
-    { "id": "allocation", "term": "Budget allocation", "short": "The share of the mission budget each role may spend; moving money between roles needs a request." },
-    { "id": "team-cost", "term": "Team cost", "short": "What the engineering team costs for every month of development or waiting, paid from the budget." },
-    { "id": "deadline", "term": "Deadline", "short": "The date the satellite must be ready; for Wildfire Watch it is the next fire season." },
-    { "id": "seed", "term": "Seed", "short": "A number that decides which random events happen; the same seed gives the same events, so you can compare designs fairly." }
+    {
+      "id": "trl",
+      "term": "TRL (Technology Readiness Level)",
+      "short": "A score from 1 to 9 for how proven a technology is: 1 is an idea on paper, 9 has flown in space many times.",
+      "learnMore": {
+        "label": "NASA: Technology Readiness Levels",
+        "url": "https://www.nasa.gov/directorates/somd/space-communications-navigation-program/technology-readiness-levels/"
+      }
+    },
+    {
+      "id": "leo",
+      "term": "Low Earth orbit (LEO)",
+      "short": "Orbits between about 200 and 2,000 km above the Earth, where most Earth-watching satellites fly.",
+      "learnMore": {
+        "label": "NASA Earth Observatory: Catalog of Earth Satellite Orbits",
+        "url": "https://earthobservatory.nasa.gov/features/OrbitsCatalog"
+      }
+    },
+    {
+      "id": "altitude",
+      "term": "Altitude",
+      "short": "How high the satellite flies above the ground; lower gives sharper images but more air drag.",
+      "learnMore": {
+        "label": "NASA Earth Observatory: Catalog of Earth Satellite Orbits",
+        "url": "https://earthobservatory.nasa.gov/features/OrbitsCatalog"
+      }
+    },
+    {
+      "id": "sso",
+      "term": "Sun-synchronous orbit (SSO)",
+      "short": "A near-polar orbit that passes over each place at the same local time every day, so the lighting is always similar.",
+      "learnMore": {
+        "label": "NASA Earth Observatory: Catalog of Earth Satellite Orbits",
+        "url": "https://earthobservatory.nasa.gov/features/OrbitsCatalog"
+      }
+    },
+    {
+      "id": "polar-orbit",
+      "term": "Polar orbit",
+      "short": "An orbit that passes over both poles, so the satellite sees the whole Earth as it turns underneath."
+    },
+    {
+      "id": "inclination",
+      "term": "Inclination",
+      "short": "The tilt of the orbit compared with the equator: 0° circles the equator, 90° passes over the poles."
+    },
+    {
+      "id": "orbit-period",
+      "term": "Orbital period",
+      "short": "The time for one trip around the Earth; about 95 minutes in low Earth orbit."
+    },
+    {
+      "id": "orbit-decay",
+      "term": "Orbit decay",
+      "short": "Thin air at the top of the atmosphere slowly drags a satellite down until it burns up; lower orbits decay faster."
+    },
+    {
+      "id": "lifetime",
+      "term": "Mission lifetime",
+      "short": "How long the satellite keeps working in orbit before it re-enters, runs out of fuel or wears out."
+    },
+    {
+      "id": "revisit",
+      "term": "Revisit",
+      "short": "How often the satellite passes over the same place; a fire watch needs at least one look per day."
+    },
+    {
+      "id": "swath",
+      "term": "Swath",
+      "short": "The width of the strip of ground the instrument sees on each pass; a wider swath means more frequent revisits."
+    },
+    {
+      "id": "fov",
+      "term": "Field of view",
+      "short": "The angle the instrument can see at once; a wide angle gives a wide swath but less detail."
+    },
+    {
+      "id": "gsd",
+      "term": "Ground sample distance",
+      "short": "The size on the ground of one image pixel; smaller means sharper images."
+    },
+    {
+      "id": "eclipse",
+      "term": "Eclipse",
+      "short": "The part of each orbit spent in the Earth's shadow, when solar panels produce no power and the battery takes over."
+    },
+    {
+      "id": "solar-panel",
+      "term": "Solar panel",
+      "short": "Turns sunlight into electricity for the satellite; more panels give more power but add mass and cost."
+    },
+    {
+      "id": "battery",
+      "term": "Battery",
+      "short": "Stores energy from the solar panels so the satellite keeps working during eclipse."
+    },
+    {
+      "id": "obc",
+      "term": "Onboard computer (OBC)",
+      "short": "The satellite's brain: it runs commands, stores data and keeps every part working together."
+    },
+    {
+      "id": "adcs",
+      "term": "Attitude control (ADCS)",
+      "short": "The system that measures and turns the satellite's orientation so cameras point at the ground and panels at the Sun."
+    },
+    {
+      "id": "propulsion",
+      "term": "Propulsion",
+      "short": "Thrusters that change the orbit, for example to dodge debris or to stay up longer against air drag."
+    },
+    {
+      "id": "downlink",
+      "term": "Downlink",
+      "short": "Sending data from the satellite down to a ground station."
+    },
+    {
+      "id": "data-rate",
+      "term": "Data rate",
+      "short": "How fast a radio can send data, in megabits per second; higher rates move more data in each short contact."
+    },
+    {
+      "id": "ground-station",
+      "term": "Ground station",
+      "short": "An antenna on Earth that talks to the satellite while it passes overhead."
+    },
+    {
+      "id": "contact-time",
+      "term": "Contact time",
+      "short": "The minutes per day a satellite is in view of a ground station and can send data."
+    },
+    {
+      "id": "cubesat",
+      "term": "CubeSat",
+      "short": "A small, standard-sized satellite built from 10 cm cubes called units (U); 6U is six cubes.",
+      "learnMore": {
+        "label": "NASA CubeSat 101",
+        "url": "https://www.nasa.gov/wp-content/uploads/2017/03/nasa_csli_cubesat_101_508.pdf"
+      }
+    },
+    {
+      "id": "smallsat",
+      "term": "Small satellite",
+      "short": "A satellite up to a few hundred kilograms: bigger and more capable than a CubeSat, but slower and dearer to build.",
+      "learnMore": {
+        "label": "NASA State-of-the-Art of Small Spacecraft Technology",
+        "url": "https://www.nasa.gov/smallsat-institute/sst-soa"
+      }
+    },
+    {
+      "id": "launch-vehicle",
+      "term": "Launch vehicle",
+      "short": "The rocket that carries the satellite to orbit; each one can lift a certain mass to a given orbit."
+    },
+    {
+      "id": "rideshare",
+      "term": "Rideshare",
+      "short": "Sharing a rocket with many other satellites: cheap, but you go to the orbit the rocket was already flying to."
+    },
+    {
+      "id": "launch-success-rate",
+      "term": "Launch success rate",
+      "short": "The share of a rocket's past launches that worked; a lower rate means a higher chance of losing the satellite."
+    },
+    {
+      "id": "payload",
+      "term": "Payload",
+      "short": "The instruments that do the mission's science, as opposed to the parts that keep the satellite alive."
+    },
+    {
+      "id": "thermal-ir",
+      "term": "Thermal infrared",
+      "short": "Light we feel as heat; a thermal camera sees fires by their heat, even at night."
+    },
+    {
+      "id": "swir-mwir",
+      "term": "Shortwave and midwave infrared",
+      "short": "Infrared light just beyond what eyes see, in which hot fires shine very brightly, even through thin smoke."
+    },
+    {
+      "id": "margin",
+      "term": "Margin",
+      "short": "Spare capacity kept on purpose (mass, power, time, money) so surprises do not break the mission."
+    },
+    {
+      "id": "redundancy",
+      "term": "Redundancy",
+      "short": "Carrying a backup of an important part, so the mission continues if one fails."
+    },
+    {
+      "id": "safe-mode",
+      "term": "Safe mode",
+      "short": "A protective state where the satellite switches off non-essential parts and waits for instructions from the ground."
+    },
+    {
+      "id": "radiation",
+      "term": "Radiation tolerance",
+      "short": "How well a part withstands the charged particles of space, which can upset or damage electronics."
+    },
+    {
+      "id": "allocation",
+      "term": "Budget allocation",
+      "short": "The share of the mission budget each role may spend; moving money between roles needs a request."
+    },
+    {
+      "id": "team-cost",
+      "term": "Team cost",
+      "short": "What the engineering team costs for every month of development or waiting, paid from the budget."
+    },
+    {
+      "id": "deadline",
+      "term": "Deadline",
+      "short": "The date the satellite must be ready; for Wildfire Watch it is the next fire season."
+    },
+    {
+      "id": "seed",
+      "term": "Seed",
+      "short": "A number that decides which random events happen; the same seed gives the same events, so you can compare designs fairly."
+    },
+    {
+      "id": "delta-v",
+      "term": "Delta-v (Δv)",
+      "short": "The total change in speed a spacecraft can make with its fuel. Going to the Moon, braking into orbit and keeping the orbit all cost delta-v.",
+      "learnMore": {
+        "label": "NASA: Delta-v",
+        "url": "https://science.nasa.gov/resource/what-is-delta-v/"
+      }
+    },
+    {
+      "id": "specific-impulse",
+      "term": "Specific impulse (Isp)",
+      "short": "How efficiently a thruster uses its propellant, in seconds. A higher Isp gives more delta-v from the same fuel."
+    },
+    {
+      "id": "tli",
+      "term": "Trans-lunar injection (TLI)",
+      "short": "The burn that sends a spacecraft from Earth orbit towards the Moon."
+    },
+    {
+      "id": "loi",
+      "term": "Lunar orbit insertion (LOI)",
+      "short": "The braking burn that captures a spacecraft into orbit around the Moon instead of flying past it."
+    },
+    {
+      "id": "psr",
+      "term": "Permanently shadowed region (PSR)",
+      "short": "A crater near a pole that sunlight never reaches: extremely cold, and where water ice can survive for billions of years.",
+      "learnMore": {
+        "label": "NASA: Permanently shadowed regions",
+        "url": "https://science.nasa.gov/moon/permanently-shadowed-regions/"
+      }
+    },
+    {
+      "id": "deep-space-station",
+      "term": "Deep-space station",
+      "short": "A large dish that can talk to spacecraft far beyond Earth orbit. Three sites about 120° apart (Goldstone, Madrid, Canberra) give near-continuous coverage."
+    },
+    {
+      "id": "station-keeping",
+      "term": "Station-keeping",
+      "short": "Small regular burns that stop an orbit from drifting. Around the Moon, lumpy gravity pulls low orbits down, so station-keeping costs fuel every year."
+    }
   ],
   "tour": [
-    { "id": "mission-card", "title": "Your mission", "text": "This card tells you what to achieve. Meet all four requirements, R1 to R4, within the budget and before the deadline.", "target": "mission-card" },
-    { "id": "roles", "title": "Four roles", "text": "Launch, Spacecraft, Ground and Science each own part of the design and part of the budget. Switch between them with the role tabs.", "target": "role-tabs" },
-    { "id": "dashboard", "title": "The dashboard", "text": "Mass, power, budget and the ready-for-launch date update with every choice. Red means a limit is broken.", "target": "dashboard" },
-    { "id": "choose", "title": "Make a choice", "text": "Pick a part to see its effect, such as +2 kg, +8 W, +$0.4M or +3 months. Locked options tell you why they are locked.", "target": "part-picker" },
-    { "id": "requests", "title": "Ask for help", "text": "Need more power, mass or money than your role has? Open a request or offer a trade to another role.", "target": "requests" },
-    { "id": "launch", "title": "Approve and launch", "text": "When the design looks ready, approve it and launch. Events will test your margins, and the report explains what happened and why.", "target": "approve-button" }
+    {
+      "id": "mission-card",
+      "title": "Your mission",
+      "text": "This card tells you what to achieve. Meet all four requirements, R1 to R4, within the budget and before the deadline.",
+      "target": "mission-card"
+    },
+    {
+      "id": "roles",
+      "title": "Four roles",
+      "text": "Launch, Spacecraft, Ground and Science each own part of the design and part of the budget. Switch between them with the role tabs.",
+      "target": "role-tabs"
+    },
+    {
+      "id": "dashboard",
+      "title": "The dashboard",
+      "text": "Mass, power, budget and the ready-for-launch date update with every choice. Red means a limit is broken.",
+      "target": "dashboard"
+    },
+    {
+      "id": "choose",
+      "title": "Make a choice",
+      "text": "Pick a part to see its effect, such as +2 kg, +8 W, +$0.4M or +3 months. Locked options tell you why they are locked.",
+      "target": "part-picker"
+    },
+    {
+      "id": "requests",
+      "title": "Ask for help",
+      "text": "Need more power, mass or money than your role has? Open a request or offer a trade to another role.",
+      "target": "requests"
+    },
+    {
+      "id": "launch",
+      "title": "Approve and launch",
+      "text": "When the design looks ready, approve it and launch. Events will test your margins, and the report explains what happened and why.",
+      "target": "approve-button"
+    }
   ],
   "advisorLines": [
-    { "id": "launch-intro", "role": "launch", "when": "intro", "text": "I pick the rocket and the orbit. A rideshare is cheap, but it only goes to 525 km sun-synchronous." },
-    { "id": "launch-mass-over", "role": "launch", "when": "mass-over", "text": "The satellite is heavier than this rocket can lift to our orbit. We need a lighter design or a bigger rocket." },
-    { "id": "launch-r4-fail", "role": "launch", "when": "requirement-failed:R4", "text": "At this altitude the orbit decays in under a year. Let's fly higher or add propulsion." },
-    { "id": "launch-low-reliability", "role": "launch", "when": "low-reliability", "text": "This rocket has a short track record. It saves money, but we could lose everything at launch." },
-    { "id": "spacecraft-intro", "role": "spacecraft", "when": "intro", "text": "I build the satellite itself and provide the power everyone else uses." },
-    { "id": "spacecraft-power-short", "role": "spacecraft", "when": "power-short", "text": "We draw more power than the panels make. I can add panels, but that costs mass and money." },
-    { "id": "spacecraft-low-trl", "role": "spacecraft", "when": "low-trl", "text": "This part has not flown yet. It performs better, but it adds months and risk." },
-    { "id": "spacecraft-deadline-risk", "role": "spacecraft", "when": "deadline-risk", "text": "We are close to the fire-season deadline. One more delay and we wait a whole year." },
-    { "id": "ground-intro", "role": "ground", "when": "intro", "text": "I get the data down to Earth: radios, ground stations and contact time." },
-    { "id": "ground-r3-fail", "role": "ground", "when": "requirement-failed:R3", "text": "We cannot downlink 1 GB a day. Another ground station or a faster radio would fix it." },
-    { "id": "ground-request-power", "role": "ground", "when": "request", "text": "A faster radio needs about 10 W more. Can Spacecraft provide it?" },
-    { "id": "science-intro", "role": "science", "when": "intro", "text": "I choose the instruments and track the science requirements." },
-    { "id": "science-r1-fail", "role": "science", "when": "requirement-failed:R1", "text": "We don't see the region every day. A wider-angle instrument or a higher orbit would help." },
-    { "id": "science-r2-fail", "role": "science", "when": "requirement-failed:R2", "text": "Our camera can't see active fires. We need an infrared instrument." },
-    { "id": "science-request-power", "role": "science", "when": "request", "text": "A thermal camera would let us see fires at night, for extra science. It needs more power and budget." },
-    { "id": "any-budget-over", "role": "any", "when": "budget-over", "text": "My area is over its budget allocation. I need to ask another role for money, or choose cheaper parts." },
-    { "id": "any-all-good", "role": "any", "when": "all-requirements-met", "text": "All four requirements are met. Check the margins, then we can approve the design." }
+    {
+      "id": "launch-intro",
+      "role": "launch",
+      "when": "intro",
+      "text": "I pick the rocket and the orbit. A rideshare is cheap, but it only goes to 525 km sun-synchronous.",
+      "missionId": "wildfire-watch"
+    },
+    {
+      "id": "launch-mass-over",
+      "role": "launch",
+      "when": "mass-over",
+      "text": "The satellite is heavier than this rocket can lift to our orbit. We need a lighter design or a bigger rocket."
+    },
+    {
+      "id": "launch-r4-fail",
+      "role": "launch",
+      "when": "requirement-failed:R4",
+      "text": "At this altitude the orbit decays in under a year. Let's fly higher or add propulsion.",
+      "missionId": "wildfire-watch"
+    },
+    {
+      "id": "launch-low-reliability",
+      "role": "launch",
+      "when": "low-reliability",
+      "text": "This rocket has a short track record. It saves money, but we could lose everything at launch."
+    },
+    {
+      "id": "spacecraft-intro",
+      "role": "spacecraft",
+      "when": "intro",
+      "text": "I build the satellite itself and provide the power everyone else uses.",
+      "missionId": "wildfire-watch"
+    },
+    {
+      "id": "spacecraft-power-short",
+      "role": "spacecraft",
+      "when": "power-short",
+      "text": "We draw more power than the panels make. I can add panels, but that costs mass and money."
+    },
+    {
+      "id": "spacecraft-low-trl",
+      "role": "spacecraft",
+      "when": "low-trl",
+      "text": "This part has not flown yet. It performs better, but it adds months and risk."
+    },
+    {
+      "id": "spacecraft-deadline-risk",
+      "role": "spacecraft",
+      "when": "deadline-risk",
+      "text": "We are close to the fire-season deadline. One more delay and we wait a whole year.",
+      "missionId": "wildfire-watch"
+    },
+    {
+      "id": "ground-intro",
+      "role": "ground",
+      "when": "intro",
+      "text": "I get the data down to Earth: radios, ground stations and contact time.",
+      "missionId": "wildfire-watch"
+    },
+    {
+      "id": "ground-r3-fail",
+      "role": "ground",
+      "when": "requirement-failed:R3",
+      "text": "We cannot downlink 1 GB a day. Another ground station or a faster radio would fix it.",
+      "missionId": "wildfire-watch"
+    },
+    {
+      "id": "ground-request-power",
+      "role": "ground",
+      "when": "request",
+      "text": "A faster radio needs about 10 W more. Can Spacecraft provide it?"
+    },
+    {
+      "id": "science-intro",
+      "role": "science",
+      "when": "intro",
+      "text": "I choose the instruments and track the science requirements.",
+      "missionId": "wildfire-watch"
+    },
+    {
+      "id": "science-r1-fail",
+      "role": "science",
+      "when": "requirement-failed:R1",
+      "text": "We don't see the region every day. A wider-angle instrument or a higher orbit would help.",
+      "missionId": "wildfire-watch"
+    },
+    {
+      "id": "science-r2-fail",
+      "role": "science",
+      "when": "requirement-failed:R2",
+      "text": "Our camera can't see active fires. We need an infrared instrument.",
+      "missionId": "wildfire-watch"
+    },
+    {
+      "id": "science-request-power",
+      "role": "science",
+      "when": "request",
+      "text": "A thermal camera would let us see fires at night, for extra science. It needs more power and budget.",
+      "missionId": "wildfire-watch"
+    },
+    {
+      "id": "any-budget-over",
+      "role": "any",
+      "when": "budget-over",
+      "text": "My area is over its budget allocation. I need to ask another role for money, or choose cheaper parts."
+    },
+    {
+      "id": "any-all-good",
+      "role": "any",
+      "when": "all-requirements-met",
+      "text": "All requirements are met. Check the margins, then we can approve the design."
+    },
+    {
+      "id": "lunar-launch-intro",
+      "role": "launch",
+      "when": "intro",
+      "missionId": "lunar-ice-hunter",
+      "text": "I pick the rocket and the altitude over the Moon. The lunar rideshare is cheap, but it is capped at 250 kg and flies on a fixed date."
+    },
+    {
+      "id": "lunar-spacecraft-intro",
+      "role": "spacecraft",
+      "when": "intro",
+      "missionId": "lunar-ice-hunter",
+      "text": "I build the spacecraft and provide propulsion: we must brake into lunar orbit ourselves and hold it for a year."
+    },
+    {
+      "id": "lunar-ground-intro",
+      "role": "ground",
+      "when": "intro",
+      "missionId": "lunar-ice-hunter",
+      "text": "I get the data home across 384,000 km: a fast radio and enough deep-space stations."
+    },
+    {
+      "id": "lunar-science-intro",
+      "role": "science",
+      "when": "intro",
+      "missionId": "lunar-ice-hunter",
+      "text": "I choose the instruments that can find water ice in the permanently shadowed craters."
+    },
+    {
+      "id": "lunar-l1-fail",
+      "role": "launch",
+      "when": "requirement-failed:L1",
+      "missionId": "lunar-ice-hunter",
+      "text": "The orbit never passes over the poles, so we never see the shadowed craters. We need a polar orbit: inclination 85 degrees or more."
+    },
+    {
+      "id": "lunar-l2-fail",
+      "role": "science",
+      "when": "requirement-failed:L2",
+      "missionId": "lunar-ice-hunter",
+      "text": "Nothing on board can find ice. We need a neutron spectrometer, an ice spectrometer or a radar."
+    },
+    {
+      "id": "lunar-l3-fail",
+      "role": "ground",
+      "when": "requirement-failed:L3",
+      "missionId": "lunar-ice-hunter",
+      "text": "Too little data reaches Earth: radios lose most of their rate at lunar distance. A faster radio or another deep-space dish would fix it."
+    },
+    {
+      "id": "lunar-l4-fail",
+      "role": "spacecraft",
+      "when": "requirement-failed:L4",
+      "missionId": "lunar-ice-hunter",
+      "text": "The propellant cannot hold this orbit for a year. Fly higher, carry more fuel, or pick a thruster with a better specific impulse."
+    },
+    {
+      "id": "lunar-l5-fail",
+      "role": "spacecraft",
+      "when": "requirement-failed:L5",
+      "missionId": "lunar-ice-hunter",
+      "text": "We cannot brake into lunar orbit with this propellant load. A higher specific impulse or a lighter spacecraft would do it."
+    }
   ],
   "sources": [
     {
-      "fields": ["glossary", "tour", "advisorLines"],
+      "fields": [
+        "glossary",
+        "tour",
+        "advisorLines"
+      ],
       "data_quality": "game-design",
       "source": "Written for the game (design.md sections 3.4 and 9)",
       "note": "Own plain-language texts; learn-more links point to NASA pages."

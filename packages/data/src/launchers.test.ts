@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import fileContents from "../json/launchers.json" with { type: "json" };
-import { LauncherListSchema, LauncherSchema, launchers } from "./index.ts";
+import { LauncherListSchema, LauncherSchema, allLaunchers, launchers } from "./index.ts";
 
 describe("launchers.json", () => {
   it("matches the launcher schema", () => {
@@ -9,8 +9,10 @@ describe("launchers.json", () => {
   });
 
   it("is exported validated and unchanged", () => {
-    expect(launchers).toEqual(fileContents);
+    expect(allLaunchers).toEqual(fileContents);
+    // The lunar rideshare serves the Moon only, so the Earth list stays at 11.
     expect(launchers.length).toBe(11);
+    expect(allLaunchers.length).toBe(12);
   });
 
   it("has exactly one rideshare entry, with the full rideshare price model", () => {

@@ -14,8 +14,17 @@ import {
   type RequirementCheck,
   type Role,
 } from "@space-mission/data";
-import { computeBudget, formatUsd, trlPenaltyMonths, type Budget, type Design, type Mission } from "./budget.ts";
-import { maxPassMinutes } from "./earth-orbit.ts";
+import {
+  LIFETIME_TABLE,
+  computeBudget,
+  formatUsd,
+  trlPenaltyMonths,
+  type Budget,
+  type Design,
+  type Mission,
+} from "./budget.ts";
+import { maxPassMinutes, missionLifetime } from "./earth-orbit.ts";
+import { lunarLatencyHours } from "./lunar.ts";
 
 // ---------- Seeded random numbers ----------
 
@@ -57,7 +66,7 @@ export const MAX_EVENTS = 5;
 
 /** The 3–5 pool events of a run, drawn by weight without replacement, in phase order. */
 export function drawEvents(mission: Mission, seed: number | string): GameEvent[] {
-  const pool = gameEvents.filter((e) => e.missionId === mission.id && e.rolled === "pool");
+  const pool = gameEvents.filter((e) => e.missions.includes(mission.id) && e.rolled === "pool");
   const rng = seededRandom(hash(`${seed}|events`));
   const count = Math.min(pool.length, MIN_EVENTS + Math.floor(rng() * (MAX_EVENTS - MIN_EVENTS + 1)));
   const left = [...pool];
@@ -124,15 +133,23 @@ interface Margins {
   hasPropulsion: boolean;
   hasRedundancy: boolean;
   dataMargin: boolean;
-  /** Downlink still meets R3 with the busiest station out. */
+  /** Downlink still meets the data requirement with the busiest station out. */
   commsSpare: boolean;
   partFailureChance: number;
+  /** Delta-v left after insertion and the required station-keeping, km/s (lunar missions). */
+  deltaVMarginKmS: number;
+  /** TRL of the propulsion part (lunar missions). */
+  propulsionTrl: number;
 }
 
 function margins(design: Design, b: Budget, mission: Mission): Margins {
   const parts = Object.values(design.parts).filter((p) => p !== undefined);
   const rated = [...parts, ...(design.instruments ?? [])];
-  const busiest = Math.max(0, ...b.groundStations.map((g) => g.contactMinutesPerDay[b.orbit.type] ?? 0));
+  const contactOf = (g: (typeof b.groundStations)[number]) =>
+    mission.destination === "lunar-orbit"
+      ? (g.lunarContactMinutesPerDay ?? 0)
+      : (g.contactMinutesPerDay[b.orbit.type] ?? 0);
+  const busiest = Math.max(0, ...b.groundStations.map(contactOf));
   const spareCapacity =
     b.contactMinutesPerDay > 0
       ? (b.downlinkCapacityGbPerDay * (b.contactMinutesPerDay - busiest)) / b.contactMinutesPerDay
@@ -149,6 +166,8 @@ function margins(design: Design, b: Budget, mission: Mission): Margins {
     dataMargin: b.downlinkCapacityGbPerDay >= 1.5 * mission.thresholds.minDownlinkGbPerDay && b.orbitPower.energyOk,
     commsSpare: b.groundStations.length > 1 && spareCapacity >= mission.thresholds.minDownlinkGbPerDay,
     partFailureChance: 1 - rated.reduce((s, p) => s * (1 - trlFailureChance(p.trl)), 1),
+    deltaVMarginKmS: b.deltaV?.marginKmS ?? 0,
+    propulsionTrl: design.parts.propulsion?.trl ?? 0,
   };
 }
 
@@ -170,6 +189,10 @@ function isAbsorbed(e: GameEvent, m: Margins, seed: number | string): boolean {
       return m.commsSpare;
     case "data-capacity":
       return m.dataMargin;
+    case "delta-v":
+      return m.deltaVMarginKmS >= 0.15;
+    case "propulsion-trl":
+      return m.propulsionTrl >= 8;
     default:
       return false;
   }
@@ -336,7 +359,7 @@ function usageScore(used: number, capacity: number | null): number {
   return u < 0.6 ? (u / 0.6) * 100 : 100 - ((u - 0.9) / 0.1) * 50;
 }
 
-function metricValue(metric: Metric, b: Budget, latency: number): number {
+function metricValue(metric: Metric, design: Design, b: Budget, latency: number): number {
   switch (metric) {
     case "revisitsPerDay":
       return b.revisitsPerDay;
@@ -346,12 +369,20 @@ function metricValue(metric: Metric, b: Budget, latency: number): number {
       return b.lifetimeYears;
     case "alertLatencyHours":
       return latency;
+    case "inclinationDeg":
+      return b.orbit.inclinationDeg;
+    case "altitudeKm":
+      return b.orbit.altitudeKm;
+    case "deltaVMarginKmS":
+      return b.deltaV?.marginKmS ?? -Infinity;
+    case "iceDetectionMethods":
+      return new Set((design.instruments ?? []).filter((i) => i.detects.includes("waterIce")).map((i) => i.kind)).size;
   }
 }
 
 function checkMet(c: RequirementCheck, design: Design, b: Budget, latency: number): boolean {
   if (c.kind === "detects") return (design.instruments ?? []).some((i) => i.detects.includes(c.detection));
-  const v = metricValue(c.metric, b, latency);
+  const v = metricValue(c.metric, design, b, latency);
   return c.kind === "min" ? v >= c.value : v <= c.value;
 }
 
@@ -369,7 +400,10 @@ export function runMission(
   const b = computeBudget(design, mission);
   const causes: Cause[] = [];
   const failureReasons: string[] = [];
-  const latency = alertLatencyHours(b.contactMinutesPerDay, b.orbit.altitudeKm);
+  const latency =
+    mission.destination === "lunar-orbit"
+      ? lunarLatencyHours(b.lunar?.stationWindowMinutesPerDay ?? b.contactMinutesPerDay, b.orbit.altitudeKm)
+      : alertLatencyHours(b.contactMinutesPerDay, b.orbit.altitudeKm);
   const bonuses: BonusResult[] = mission.card.bonusObjectives.map((o) => ({
     id: o.id,
     name: o.name,
@@ -448,6 +482,30 @@ export function runMission(
     }
   }
   runPhase("operations");
+
+  // Propellant spent during events shortens the mission: station-keeping at the Moon,
+  // the propulsion-extended lifetime in Earth orbit. Ending below the required lifetime loses the mission.
+  const fuelUsedPct = events.reduce((s, e) => s + (e.effects.propulsionUsePct ?? 0), 0);
+  if (!lost && fuelUsedPct > 0 && design.parts.propulsion) {
+    const share = 1 - fuelUsedPct / 100;
+    const years =
+      mission.destination === "lunar-orbit" && b.deltaV
+        ? Math.max(0, (b.deltaV.availableKmS * share - b.deltaV.loiKmS) / b.deltaV.stationKeepingKmSPerYear)
+        : missionLifetime(
+            b.orbit.altitudeKm,
+            { totalImpulseNs: design.parts.propulsion.performance.value * share, massKg: b.massKg },
+            LIFETIME_TABLE,
+          ).years;
+    const note = `Correction burns used ${fuelUsedPct}% of the propellant: the orbit now holds for about ${years.toFixed(1)} years.`;
+    if (years < mission.thresholds.minLifetimeYears) {
+      lost = true;
+      const msg = `The orbit decayed before the mission's ${mission.thresholds.minLifetimeYears} years were up. ${note}`;
+      failureReasons.push(msg);
+      causes.push({ phase: "operations", tone: "bad", text: msg });
+    } else {
+      causes.push({ phase: "operations", tone: "neutral", text: note });
+    }
+  }
 
   // Time and money after the events (T13.4 deadline rule on the delayed schedule).
   const sum = (k: keyof EventEffects) => events.reduce((s, e) => s + ((e.effects[k] as number | undefined) ?? 0), 0);
@@ -531,7 +589,9 @@ function scoreMission(
   const fx = (k: keyof EventEffects) => events.reduce((s, e) => s + ((e.effects[k] as number | undefined) ?? 0), 0);
 
   // Science: the best instrument, a quarter of the others, bonus objectives, then event effects.
-  const values = (design.instruments ?? []).map((i) => i.scienceValue.wildfireWatch).sort((x, y) => y - x);
+  const values = (design.instruments ?? [])
+    .map((i) => (i.scienceValue as Record<string, number>)[mission.scienceKey] ?? 0)
+    .sort((x, y) => y - x);
   const instrumentValue = (values[0] ?? 0) + 0.25 * values.slice(1).reduce((s, v) => s + v, 0);
   const metBonuses = bonuses.filter((x) => x.met);
   const eventSciencePct =

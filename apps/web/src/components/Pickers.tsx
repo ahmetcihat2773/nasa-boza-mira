@@ -8,7 +8,14 @@ import {
   parts,
   type Subsystem,
 } from "@space-mission/data";
-import { formatUsd, swathWidthKm, trlPenaltyMonths, type Budget, type Mission } from "@space-mission/sim";
+import {
+  formatUsd,
+  stationContactMinutes,
+  swathWidthKm,
+  trlPenaltyMonths,
+  type Budget,
+  type Mission,
+} from "@space-mission/sim";
 import { instrumentLockReason, launcherLockReason, missionPartLockReason, partFits, partLockReason } from "../lock.ts";
 import { destinationOf } from "../missions.ts";
 import { useGame } from "../store.ts";
@@ -187,7 +194,10 @@ export function LauncherPicker({ b, mission }: { b: Budget; mission: Mission }) 
                 <span className="delta">
                   {formatUsd(l.launchCostUsd)}
                   {perKg} · <Term id="sso">SSO</Term> capacity {l.ssoCapacityKg} kg
-                  {lunar && active && b.launcherCapacityKg !== null && ` · to the Moon about ${b.launcherCapacityKg} kg`}
+                  {lunar &&
+                    active &&
+                    b.launcherCapacityKg !== null &&
+                    ` · to the Moon about ${b.launcherCapacityKg} kg`}
                   {l.fixedOrbit && ` · fixed orbit: ${l.fixedOrbit.altitudeKm} km ${l.fixedOrbit.type}`}
                 </span>
                 {lock && <span className="lock">Locked: {lock}</span>}
@@ -318,10 +328,13 @@ export function OrbitPicker({ b, mission }: { b: Budget; mission: Mission }) {
   );
 }
 
-export function GroundPicker({ b }: { b: Budget }) {
+export function GroundPicker({ b, mission }: { b: Budget; mission: Mission }) {
   const setStations = useGame((s) => s.setGroundStations);
   const chosen = b.groundStations;
   const full = chosen.length >= maxGroundStations;
+  const lunar = destinationOf(mission.card) === "lunar-orbit";
+  // Only deep-space dishes reach the Moon; near-Earth stations see nothing that far out.
+  const offered = lunar ? groundStations.filter((g) => g.kind === "deep-space") : groundStations;
 
   return (
     <section className="picker">
@@ -333,10 +346,15 @@ export function GroundPicker({ b }: { b: Budget }) {
           {chosen.length} of up to {maxGroundStations}
         </span>
       </h3>
+      {lunar && (
+        <p className="muted small">
+          At lunar distance only the deep-space dishes can talk to the spacecraft; near-Earth stations are out of range.
+        </p>
+      )}
       <ul>
-        {groundStations.map((g) => {
+        {offered.map((g) => {
           const active = chosen.some((c) => c.id === g.id);
-          const minutes = g.contactMinutesPerDay[b.orbit.type] ?? 0;
+          const minutes = Math.round(stationContactMinutes(g, b.orbit, mission));
           const lock = !active && full ? `At most ${maxGroundStations} ground stations.` : null;
           return (
             <li key={g.id}>
