@@ -25,6 +25,7 @@ import {
 import { orbitTypes } from "@space-mission/data";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { designerAgent, monitorAgent, type DesignerResponse, type MonitorResponse } from "../api.ts";
+import type { Maneuver } from "../scene/OrbitView.tsx";
 
 const OrbitView = lazy(() => import("../scene/OrbitView.tsx"));
 const LaunchScene = lazy(() => import("../scene/LaunchScene.tsx"));
@@ -39,6 +40,8 @@ const STAGES: { label: string; stages: Stage[] }[] = [
 ];
 
 const FRAME_MS = 900;
+/** Slower during the burn, so the climb is easy to follow in the 3D view. */
+const BURN_MS = 1500;
 const STEP_MS = 1400;
 
 const clock = (tS: number) => {
@@ -160,7 +163,7 @@ export function MissionControl({ onExit }: { onExit: () => void }) {
     void monitorCall.current.then((r) => {
       if (!live) return;
       setMonitor(r);
-      setTimeout(() => live && setStage("burning"), 2500);
+      setTimeout(() => live && setStage("burning"), 3500);
     });
     return () => {
       live = false;
@@ -172,7 +175,7 @@ export function MissionControl({ onExit }: { onExit: () => void }) {
       setStage("done");
       return;
     }
-    const t = setTimeout(() => setBurnIndex((i) => i + 1), FRAME_MS);
+    const t = setTimeout(() => setBurnIndex((i) => i + 1), BURN_MS);
     return () => clearTimeout(t);
   }, [stage, burnIndex, monitor]);
 
@@ -190,6 +193,14 @@ export function MissionControl({ onExit }: { onExit: () => void }) {
   const current = shownFrames[shownFrames.length - 1];
   const plannedKm = ev?.budget.orbit.altitudeKm ?? 525;
   const inOrbit = current && current.tS >= 900;
+  // What the 3D view shows: off target → fix chosen → thruster firing → holding the new orbit.
+  const maneuverPhase: Maneuver["phase"] =
+    stage === "burning" ? "burning" : stage === "done" ? "done" : monitor ? "arming" : "low";
+  const targetKm = monitor ? monitor.outcome.option.finalAltitudeKm : plannedKm;
+  const maneuver = useMemo<Maneuver>(
+    () => ({ phase: maneuverPhase, targetAltitudeKm: targetKm }),
+    [maneuverPhase, targetKm],
+  );
   const designDone = designer !== null && shownSteps >= designer.steps.length;
 
   // What would have happened without Agent 1 planning for the risk (same problem, no thruster).
@@ -353,6 +364,20 @@ export function MissionControl({ onExit }: { onExit: () => void }) {
             <p className="muted">Waiting for the launch…</p>
           )}
 
+          {inOrbit && ev && (
+            <Suspense fallback={<div className="orbit-view scene-loading">Loading orbit view…</div>}>
+              <OrbitView
+                orbit={{ ...ev.budget.orbit, altitudeKm: current!.altitudeKm }}
+                orbitName={orbitTypes.find((o) => o.id === ev.budget.orbit.type)?.name ?? ev.budget.orbit.type}
+                swathKm={ev.budget.swathKm}
+                stations={ev.budget.groundStations}
+                design={design ?? undefined}
+                maneuver={maneuver}
+                live
+              />
+            </Suspense>
+          )}
+
           {shownFrames.length > 0 && (
             <>
               <AltitudeChart frames={shownFrames} plannedKm={plannedKm} />
@@ -423,21 +448,6 @@ export function MissionControl({ onExit }: { onExit: () => void }) {
           {stage === "burning" && <p className="mc-thinking">Firing the thruster…</p>}
         </section>
       </div>
-
-      {inOrbit && ev && (
-        <section className="card mc-orbit">
-          <Suspense fallback={<div className="orbit-view scene-loading">Loading orbit view…</div>}>
-            <OrbitView
-              orbit={{ ...ev.budget.orbit, altitudeKm: current!.altitudeKm }}
-              orbitName={`${current!.altitudeKm} km ${orbitTypes.find((o) => o.id === ev.budget.orbit.type)?.name ?? ""}`}
-              swathKm={ev.budget.swathKm}
-              stations={ev.budget.groundStations}
-              design={design ?? undefined}
-              live
-            />
-          </Suspense>
-        </section>
-      )}
 
       {stage === "done" && monitor && (
         <section className={`card mc-result ${monitor.outcome.lifetimeMet ? "saved" : "lost"}`}>

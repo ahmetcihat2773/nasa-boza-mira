@@ -731,3 +731,7 @@
     display: none;
   }
 }
+.mc-agent .orbit-view {
+  height: 340px;
+  margin: 0 0 10px;
+}

@@ -114,6 +114,53 @@ function StationMarker({ station, coverage, active }: { station: StationSite; co
   );
 }
 
+/**
+ * An orbit change in progress (AI Mission Control): the view exaggerates altitude so the change is
+ * visible, eases the satellite between altitudes, and shows the target orbit, the engine plume and the
+ * climb trail.
+ */
+export interface Maneuver {
+  /** low: off target, no decision yet · arming: fix chosen, lining up · burning: thruster on · done: holding. */
+  phase: "low" | "arming" | "burning" | "done";
+  /** The orbit the spacecraft should reach, km. */
+  targetAltitudeKm: number;
+}
+/** Altitude exaggeration while a maneuver is shown: 150 km is only 2% of Earth's radius at true scale. */
+export const MANEUVER_ALT_SCALE = 3;
+const PLUME_LEN = 0.11;
+const PLUME_R = 0.016;
+const TRAIL_MAX = 360;
+/** Over-bright colours so the maneuver lines bloom. */
+const TARGET_COLOR = new THREE.Color(0.5, 2.4, 1.2);
+const TARGET_DIM_COLOR = new THREE.Color(0.3, 1.2, 0.6);
+const TRAIL_COLOR = new THREE.Color(2.4, 1.2, 0.35);
+
+function ringPoints(orbit: CircularOrbit): THREE.Vector3[] {
+  const period = orbitalPeriodS(orbit.altitudeKm);
+  const pts: THREE.Vector3[] = [];
+  for (let i = 0; i <= ORBIT_SAMPLES; i++) pts.push(toScene(orbitState(orbit, (i / ORBIT_SAMPLES) * period).position));
+  return pts;
+}
+
+/** The orbit a maneuver aims for: a dashed green ring. */
+function TargetRing({ orbit, active }: { orbit: CircularOrbit; active: boolean }) {
+  const pts = useMemo(() => ringPoints(orbit), [orbit]);
+  return (
+    <Line
+      points={pts}
+      color={active ? TARGET_COLOR : TARGET_DIM_COLOR}
+      lineWidth={1.4}
+      dashed
+      dashSize={0.04}
+      gapSize={0.03}
+      transparent
+      opacity={active ? 0.9 : 0.35}
+      depthWrite={false}
+      toneMapped={false}
+    />
+  );
+}
+
 interface SceneProps {
   orbit: CircularOrbit;
   swathKm: number;
@@ -122,13 +169,26 @@ interface SceneProps {
   reduced: boolean;
   contact: string;
   onContact: (names: string) => void;
+  maneuver?: Maneuver;
+  /** Display multiplier on the altitude (MANEUVER_ALT_SCALE during a maneuver). */
+  altScale?: number;
 }
 
-function OrbitScene({ orbit, swathKm, stations, look, reduced, contact, onContact }: SceneProps) {
-  const period = orbitalPeriodS(orbit.altitudeKm);
-  const timeScale = (period * ORBITS_PER_MINUTE) / 60;
+function OrbitScene({
+  orbit,
+  swathKm,
+  stations,
+  look,
+  reduced,
+  contact,
+  onContact,
+  maneuver,
+  altScale = 1,
+}: SceneProps) {
+  const realPeriod = orbitalPeriodS(orbit.altitudeKm);
+  const timeScale = (realPeriod * ORBITS_PER_MINUTE) / 60;
   // Start just before a pass over Svalbard so contact shows soon.
-  const simT = useRef(period * 0.9);
+  const simT = useRef(realPeriod * 0.9);
   const coverage = coverageHalfAngleRad(orbit.altitudeKm, MIN_ELEVATION_DEG);
 
   const earth = useRef<THREE.Group>(null);
@@ -136,13 +196,21 @@ function OrbitScene({ orbit, swathKm, stations, look, reduced, contact, onContac
   const orbitLine = useRef<LineObj>(null);
   const links = useRef<(LineObj | null)[]>([]);
   const contactKey = useRef("");
+  // The altitude on screen eases towards the orbit's altitude, so a climb looks smooth.
+  const shownAlt = useRef(orbit.altitudeKm);
+  const builtAlt = useRef(orbit.altitudeKm);
+  const disp = useRef<CircularOrbit>({ ...orbit });
+  const plume = useRef<THREE.Group>(null);
+  const halo = useRef<THREE.Mesh>(null);
+  const trailLine = useRef<LineObj>(null);
+  const trail = useRef<number[]>([]);
+  const trailClock = useRef(0);
 
-  const orbitPoints = useMemo(() => {
-    const pts: THREE.Vector3[] = [];
-    for (let i = 0; i <= ORBIT_SAMPLES; i++)
-      pts.push(toScene(orbitState(orbit, (i / ORBIT_SAMPLES) * period).position));
-    return pts;
-  }, [orbit, period]);
+  const [orbitPoints] = useState(() => ringPoints({ ...orbit, altitudeKm: orbit.altitudeKm * altScale }));
+  const targetOrbit = useMemo<CircularOrbit | null>(
+    () => (maneuver ? { ...orbit, altitudeKm: maneuver.targetAltitudeKm * altScale } : null),
+    [maneuver, orbit, altScale],
+  );
   const orbitColors = useMemo(() => new Float32Array((ORBIT_SAMPLES + 1) * 3), []);
 
   // Swath ribbon (Earth-fixed, child of the Earth group) and the instrument's view cone.
@@ -211,13 +279,30 @@ function OrbitScene({ orbit, swathKm, stations, look, reduced, contact, onContac
     [],
   );
 
-  useFrame((_, dt) => {
+  useFrame(({ clock }, dt) => {
     if (!reduced) simT.current += Math.min(dt, 0.1) * timeScale;
     const t = simT.current;
     const theta = earthRotationRad(t);
     if (earth.current) earth.current.rotation.y = theta;
 
-    const s = orbitState(orbit, t);
+    // Displayed orbit: eased altitude, exaggerated during a maneuver.
+    shownAlt.current += (orbit.altitudeKm - shownAlt.current) * (reduced ? 1 : Math.min(1, dt * 1.4));
+    const o = disp.current;
+    o.altitudeKm = shownAlt.current * altScale;
+    o.inclinationDeg = orbit.inclinationDeg;
+    o.raanDeg = orbit.raanDeg;
+    const period = orbitalPeriodS(o.altitudeKm);
+    if (Math.abs(shownAlt.current - builtAlt.current) > 0.3) {
+      builtAlt.current = shownAlt.current;
+      const flat: number[] = [];
+      for (let i = 0; i <= ORBIT_SAMPLES; i++) {
+        const q = toScene(orbitState(o, (i / ORBIT_SAMPLES) * period).position, tmp.c);
+        flat.push(q.x, q.y, q.z);
+      }
+      (orbitLine.current?.geometry as unknown as LineGeo | undefined)?.setPositions(flat);
+    }
+
+    const s = orbitState(o, t);
     const p = toScene(s.position, tmp.p);
     const v = toScene(s.velocity, tmp.v).normalize();
     if (sat.current) {
@@ -229,17 +314,58 @@ function OrbitScene({ orbit, swathKm, stations, look, reduced, contact, onContac
       sat.current.quaternion.setFromRotationMatrix(tmp.m);
     }
 
-    // Orbit line: bright fading trail behind the satellite, faint ahead.
+    // Orbit line: bright fading trail behind the satellite, faint ahead. Red while off target,
+    // amber while lining up or burning, blue otherwise.
+    const ph = maneuver?.phase;
+    const tint = ph === "low" ? [1.1, 0.3, 0.28] : ph === "arming" || ph === "burning" ? [1.1, 0.62, 0.22] : null;
     const phase = (((t / period) % 1) + 1) % 1;
     for (let i = 0; i <= ORBIT_SAMPLES; i++) {
       const d = (((phase - i / ORBIT_SAMPLES) % 1) + 1) % 1;
-      const trail = Math.exp(-d * 5);
-      const k = 0.32 + 1.9 * trail;
-      orbitColors[i * 3] = (0.25 + 0.5 * trail) * k;
-      orbitColors[i * 3 + 1] = (0.62 + 0.3 * trail) * k;
-      orbitColors[i * 3 + 2] = 1.0 * k;
+      const fade = Math.exp(-d * 5);
+      const k = 0.32 + 1.9 * fade;
+      if (tint) {
+        orbitColors[i * 3] = tint[0]! * k;
+        orbitColors[i * 3 + 1] = tint[1]! * k;
+        orbitColors[i * 3 + 2] = tint[2]! * k;
+      } else {
+        orbitColors[i * 3] = (0.25 + 0.5 * fade) * k;
+        orbitColors[i * 3 + 1] = (0.62 + 0.3 * fade) * k;
+        orbitColors[i * 3 + 2] = 1.0 * k;
+      }
     }
     (orbitLine.current?.geometry as unknown as LineGeo | undefined)?.setColors(orbitColors);
+
+    // Maneuver effects: engine plume and climb trail while burning, a warning halo before.
+    const burning = ph === "burning";
+    if (plume.current) {
+      plume.current.visible = burning;
+      if (burning) {
+        const f = reduced ? 1 : 0.85 + 0.3 * Math.sin(clock.elapsedTime * 38) * Math.sin(clock.elapsedTime * 11);
+        plume.current.scale.set(1, 1, f);
+      }
+    }
+    if (halo.current) {
+      const show = ph === "low" || ph === "arming";
+      halo.current.visible = show;
+      if (show) {
+        const k = reduced ? 0.5 : (clock.elapsedTime * (ph === "low" ? 1.6 : 1)) % 1;
+        halo.current.scale.setScalar(0.6 + k * 1.6);
+        const m = halo.current.material as THREE.MeshBasicMaterial;
+        m.opacity = (1 - k) * 0.7;
+        m.color.setRGB(2.2, ph === "low" ? 0.4 : 1.3, ph === "low" ? 0.35 : 0.3);
+      }
+    }
+    if (!maneuver) trail.current = [];
+    else if (burning && clock.elapsedTime - trailClock.current > 0.04) {
+      trailClock.current = clock.elapsedTime;
+      trail.current.push(p.x, p.y, p.z);
+      if (trail.current.length > TRAIL_MAX * 3) trail.current.splice(0, 3);
+    }
+    if (trailLine.current) {
+      const n = trail.current.length / 3;
+      trailLine.current.visible = n >= 2;
+      if (n >= 2) (trailLine.current.geometry as unknown as LineGeo).setPositions(trail.current);
+    }
 
     // Swath: sub-satellite points over the last few minutes, in Earth-fixed axes.
     const hw = swathKm / 2 / EARTH_RADIUS_KM;
@@ -247,7 +373,7 @@ function OrbitScene({ orbit, swathKm, stations, look, reduced, contact, onContac
     const stepS = (period * 0.07) / SWATH_SAMPLES;
     for (let k = 0; k < SWATH_SAMPLES; k++) {
       const tk = t - k * stepS;
-      const sk = orbitState(orbit, tk);
+      const sk = orbitState(o, tk);
       const back = -earthRotationRad(tk);
       const g = toScene(sk.position, tmp.a).normalize().applyAxisAngle(THREE.Object3D.DEFAULT_UP, back);
       const vel = toScene(sk.velocity, tmp.c).applyAxisAngle(THREE.Object3D.DEFAULT_UP, back);
@@ -348,9 +474,69 @@ function OrbitScene({ orbit, swathKm, stations, look, reduced, contact, onContac
         />
       ))}
 
+      {targetOrbit && <TargetRing orbit={targetOrbit} active={maneuver?.phase !== "done"} />}
+      {maneuver && (
+        <Line
+          ref={trailLine}
+          points={[
+            [0, 0, 0],
+            [0, 0, 0.001],
+          ]}
+          color={TRAIL_COLOR}
+          lineWidth={2.2}
+          transparent
+          opacity={0.9}
+          depthWrite={false}
+          toneMapped={false}
+          visible={false}
+        />
+      )}
+
       <group ref={sat}>
-        <Satellite look={look} scale={SAT_SCALE * lookScale(look)} />
+        <Satellite look={look} scale={SAT_SCALE * lookScale(look) * (maneuver ? 1.8 : 1)} />
         <pointLight color="#9fd4ff" intensity={0.02} distance={0.2} />
+        {maneuver && (
+          <>
+            {/* Engine plume: points backwards (−z, against the velocity) for a prograde burn. */}
+            <group ref={plume} visible={false}>
+              <mesh position={[0, 0, -PLUME_LEN / 2 - 0.012]} rotation={[Math.PI / 2, 0, 0]}>
+                <coneGeometry args={[PLUME_R, PLUME_LEN, 20, 1, true]} />
+                <meshBasicMaterial
+                  color={[3, 1.3, 0.35]}
+                  transparent
+                  opacity={0.55}
+                  blending={THREE.AdditiveBlending}
+                  depthWrite={false}
+                  side={THREE.DoubleSide}
+                  toneMapped={false}
+                />
+              </mesh>
+              <mesh position={[0, 0, -PLUME_LEN * 0.3 - 0.012]} rotation={[Math.PI / 2, 0, 0]}>
+                <coneGeometry args={[PLUME_R * 0.45, PLUME_LEN * 0.6, 16, 1, true]} />
+                <meshBasicMaterial
+                  color={[4, 3, 2]}
+                  transparent
+                  opacity={0.8}
+                  blending={THREE.AdditiveBlending}
+                  depthWrite={false}
+                  side={THREE.DoubleSide}
+                  toneMapped={false}
+                />
+              </mesh>
+              <pointLight color="#ffb060" intensity={0.15} distance={0.4} position={[0, 0, -0.03]} />
+            </group>
+            <mesh ref={halo} visible={false}>
+              <sphereGeometry args={[0.03, 24, 16]} />
+              <meshBasicMaterial
+                transparent
+                blending={THREE.AdditiveBlending}
+                depthWrite={false}
+                wireframe
+                toneMapped={false}
+              />
+            </mesh>
+          </>
+        )}
       </group>
 
       <OrbitControls
@@ -358,7 +544,7 @@ function OrbitScene({ orbit, swathKm, stations, look, reduced, contact, onContac
         enableDamping
         minDistance={1.5}
         maxDistance={9}
-        autoRotate={!reduced}
+        autoRotate={!reduced && !maneuver}
         autoRotateSpeed={0.15}
       />
       <EffectComposer multisampling={4}>
@@ -390,7 +576,25 @@ export type OrbitViewProps = ({ design: Design } | ExplicitOrbitProps) & {
   live: boolean;
   /** The mission's destination; "lunar-orbit" draws the Moon scene instead of Earth. */
   destination?: Destination;
+  /** An orbit change to show (Earth orbit only). */
+  maneuver?: Maneuver;
 };
+
+function maneuverStatus(m: Maneuver, altitudeKm: number): { text: string; tone: string } {
+  const gap = Math.round(m.targetAltitudeKm - altitudeKm);
+  switch (m.phase) {
+    case "low":
+      return { text: `⚠ ${gap} km below the target ${m.targetAltitudeKm} km orbit`, tone: "bad" };
+    case "arming":
+      return { text: `Agent 2's fix: climb to ${m.targetAltitudeKm} km · turning to burn attitude`, tone: "warn" };
+    case "burning":
+      return { text: `Thruster firing · ${altitudeKm} → ${m.targetAltitudeKm} km`, tone: "warn" };
+    case "done":
+      return gap <= 0
+        ? { text: `✓ Target orbit reached · holding ${altitudeKm} km`, tone: "ok" }
+        : { text: `Staying at ${altitudeKm} km`, tone: "bad" };
+  }
+}
 
 function resolveProps(p: OrbitViewProps): ExplicitOrbitProps {
   if ("orbit" in p) return p;
@@ -408,6 +612,7 @@ function resolveProps(p: OrbitViewProps): ExplicitOrbitProps {
 export default function OrbitView(props: OrbitViewProps) {
   const { live, destination } = props;
   const lunar = destination === "lunar-orbit";
+  const maneuver = lunar ? undefined : props.maneuver;
   const { orbit: o, orbitName, swathKm: designSwathKm, stations, design } = resolveProps(props);
   const look = useMemo(() => spacecraftLook(design), [design]);
   const reduced = useReducedMotion();
@@ -428,7 +633,8 @@ export default function OrbitView(props: OrbitViewProps) {
     <div className="orbit-view" id="orbit-view">
       <Canvas
         dpr={[1, 2]}
-        camera={{ position: [2.5, 1.35, 2.15], fov: 40, near: 0.01, far: 200 }}
+        // During a maneuver, look down on the orbit plane so the old and new orbits do not overlap.
+        camera={{ position: maneuver ? [0.6, 0.65, 3.95] : [2.5, 1.35, 2.15], fov: 40, near: 0.01, far: 200 }}
         gl={{ antialias: false, powerPreference: "high-performance" }}
         aria-label={`3D view of a ${orbitName} orbit at ${altitudeKm} km`}
       >
@@ -452,6 +658,8 @@ export default function OrbitView(props: OrbitViewProps) {
               reduced={reduced}
               contact={contact}
               onContact={setContact}
+              maneuver={maneuver}
+              altScale={maneuver ? MANEUVER_ALT_SCALE : 1}
             />
           )}
         </Suspense>
@@ -468,6 +676,15 @@ export default function OrbitView(props: OrbitViewProps) {
         </div>
         <span className={`ov-badge ${live ? "live" : ""}`}>{live ? "● In orbit" : "Planned"}</span>
       </div>
+      {maneuver &&
+        (() => {
+          const st = maneuverStatus(maneuver, altitudeKm);
+          return (
+            <div className={`ov-maneuver ${st.tone}`} role="status">
+              {st.text}
+            </div>
+          );
+        })()}
       <div className="ov-hud ov-bottom">
         <div className="ov-stations">
           {(lunar ? stations.filter((s) => (s as { kind?: string }).kind !== "near-earth") : stations).map((g) => {
@@ -486,6 +703,7 @@ export default function OrbitView(props: OrbitViewProps) {
             : `Swath ${Math.round(swathKm)} km${placeholder ? ` (placeholder, ${PLACEHOLDER_FOV_DEG}° view)` : ""}`}
           {!reduced &&
             ` · ×${Math.round(((lunar ? lunarOrbitalPeriodS(altitudeKm) : orbitalPeriodS(altitudeKm)) * ORBITS_PER_MINUTE) / 60)} speed`}
+          {maneuver && ` · altitude ×${MANEUVER_ALT_SCALE} for visibility`}
         </div>
       </div>
     </div>
