@@ -76,6 +76,8 @@ export type ClaudeRunnerOptions = {
   timeoutMs?: number;
   prompt?: string;
   spawn?: SpawnFn;
+  /** Longest answer kept, characters (default 4000). */
+  maxChars?: number;
 };
 
 /** Finds the Claude CLI. On Windows the npm shim is a .cmd file, which cannot run without a shell, so look for claude.exe. */
@@ -113,7 +115,8 @@ export function claudeArgs(prompt: string): string[] {
 }
 
 /** Runs `claude -p` once. The input JSON goes on stdin; resolves with stdout text or rejects. */
-export function runClaude(input: DebriefInput, opts: ClaudeRunnerOptions = {}): Promise<string> {
+export function runClaude(input: unknown, opts: ClaudeRunnerOptions = {}): Promise<string> {
+  const maxChars = opts.maxChars ?? MAX_OUTPUT_CHARS;
   const prompt = opts.prompt ?? readFileSync(PROMPT_FILE, "utf8");
   const spawn = opts.spawn ?? (nodeSpawn as unknown as SpawnFn);
   const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
@@ -143,7 +146,7 @@ export function runClaude(input: DebriefInput, opts: ClaudeRunnerOptions = {}): 
     child.stdout.setEncoding("utf8");
     child.stderr.setEncoding("utf8");
     child.stdout.on("data", (d: string) => {
-      if (out.length < MAX_OUTPUT_CHARS * 2) out += d;
+      if (out.length < maxChars * 2) out += d;
     });
     child.stderr.on("data", (d: string) => {
       if (errText.length < 2000) errText += d;
@@ -155,7 +158,7 @@ export function runClaude(input: DebriefInput, opts: ClaudeRunnerOptions = {}): 
         if (code !== 0)
           reject(new Error(`claude exited with code ${code}${errText ? `: ${errText.trim().slice(0, 300)}` : ""}`));
         else if (!text) reject(new Error("claude returned no text"));
-        else resolve(text.slice(0, MAX_OUTPUT_CHARS));
+        else resolve(text.slice(0, maxChars));
       }),
     );
     child.stdin.on("error", () => {

@@ -8,7 +8,7 @@ const db = openDb();
 
 const server = serve({ fetch: createApp({ db }).fetch, hostname: host, port }, (info) => {
   console.log(
-    `API listening on http://${host}:${info.port} (GET /health, /attempts, /leaderboard/:missionId; POST /attempts, /flight-director)`,
+    `API listening on http://${host}:${info.port} (GET /health, /attempts, /leaderboard/:missionId; POST /attempts, /flight-director, /agents/designer, /agents/monitor)`,
   );
   console.log(`SQLite database: ${process.env.DB_PATH ?? DEFAULT_DB_PATH}`);
 });

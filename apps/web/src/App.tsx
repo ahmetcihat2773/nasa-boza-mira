@@ -15,6 +15,7 @@ import { Tour } from "./components/Tour.tsx";
 import { recordRun, useFlow } from "./flow.ts";
 import { GlossaryButton, Term } from "./components/Glossary.tsx";
 import { Meter } from "./components/Meter.tsx";
+import { MissionControl } from "./components/MissionControl.tsx";
 import { RequirementsPanel } from "./components/Requirements.tsx";
 import { ROLES, RoleBudget, RoleTabs } from "./components/RoleTabs.tsx";
 import { destinationOf, missionById, starterDesign, transferMeters } from "./missions.ts";
@@ -78,6 +79,9 @@ export function App() {
       );
   }, [launchRun, design, seed, decisions, goTo, mission, requests]);
   const orbitName = orbitTypes.find((o) => o.id === b.orbit.type)?.name ?? b.orbit.type;
+  // AI Mission Control: two agents design and fly the mission (a separate screen).
+  const [missionControl, setMissionControl] = useState(false);
+  if (missionControl) return <MissionControl onExit={() => setMissionControl(false)} />;
 
   return (
     <div className="app">
@@ -101,6 +105,9 @@ export function App() {
           <p className="objective">{mission.objective}</p>
         </div>
         <div className="header-tools">
+          <button className="ghost mc-open" onClick={() => setMissionControl(true)}>
+            AI Mission Control
+          </button>
           <GlossaryButton />
           <div className="constraints">
             <div>

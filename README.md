@@ -38,6 +38,19 @@ Then open http://localhost:5173. The local API runs on http://127.0.0.1:8787. St
 
 For team play, players take turns on the same screen – the game shows whose role is up.
 
+### AI Mission Control (two-agent demo)
+
+Click **AI Mission Control** in the header. Two agents fly Wildfire Watch with one known risk – the rocket may release the satellite up to 150 km too low:
+
+1. **Mission Designer** picks every part so the mission meets R1–R4 *and* carries enough thruster delta-v to climb back (check C1). Each attempt is checked by the sim; failed checks go back to the agent.
+2. **Mission Monitor** watches the launch telemetry, detects the low release, diagnoses it and chooses a fix (raise the orbit fully, partly, or do nothing). The sim applies it and shows whether the mission is saved.
+
+Both agents use the Claude CLI (`claude -p`) through the local API. If the CLI is missing, a built-in agent takes over, so the demo always runs. On Windows, point the API at the CLI with `CLAUDE_BIN`, e.g. the copy that ships with the VS Code extension:
+
+```bash
+CLAUDE_BIN="C:/Users/<you>/.vscode/extensions/anthropic.claude-code-<version>-win32-x64/resources/native-binary/claude.exe" pnpm dev
+```
+
 ## Project structure
 
 ```

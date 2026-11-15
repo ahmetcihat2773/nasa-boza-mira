@@ -485,3 +485,249 @@
 .mission-card .perf {
   font-size: 14px;
 }
+
+/* ---------- AI Mission Control ---------- */
+.mc-open {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.mc-stages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+.mc-stages li {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font: 600 12px/1.2 var(--mono);
+}
+.mc-stages li.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.mc-risk {
+  margin-bottom: 12px;
+  border-left: 3px solid var(--warn);
+}
+.mc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  gap: 12px;
+  align-items: start;
+}
+.mc-agent h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.mc-agent h3 {
+  margin: 14px 0 6px;
+  font-size: 14px;
+}
+.mc-agent-head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.mc-agent-head > div {
+  flex: 1;
+}
+.mc-agent-head p {
+  margin: 2px 0 0;
+}
+.mc-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  font: 700 13px/1 var(--mono);
+}
+.mc-avatar.a2 {
+  background: var(--warn);
+}
+.mc-badge {
+  flex: none;
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--muted);
+  font: 600 11px/1.2 var(--mono);
+}
+.mc-thinking {
+  color: var(--accent);
+  animation: mc-pulse 1.4s ease-in-out infinite;
+}
+@keyframes mc-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mc-thinking {
+    animation: none;
+  }
+}
+.mc-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.mc-steps > li {
+  padding: 8px 10px;
+  background: var(--panel-2);
+  border-left: 3px solid var(--bad);
+  border-radius: 4px;
+}
+.mc-steps > li.ok {
+  border-left-color: var(--ok);
+}
+.mc-steps p {
+  margin: 4px 0 0;
+}
+.mc-step-head {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+.mc-step-head .val {
+  margin-left: auto;
+}
+.mc-quote {
+  font-style: italic;
+  color: var(--text);
+  border-left: 2px solid var(--line);
+  padding-left: 8px;
+}
+.mc-design {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.mc-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 10px 0;
+  font-size: 13px;
+}
+.mc-checks {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  font-size: 13px;
+}
+.mc-checks li {
+  margin: 3px 0;
+}
+.mc-checks li.ok {
+  color: var(--ok);
+}
+.mc-checks li.bad {
+  color: var(--bad);
+}
+.mc-chart {
+  width: 100%;
+  height: auto;
+  background: var(--panel-2);
+  border-radius: 4px;
+}
+.mc-chart-target {
+  stroke: var(--line);
+  stroke-dasharray: 2 4;
+}
+.mc-chart-expected {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+.mc-chart-actual {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+.mc-chart-alert {
+  fill: var(--bad);
+}
+.mc-chart-label {
+  fill: var(--muted);
+  font: 10px var(--mono);
+}
+.mc-telemetry {
+  max-height: 190px;
+  overflow-y: auto;
+  margin-top: 8px;
+  font-size: 12px;
+}
+.mc-telemetry > div {
+  display: grid;
+  grid-template-columns: 74px 1fr auto auto auto;
+  gap: 10px;
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--line);
+}
+.mc-telemetry > div.alert {
+  color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 10%, transparent);
+}
+.mc-telemetry .mono,
+.mc-options .mono {
+  font-family: var(--mono);
+}
+.mc-alarm {
+  margin: 10px 0;
+  padding: 8px 10px;
+  color: var(--bad);
+  border: 1px solid var(--bad);
+  border-radius: 4px;
+  font-weight: 600;
+}
+.mc-options {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.mc-options th,
+.mc-options td {
+  text-align: left;
+  padding: 5px 6px;
+  border-bottom: 1px solid var(--line);
+}
+.mc-options tr.chosen td {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  font-weight: 600;
+}
+.mc-orbit {
+  margin-top: 12px;
+}
+.mc-result {
+  margin-top: 12px;
+  border-left: 4px solid var(--ok);
+}
+.mc-result.lost {
+  border-left-color: var(--bad);
+}
+.mc-result h2 {
+  margin-top: 0;
+}
+@media (max-width: 560px) {
+  .mc-telemetry > div {
+    grid-template-columns: 64px 1fr auto;
+  }
+  .mc-telemetry > div > span:nth-child(n + 4) {
+    display: none;
+  }
+}

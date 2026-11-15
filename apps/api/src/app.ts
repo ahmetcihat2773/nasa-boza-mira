@@ -5,8 +5,15 @@ import { cors } from "hono/cors";
 import type { z } from "zod";
 import type { Db } from "./db/client.ts";
 import { attempts } from "./db/schema.ts";
+import { defaultClaude, runDesigner, runMonitor, type ClaudeFn } from "./agents.ts";
 import { createFlightDirector, toDebriefInput, type Debrief, type FlightDirector } from "./flight-director.ts";
-import { FlightDirectorRequestSchema, MissionIdSchema, SaveAttemptSchema, issuesOf } from "./schemas.ts";
+import {
+  FlightDirectorRequestSchema,
+  MissionIdSchema,
+  MonitorRequestSchema,
+  SaveAttemptSchema,
+  issuesOf,
+} from "./schemas.ts";
 
 /** The health answer: lets the web app (and people) check that the local API is up. */
 export type HealthResponse = { status: "ok"; service: "api"; db: "ok" | "not-configured" };
@@ -31,6 +38,8 @@ export type FlightDirectorResponse = Debrief;
 export type AppDeps = {
   db?: Db;
   flightDirector?: FlightDirector;
+  /** Runs Claude for the two AI Mission Control agents (tests inject a fake). */
+  claude?: ClaudeFn;
   /** Origins allowed by CORS; defaults to the Vite dev server. */
   corsOrigins?: string[];
   now?: () => Date;
@@ -76,6 +85,7 @@ async function readJson<T extends z.ZodType>(
 export function createApp({
   db,
   flightDirector = createFlightDirector(),
+  claude = defaultClaude,
   corsOrigins = DEFAULT_CORS_ORIGINS,
   now = () => new Date(),
 }: AppDeps = {}): Hono {
@@ -159,6 +169,17 @@ export function createApp({
     const body = await readJson(c, FlightDirectorRequestSchema);
     if (!body.ok) return body.res;
     return c.json<FlightDirectorResponse>(await flightDirector(toDebriefInput(body.data)));
+  });
+
+  // ---------- AI Mission Control: the two agents ----------
+
+  app.post("/agents/designer", async (c) => c.json(await runDesigner(claude)));
+
+  app.post("/agents/monitor", async (c) => {
+    const body = await readJson(c, MonitorRequestSchema);
+    if (!body.ok) return body.res;
+    const result = await runMonitor(body.data.design, claude);
+    return "error" in result ? c.json(result, 400) : c.json(result);
   });
 
   return app;

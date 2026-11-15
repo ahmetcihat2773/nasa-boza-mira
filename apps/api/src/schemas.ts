@@ -76,3 +76,14 @@ export type FlightDirectorRequest = z.infer<typeof FlightDirectorRequestSchema>;
 export function issuesOf(error: z.ZodError): { path: string; message: string }[] {
   return error.issues.map((i) => ({ path: i.path.join("."), message: i.message }));
 }
+
+/** A design as part ids (the sim's DesignIds), as sent to the Mission Monitor agent. */
+export const DesignIdsSchema = z.object({
+  parts: z.record(z.string(), z.string().max(80)),
+  instruments: z.array(z.string().max(80)).max(10),
+  launcher: z.string().max(80).optional(),
+  orbit: z.object({ type: z.string().max(40), altitudeKm: z.number().min(150).max(2000) }).optional(),
+  groundStations: z.array(z.string().max(80)).max(10).optional(),
+});
+
+export const MonitorRequestSchema = z.object({ design: DesignIdsSchema });

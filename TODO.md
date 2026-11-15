@@ -413,3 +413,13 @@ Spec: [design.md](design.md) section 10. Plausible values, no research, no tests
 - **Subtasks:**
   - [x] **T28.1 – Mission selection screen** before the Briefing (cards for both missions).
   - [x] **T28.2 – Use the chosen mission everywhere:** briefing, pickers (6U and propulsion "none" locked for the Moon, with reasons), requirements panel (L1–L5), delta-v and propellant on the dashboard, events, results, saved attempts and leaderboard per mission.
+
+### [x] T29 – AI Mission Control (two agents, one mission, one expected problem)
+
+- **Owner:** coordinator
+- **Why:** A simple, demo-ready story for the presentation: one agent designs the mission, another detects a launch problem and fixes it.
+- **Subtasks:**
+  - [x] **T29.1 – Sim (`packages/sim/src/autopilot.ts`):** the scenario (release 150 km below the planned orbit), check C1 (thruster delta-v to climb back, Hohmann transfer + 10%), a built-in designer (local search over part swaps), launch telemetry, recovery options and their outcome. Tests in `autopilot.test.ts`.
+  - [x] **T29.2 – API:** `POST /agents/designer` and `POST /agents/monitor` (`apps/api/src/agents.ts`, prompts in `apps/api/prompts/`). Claude proposes, the sim validates; up to 3 designer attempts with the failed checks fed back; built-in fallback when Claude is missing or answers badly.
+  - [x] **T29.3 – Web:** the AI Mission Control screen (`MissionControl.tsx`): agent panels, attempts, live telemetry and altitude chart, decision table, orbit view and the result with a "without a thruster" comparison. Runs the built-in agents in the browser when the API is down.
+

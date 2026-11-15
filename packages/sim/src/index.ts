@@ -5,3 +5,4 @@ export * from "./orbit.ts";
 export * from "./earth-orbit.ts";
 export * from "./lunar.ts";
 export * from "./run.ts";
+export * from "./autopilot.ts";

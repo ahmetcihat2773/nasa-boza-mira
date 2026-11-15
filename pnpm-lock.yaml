@@ -38,6 +38,12 @@ importers:
       '@hono/node-server':
         specifier: 2.1.8
         version: 2.1.8(hono@4.13.18)
+      '@space-mission/data':
+        specifier: workspace:*
+        version: link:../../packages/data
+      '@space-mission/sim':
+        specifier: workspace:*
+        version: link:../../packages/sim
       better-sqlite3:
         specifier: 12.11.1
         version: 12.11.1

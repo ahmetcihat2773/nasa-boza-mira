@@ -2,7 +2,15 @@
  * Client for the local API (apps/api, http://127.0.0.1:8787). Every call fails softly:
  * when the API is not running the game keeps working with the attempts in the store.
  */
-import type { Design, MissionResult } from "@space-mission/sim";
+import type {
+  Design,
+  DesignIds,
+  DesignStep,
+  MissionResult,
+  RecoveryOptionId,
+  RecoveryOutcome,
+  Situation,
+} from "@space-mission/sim";
 
 export const API_URL: string = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8787";
 
@@ -82,3 +90,31 @@ export function flightDirector(
   }
   return p;
 }
+
+// ---------- AI Mission Control (apps/api/src/agents.ts) ----------
+
+export interface DesignerResponse {
+  source: "claude" | "autopilot" | "claude+autopilot";
+  steps: (DesignStep & { reasoning?: string })[];
+  final: DesignIds;
+  pass: boolean;
+  fallbackReason?: string;
+}
+
+export interface MonitorResponse {
+  source: "claude" | "autopilot";
+  diagnosis: string;
+  optionId: RecoveryOptionId;
+  reasoning: string;
+  situation: Situation;
+  outcome: RecoveryOutcome;
+  fallbackReason?: string;
+}
+
+/** Agent 1. Claude may take several attempts, so the timeout is long. Null when the API is not running. */
+export const designerAgent = (): Promise<DesignerResponse | null> =>
+  call<DesignerResponse>("/agents/designer", { method: "POST" }, 420_000);
+
+/** Agent 2. Null when the API is not running. */
+export const monitorAgent = (design: DesignIds): Promise<MonitorResponse | null> =>
+  call<MonitorResponse>("/agents/monitor", { method: "POST", body: JSON.stringify({ design }) }, 90_000);
