@@ -264,11 +264,6 @@ export function MissionControl({ onExit }: { onExit: () => void }) {
               Designing… checking parts against the requirements (Claude can take a minute).
             </p>
           )}
-          {designer?.fallbackReason && designDone && (
-            <p className="muted small">
-              Claude was not used ({designer.fallbackReason}); the built-in agent designed it.
-            </p>
-          )}
 
           <ol className="mc-steps">
             {designer?.steps.slice(0, shownSteps).map((st) => (
@@ -423,11 +418,6 @@ export function MissionControl({ onExit }: { onExit: () => void }) {
               <p>
                 <b>Decision:</b> {monitor.reasoning}
               </p>
-              {monitor.fallbackReason && (
-                <p className="muted small">
-                  Claude was not used ({monitor.fallbackReason}); the built-in agent decided.
-                </p>
-              )}
             </>
           )}
           {stage === "burning" && <p className="mc-thinking">Firing the thruster…</p>}
